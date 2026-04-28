@@ -1,7 +1,8 @@
 import 'dart:convert'; // Wajib untuk jsonEncode & jsonDecode
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http; // Import dengan alias 'http'
+import 'package:http/http.dart' as http;
+import 'package:ta_mobile_project/routes/route.dart'; // Import dengan alias 'http'
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
@@ -13,15 +14,15 @@ class LoginController extends GetxController {
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
   }
-  
+
   void forgotPassword() {
     // Logika ketika tombol Lupa Kata Sandi ditekan
     Get.snackbar(
-      'Informasi', 
+      'Informasi',
       'Fitur lupa kata sandi akan segera hadir',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.amber,
-      colorText: Colors.black
+      colorText: Colors.black,
     );
   }
 
@@ -29,16 +30,20 @@ class LoginController extends GetxController {
     // Logika login menggunakan akun belajar.id
     print("Mencoba login dengan Belajar.id");
     Get.snackbar(
-      'Info', 
+      'Info',
       'Login Belajar.id sedang dikembangkan',
-      snackPosition: SnackPosition.BOTTOM
+      snackPosition: SnackPosition.BOTTOM,
     );
   }
 
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Email dan Password harus diisi',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Email dan Password harus diisi',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -52,7 +57,8 @@ class LoginController extends GetxController {
       final response = await http.post(
         url,
         headers: {
-          'Content-Type': 'application/json', // Memberitahu server bahwa kita mengirim JSON
+          'Content-Type':
+              'application/json', // Memberitahu server bahwa kita mengirim JSON
           'Accept': 'application/json',
         },
         body: jsonEncode({
@@ -70,21 +76,33 @@ class LoginController extends GetxController {
         String token = responseData['token'];
         print('Login Berhasil, Token: $token');
 
-        Get.snackbar('Sukses', 'Selamat Datang!',
-            backgroundColor: Colors.green, colorText: Colors.white);
-        
+        Get.snackbar(
+          'Sukses',
+          'Selamat Datang!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
         // Navigasi ke home
-        // Get.offAllNamed(Routes.HOME);
+        Get.offAllNamed(AppRoutes.mainPage);
       } else {
         // Gagal (Status code 401, 400, 422, dll)
         String message = responseData['message'] ?? "Email atau Password salah";
-        Get.snackbar('Login Gagal', message,
-            backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          'Login Gagal',
+          message,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       // Error jaringan atau server mati
-      Get.snackbar('Error', 'Tidak dapat terhubung ke server',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Tidak dapat terhubung ke server',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }

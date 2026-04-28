@@ -51,14 +51,17 @@ class LoginPage extends GetView<LoginController> {
 
   Widget _buildBackgroundWatermark() {
     return Positioned(
-      bottom: 0, left: 0, right: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
       child: Opacity(
         opacity: 0.08,
         child: Image.asset(
           'assets/images/school_building.png',
           fit: BoxFit.cover,
           height: 300,
-          errorBuilder: (context, error, stackTrace) => const SizedBox(height: 300),
+          errorBuilder: (context, error, stackTrace) =>
+              const SizedBox(height: 300),
         ),
       ),
     );
@@ -66,12 +69,17 @@ class LoginPage extends GetView<LoginController> {
 
   Widget _buildLogo() {
     return Container(
-      width: 80, height: 80,
+      width: 80,
+      height: 80,
       decoration: BoxDecoration(
         color: const Color(0xFFD4C4A8),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Icon(Icons.school_rounded, size: 44, color: Color(0xFF6B1A1A)),
+      child: const Icon(
+        Icons.school_rounded,
+        size: 44,
+        color: Color(0xFF6B1A1A),
+      ),
     );
   }
 
@@ -80,7 +88,11 @@ class LoginPage extends GetView<LoginController> {
       children: [
         const Text(
           'Masuk',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF6B1A1A)),
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF6B1A1A),
+          ),
         ),
         const SizedBox(height: 6),
         Text(
@@ -95,11 +107,22 @@ class LoginPage extends GetView<LoginController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF3D2B1F))),
+        const Text(
+          'Email',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF3D2B1F),
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller.emailController,
           keyboardType: TextInputType.emailAddress,
-          decoration: _inputDecoration(hint: 'nama@sekolah.id', icon: Icons.alternate_email_rounded),
+          decoration: _inputDecoration(
+            hint: 'nama@sekolah.id',
+            icon: Icons.alternate_email_rounded,
+          ),
         ),
       ],
     );
@@ -109,23 +132,36 @@ class LoginPage extends GetView<LoginController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Kata Sandi', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF3D2B1F))),
+        const Text(
+          'Kata Sandi',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF3D2B1F),
+          ),
+        ),
         const SizedBox(height: 8),
         // Obx mendengarkan perubahan pada controller.obscurePassword
-        Obx(() => TextFormField(
-          obscureText: controller.obscurePassword.value,
-          decoration: _inputDecoration(
-            hint: 'Masukkan kata sandi',
-            icon: Icons.lock_outline_rounded,
-            suffix: GestureDetector(
-              onTap: controller.togglePasswordVisibility,
-              child: Icon(
-                controller.obscurePassword.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                color: Colors.brown.shade400, size: 20,
+        Obx(
+          () => TextFormField(
+            controller: controller.passwordController,
+            obscureText: controller.obscurePassword.value,
+            decoration: _inputDecoration(
+              hint: 'Masukkan kata sandi',
+              icon: Icons.lock_outline_rounded,
+              suffix: GestureDetector(
+                onTap: controller.togglePasswordVisibility,
+                child: Icon(
+                  controller.obscurePassword.value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: Colors.brown.shade400,
+                  size: 20,
+                ),
               ),
             ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -137,7 +173,11 @@ class LoginPage extends GetView<LoginController> {
         onTap: controller.forgotPassword,
         child: const Text(
           'Lupa Kata Sandi?',
-          style: TextStyle(fontSize: 13, color: Color(0xFF6B1A1A), fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 13,
+            color: Color(0xFF6B1A1A),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );
@@ -145,19 +185,25 @@ class LoginPage extends GetView<LoginController> {
 
   Widget _buildLoginButton() {
     return SizedBox(
-      width: double.infinity, height: 56,
+      width: double.infinity,
+      height: 56,
       child: ElevatedButton(
         onPressed: controller.login,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF6B1A1A),
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           elevation: 0,
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Masuk', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+            Text(
+              'Masuk',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            ),
             SizedBox(width: 8),
             Icon(Icons.arrow_forward_rounded, size: 20),
           ],
@@ -168,25 +214,42 @@ class LoginPage extends GetView<LoginController> {
 
   Widget _buildBelajarIdButton() {
     return SizedBox(
-      width: double.infinity, height: 56,
+      width: double.infinity,
+      height: 56,
       child: OutlinedButton(
         onPressed: controller.loginWithBelajarId,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           side: BorderSide.none,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 26, height: 26,
-              decoration: BoxDecoration(color: const Color(0xFF4CAF50), borderRadius: BorderRadius.circular(6)),
-              child: const Icon(Icons.school_outlined, color: Colors.white, size: 16),
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: const Color(0xFF4CAF50),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(
+                Icons.school_outlined,
+                color: Colors.white,
+                size: 16,
+              ),
             ),
             const SizedBox(width: 10),
-            const Text('Masuk dengan belajar.id', 
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF3D2B1F))),
+            const Text(
+              'Masuk dengan belajar.id',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3D2B1F),
+              ),
+            ),
           ],
         ),
       ),
@@ -199,8 +262,14 @@ class LoginPage extends GetView<LoginController> {
         Expanded(child: Divider(color: Colors.brown.shade300, thickness: 0.8)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text('ATAU MASUK DENGAN', 
-              style: TextStyle(fontSize: 11, color: Colors.brown.shade400, fontWeight: FontWeight.w500)),
+          child: Text(
+            'ATAU MASUK DENGAN',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.brown.shade400,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
         Expanded(child: Divider(color: Colors.brown.shade300, thickness: 0.8)),
       ],
@@ -210,18 +279,31 @@ class LoginPage extends GetView<LoginController> {
   Widget _buildFooter() {
     return Column(
       children: [
-        Text('Mengalami kendala teknis?', style: TextStyle(fontSize: 13, color: Colors.brown.shade400)),
+        Text(
+          'Mengalami kendala teknis?',
+          style: TextStyle(fontSize: 13, color: Colors.brown.shade400),
+        ),
         const SizedBox(height: 4),
         GestureDetector(
           onTap: () {},
-          child: const Text('Hubungi Admin IT Sekolah',
-              style: TextStyle(fontSize: 13, color: Color(0xFF6B1A1A), fontWeight: FontWeight.w600)),
+          child: const Text(
+            'Hubungi Admin IT Sekolah',
+            style: TextStyle(
+              fontSize: 13,
+              color: Color(0xFF6B1A1A),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
   }
 
-  InputDecoration _inputDecoration({required String hint, required IconData icon, Widget? suffix}) {
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData icon,
+    Widget? suffix,
+  }) {
     return InputDecoration(
       hintText: hint,
       prefixIcon: Icon(icon, color: Colors.brown.shade400, size: 20),
@@ -229,7 +311,10 @@ class LoginPage extends GetView<LoginController> {
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFF6B1A1A), width: 1.5),
