@@ -6,7 +6,7 @@ import 'package:ta_mobile_project/controllers/mainController.dart';
 class MainPage extends StatelessWidget {
   MainPage({super.key});
 
-  final MainController controller = Get.put(MainController());
+  final MainController controller = Get.find<MainController>();
 
   @override
   Widget build(BuildContext context) {

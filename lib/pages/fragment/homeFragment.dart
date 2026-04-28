@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:ta_mobile_project/controllers/homeController.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeFragment extends StatelessWidget {
+  HomeFragment({super.key});
+
+  final HomeController homeCtrl = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
