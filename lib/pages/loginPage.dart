@@ -187,26 +187,36 @@ class LoginPage extends GetView<LoginController> {
     return SizedBox(
       width: double.infinity,
       height: 56,
-      child: ElevatedButton(
-        onPressed: controller.login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF6B1A1A),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          elevation: 0,
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Masuk',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+      child: Obx(
+        () => ElevatedButton(
+          onPressed: controller.isLoading.value
+              ? null
+              : controller.login, // Disable saat loading
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF6B1A1A),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
             ),
-            SizedBox(width: 8),
-            Icon(Icons.arrow_forward_rounded, size: 20),
-          ],
+          ),
+          child: controller.isLoading.value
+              ? const CircularProgressIndicator(
+                  color: Colors.white,
+                ) // Tampilkan loading
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Masuk',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_rounded, size: 20),
+                  ],
+                ),
         ),
       ),
     );
