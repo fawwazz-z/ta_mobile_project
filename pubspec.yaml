@@ -12,6 +12,7 @@ dependencies:
 
   get: ^4.7.3
   http: ^1.6.0
+  shared_preferences: ^2.3.2   # ← tambahan untuk simpan token
 
 dev_dependencies:
   flutter_test:
