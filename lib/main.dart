@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
       title: 'Presensi Guru',
       debugShowCheckedModeBanner: false,
       // Mengambil initial route dari class Routes
-      initialRoute: AppRoutes.loginPage, 
+      initialRoute: AppRoutes.mainPage, 
       // Mengambil daftar halaman dari AppPages
       getPages: AppPage.pages,
       theme: ThemeData(

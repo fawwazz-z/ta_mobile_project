@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ta_mobile_project/routes/route.dart';
 
 class EditProfilPages extends StatelessWidget {
   const EditProfilPages({super.key});
@@ -14,15 +16,20 @@ class EditProfilPages extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(10),
+                  GestureDetector(
+                    onTap: () {
+                      Get.offAllNamed(AppRoutes.mainPage); // 🔥 INI YANG LU MAU
+                    },
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.chevron_left_rounded,
+                          color: Color(0xFF3D2B1F), size: 22),
                     ),
-                    child: const Icon(Icons.chevron_left_rounded,
-                        color: Color(0xFF3D2B1F), size: 22),
                   ),
                   const Expanded(
                     child: Text(
@@ -45,7 +52,6 @@ class EditProfilPages extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Avatar with edit icon
                     Center(
                       child: Stack(
                         children: [
@@ -79,7 +85,7 @@ class EditProfilPages extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    // Section label
+
                     Text(
                       'INFORMASI PERSONAL',
                       style: TextStyle(
@@ -90,22 +96,22 @@ class EditProfilPages extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    // Nama Lengkap
+
                     _buildFieldLabel('Nama Lengkap'),
                     const SizedBox(height: 6),
                     _buildTextField('Ahmad Fauzi, S.Pd.'),
                     const SizedBox(height: 14),
-                    // NIP
+
                     _buildFieldLabel('NIP'),
                     const SizedBox(height: 6),
                     _buildTextField('19850312 201001 1 004'),
                     const SizedBox(height: 14),
-                    // Email
+
                     _buildFieldLabel('Email'),
                     const SizedBox(height: 6),
                     _buildTextField('ahmad.fauzi@dikbud.go.id'),
                     const SizedBox(height: 28),
-                    // Simpan Perubahan
+
                     SizedBox(
                       width: double.infinity,
                       height: 52,
@@ -130,15 +136,15 @@ class EditProfilPages extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Reset Password
+
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton.icon(
                         onPressed: null,
-                        icon: Icon(Icons.lock_reset_rounded,
+                        icon: const Icon(Icons.lock_reset_rounded,
                             size: 18,
-                            color: const Color(0xFF6B1A1A)),
+                            color: Color(0xFF6B1A1A)),
                         label: const Text(
                           'Reset Password',
                           style: TextStyle(
@@ -186,12 +192,6 @@ class EditProfilPages extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.brown.withOpacity(0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 2))
-        ],
       ),
       child: Align(
         alignment: Alignment.centerLeft,
@@ -213,17 +213,10 @@ class EditProfilPages extends StatelessWidget {
       {'icon': Icons.calendar_today_outlined, 'label': 'Jadwal'},
       {'icon': Icons.person_outline_rounded, 'label': 'Profil'},
     ];
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-              color: Colors.brown.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, -3))
-        ],
-      ),
+      color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(items.length, (i) {
@@ -234,14 +227,11 @@ class EditProfilPages extends StatelessWidget {
               Icon(items[i]['icon'] as IconData,
                   color: sel
                       ? const Color(0xFF6B1A1A)
-                      : Colors.brown.shade300,
-                  size: 24),
+                      : Colors.brown.shade300),
               const SizedBox(height: 3),
               Text(items[i]['label'] as String,
                   style: TextStyle(
                       fontSize: 11,
-                      fontWeight:
-                          sel ? FontWeight.w600 : FontWeight.normal,
                       color: sel
                           ? const Color(0xFF6B1A1A)
                           : Colors.brown.shade300)),

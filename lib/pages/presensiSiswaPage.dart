@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PresensiSiswaPages extends StatelessWidget {
   const PresensiSiswaPages({super.key});
@@ -10,21 +11,30 @@ class PresensiSiswaPages extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            // HEADER
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
               child: Row(
                 children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(10),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.chevron_left_rounded,
+                        color: Color(0xFF3D2B1F),
+                        size: 22,
+                      ),
                     ),
-                    child: const Icon(Icons.chevron_left_rounded,
-                        color: Color(0xFF3D2B1F), size: 22),
                   ),
                   const SizedBox(width: 12),
+
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -39,14 +49,17 @@ class PresensiSiswaPages extends StatelessWidget {
                       Text(
                         'Kelas X - MIPA 1 • Senin, 22 Mei 2024',
                         style: TextStyle(
-                            fontSize: 11, color: Colors.brown.shade500),
+                          fontSize: 11,
+                          color: Colors.brown.shade500,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            // Search
+
+            // SEARCH
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -61,14 +74,21 @@ class PresensiSiswaPages extends StatelessWidget {
                     Icon(Icons.search_rounded,
                         color: Colors.brown.shade300, size: 20),
                     const SizedBox(width: 8),
-                    Text('Cari nama siswa...',
-                        style: TextStyle(
-                            fontSize: 13, color: Colors.brown.shade300)),
+                    Text(
+                      'Cari nama siswa...',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.brown.shade300,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
+
             const SizedBox(height: 12),
+
+            // LIST SISWA
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -99,21 +119,27 @@ class PresensiSiswaPages extends StatelessWidget {
                 ),
               ),
             ),
-            // Simpan button
+
+            // BUTTON SIMPAN
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: null,
+                  onPressed: () {
+                    Get.snackbar(
+                      'Success',
+                      'Presensi disimpan',
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B1A1A),
-                    disabledBackgroundColor: const Color(0xFF6B1A1A),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 0,
                   ),
                   child: const Row(
@@ -121,9 +147,13 @@ class PresensiSiswaPages extends StatelessWidget {
                     children: [
                       Icon(Icons.save_outlined, size: 20),
                       SizedBox(width: 8),
-                      Text('Simpan Presensi',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600)),
+                      Text(
+                        'Simpan Presensi',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -135,12 +165,14 @@ class PresensiSiswaPages extends StatelessWidget {
     );
   }
 
+  // ================= CARD SISWA =================
   Widget _buildSiswaCard({
     required String nama,
     required String nis,
     required String selected,
   }) {
     const options = ['HADIR', 'IZIN', 'SAKIT', 'ALPA'];
+
     final Map<String, Color> activeColors = {
       'HADIR': const Color(0xFF6B1A1A),
       'IZIN': const Color(0xFF1565C0),
@@ -156,9 +188,10 @@ class PresensiSiswaPages extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.brown.withOpacity(0.05),
-              blurRadius: 6,
-              offset: const Offset(0, 2))
+            color: Colors.brown.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          )
         ],
       ),
       child: Column(
@@ -169,14 +202,18 @@ class PresensiSiswaPages extends StatelessWidget {
               Container(
                 width: 38,
                 height: 38,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFE8D8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEFE8D8),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.person_outline_rounded,
-                    color: Color(0xFF6B1A1A), size: 20),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  color: Color(0xFF6B1A1A),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -188,24 +225,32 @@ class PresensiSiswaPages extends StatelessWidget {
                       color: Color(0xFF3D2B1F),
                     ),
                   ),
-                  Text(nis,
-                      style: TextStyle(
-                          fontSize: 11, color: Colors.brown.shade400)),
+                  Text(
+                    nis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.brown.shade400,
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
+
           const SizedBox(height: 12),
+
           Row(
             children: options.map((opt) {
               final isSelected = opt == selected;
-              final color = activeColors[opt] ?? const Color(0xFF6B1A1A);
+              final color = activeColors[opt]!;
+
               return Expanded(
                 child: Container(
                   margin: const EdgeInsets.only(right: 6),
                   padding: const EdgeInsets.symmetric(vertical: 7),
                   decoration: BoxDecoration(
-                    color: isSelected ? color : const Color(0xFFF5EFE6),
+                    color:
+                        isSelected ? color : const Color(0xFFF5EFE6),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
