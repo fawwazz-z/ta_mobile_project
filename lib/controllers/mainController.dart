@@ -7,14 +7,18 @@ import 'package:ta_mobile_project/pages/fragment/riwayatFragment.dart';
 
 class MainController extends GetxController {
   var selectedIndex = 0.obs;
+  late List<Widget> fragments;
 
-  // Daftar Fragment sebagai Widget
-  final List<Widget> fragments = [
-    HomeFragment(), // Konten beranda yang kamu buat sebelumnya
-    RiwayatFragment(),
-    JadwalFragment(),
-    ProfileFragment(),
-  ];
+  @override
+  void onInit() {
+    super.onInit();
+    fragments = [
+      HomeFragment(),
+      RiwayatFragment(),
+      JadwalFragment(),
+      ProfileFragment(),
+    ];
+  }
 
   void changeIndex(int index) {
     selectedIndex.value = index;

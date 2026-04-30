@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/homeController.dart';
+import 'package:ta_mobile_project/routes/route.dart';
 
 class HomeFragment extends StatelessWidget {
   HomeFragment({super.key});
 
-  final HomeController homeCtrl = Get.put(HomeController());
+  final HomeController homeCtrl = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
-    // Tidak perlu Scaffold lagi, karena sudah ada di MainPage
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -105,7 +105,6 @@ class HomeFragment extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -119,9 +118,7 @@ class HomeFragment extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
+                    horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6B1A1A),
                   borderRadius: BorderRadius.circular(20),
@@ -143,93 +140,64 @@ class HomeFragment extends StatelessWidget {
             style: TextStyle(fontSize: 12, color: Colors.brown.shade400),
           ),
           const SizedBox(height: 16),
-          // Masuk / Pulang
           Row(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'MASUK',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.brown.shade400,
-                        letterSpacing: 0.8,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      '--:--',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D2B1F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(width: 1, height: 40, color: Colors.brown.shade100),
+              Expanded(child: _buildTimeInfo('MASUK', '--:--')),
+              Container(
+                  width: 1, height: 40, color: Colors.brown.shade100),
               const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'PULANG',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.brown.shade400,
-                        letterSpacing: 0.8,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      '--:--',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D2B1F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Expanded(child: _buildTimeInfo('PULANG', '--:--')),
             ],
           ),
           const SizedBox(height: 18),
-          // Mulai Presensi Button
           SizedBox(
             width: double.infinity,
             height: 52,
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: () {},
+              icon: const Icon(Icons.fingerprint_rounded, size: 22),
+              label: const Text(
+                'Mulai Presensi',
+                style:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B1A1A),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                    borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.fingerprint_rounded, size: 22),
-                  SizedBox(width: 10),
-                  Text(
-                    'Mulai Presensi',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTimeInfo(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.brown.shade400,
+            letterSpacing: 0.8,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF3D2B1F),
+          ),
+        ),
+      ],
     );
   }
 
@@ -286,9 +254,7 @@ class HomeFragment extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10),
-            ),
+                color: iconBg, borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(height: 12),
@@ -329,8 +295,9 @@ class HomeFragment extends StatelessWidget {
                 color: Color(0xFF3D2B1F),
               ),
             ),
+            // ← LIHAT SEMUA → navigasi ke JurnalPage
             GestureDetector(
-              onTap: () {},
+              onTap: () => Get.toNamed(AppRoutes.jurnalPage),
               child: const Text(
                 'Lihat Semua',
                 style: TextStyle(
@@ -343,6 +310,7 @@ class HomeFragment extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 14),
+        // Preview 2 item jurnal — klik → PresensiSiswa
         _buildJurnalItem(
           icon: Icons.menu_book_outlined,
           iconColor: const Color(0xFF2196F3),
@@ -350,6 +318,7 @@ class HomeFragment extends StatelessWidget {
           className: 'Kelas X - MIPA 1',
           subject: 'Teks Eksposisi',
           time: '08:00 - 09:30',
+          jurnalId: 1,
         ),
         const SizedBox(height: 12),
         _buildJurnalItem(
@@ -359,6 +328,7 @@ class HomeFragment extends StatelessWidget {
           className: 'Kelas XI - IPS 2',
           subject: 'Analisis Puisi',
           time: '10:00 - 11:30',
+          jurnalId: 2,
         ),
       ],
     );
@@ -371,58 +341,65 @@ class HomeFragment extends StatelessWidget {
     required String className,
     required String subject,
     required String time,
+    required int jurnalId,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.brown.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return GestureDetector(
+      // ← KLIK KELAS → PresensiSiswaPage
+      onTap: () => Get.toNamed(
+        AppRoutes.presensiSiswa,
+        arguments: {'jurnal_id': jurnalId, 'kelas': className},
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.brown.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  className,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D2B1F),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    className,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3D2B1F),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '$subject • $time',
-                  style: TextStyle(fontSize: 13, color: Colors.brown.shade400),
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    '$subject • $time',
+                    style: TextStyle(
+                        fontSize: 13, color: Colors.brown.shade400),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: Colors.brown.shade300,
-            size: 22,
-          ),
-        ],
+            Icon(Icons.chevron_right_rounded,
+                color: Colors.brown.shade300, size: 22),
+          ],
+        ),
       ),
     );
   }
