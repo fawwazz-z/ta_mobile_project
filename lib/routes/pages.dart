@@ -17,5 +17,6 @@ class AppPage {
       page: () => MainPage(),
       binding: MainBinding(),
     ),
+    
   ];
 }

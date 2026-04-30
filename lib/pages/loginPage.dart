@@ -23,7 +23,7 @@ class LoginPage extends GetView<LoginController> {
                     const SizedBox(height: 20),
                     _buildTitle(),
                     const SizedBox(height: 40),
-                    _buildEmailField(),
+                    _buildEmailField(), 
                     const SizedBox(height: 20),
                     _buildPasswordField(),
                     const SizedBox(height: 12),
@@ -145,6 +145,7 @@ class LoginPage extends GetView<LoginController> {
         Obx(
           () => TextFormField(
             controller: controller.passwordController,
+            
             obscureText: controller.obscurePassword.value,
             decoration: _inputDecoration(
               hint: 'Masukkan kata sandi',
