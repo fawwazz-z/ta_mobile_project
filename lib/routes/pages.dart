@@ -3,12 +3,17 @@ import 'package:ta_mobile_project/bindings/editProfileBinding.dart';
 import 'package:ta_mobile_project/bindings/jurnalBinding.dart';
 import 'package:ta_mobile_project/bindings/loginBinding.dart';
 import 'package:ta_mobile_project/bindings/mainBinding.dart';
+import 'package:ta_mobile_project/bindings/presensiBinding.dart';
 import 'package:ta_mobile_project/bindings/presensiSiswa_Binding.dart';
 import 'package:ta_mobile_project/pages/editProfilePage.dart';
 import 'package:ta_mobile_project/pages/jurnalPage.dart';
 import 'package:ta_mobile_project/pages/loginPage.dart';
 import 'package:ta_mobile_project/pages/mainPage.dart';
 import 'package:ta_mobile_project/pages/presensiSiswaPage.dart';
+import 'package:ta_mobile_project/pages/presensiPage.dart';
+import 'package:ta_mobile_project/pages/verifikasiPage.dart';
+import 'package:ta_mobile_project/bindings/verifikasiBinding.dart';
+import 'package:ta_mobile_project/bindings/presensiBinding.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 
 class AppPage {
@@ -38,5 +43,15 @@ class AppPage {
       page:    () => const EditProfilPages(),
       binding: EditProfileBinding(),
     ),
+      GetPage(
+        name:    AppRoutes.presensipage,
+        page:    () => PresensiPage(),
+        binding: PresensiBinding(),
+      ),
+      GetPage(
+        name:    AppRoutes.verifikasipage,
+        page:    () => VerifikasiPage(),
+        binding: VerifikasiBinding(),
+      ),
   ];
 }

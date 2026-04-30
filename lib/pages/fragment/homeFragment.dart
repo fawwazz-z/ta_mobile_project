@@ -154,7 +154,7 @@ class HomeFragment extends StatelessWidget {
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {Get.offAllNamed(AppRoutes.presensipage);},
               icon: const Icon(Icons.fingerprint_rounded, size: 22),
               label: const Text(
                 'Mulai Presensi',
