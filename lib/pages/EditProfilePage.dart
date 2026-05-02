@@ -18,7 +18,7 @@ class EditProfilPages extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Get.offAllNamed(AppRoutes.mainPage); // 🔥 INI YANG LU MAU
+                      Get.back(); 
                     },
                     child: Container(
                       width: 36,

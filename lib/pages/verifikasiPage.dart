@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/verifikasiController.dart';
@@ -13,30 +14,222 @@ class VerifikasiPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5EDE2),
       appBar: AppBar(
-        title: const Text("Verifikasi Lokasi"),
+        title: const Text(
+          "Verifikasi Lokasi",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xFFF5EDE2),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
+            const SizedBox(height: 10),
+
+            // Preview foto
+            Obx(() {
+              final path = controller.fotoPath.value; // sesuaikan nama field di controller kamu
+              return Container(
+                width: double.infinity,
+                height: 220,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2C9B8),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: path.isNotEmpty
+                          ? Image.file(File(path), fit: BoxFit.cover, width: double.infinity, height: 220)
+                          : const Center(child: Icon(Icons.person, size: 80, color: Colors.white54)),
+                    ),
+                    // Tombol ambil ulang foto di bawah preview
+                    Positioned(
+                      bottom: 16,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Text(
+                            "AMBIL ULANG FOTO",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+
+            const SizedBox(height: 24),
+
+            // Info lokasi, koordinat, status
             Container(
-              height: 200,
-              color: Colors.orange[200],
-              child: const Center(child: Text("Preview")),
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  // Lokasi
+                  _infoRow(
+                    icon: Icons.location_on,
+                    iconColor: const Color(0xFF7A0019),
+                    label: "LOKASI ANDA",
+                    child: Obx(() => Text(
+                          controller.alamat.value,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        )),
+                  ),
+
+                  const Divider(height: 24),
+
+                  // Koordinat
+                  _infoRow(
+                    icon: Icons.explore,
+                    iconColor: const Color(0xFF7A0019),
+                    label: "KOORDINAT",
+                    child: Obx(() => Text(
+                          controller.koordinat.value,
+                          style: const TextStyle(fontSize: 14),
+                        )),
+                  ),
+
+                  const Divider(height: 24),
+
+                  // Status radius
+                  _infoRow(
+                    icon: Icons.check_circle,
+                    iconColor: Colors.green,
+                    label: "STATUS RADIUS",
+                    child: Obx(() => Row(
+                          children: [
+                            Text(
+                              controller.status.value,
+                              style: const TextStyle(
+                                color: Colors.teal,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFDFF5F0),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text(
+                                "12 Meter",
+                                style: TextStyle(
+                                  color: Colors.teal,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-            Obx(() => Text(controller.alamat.value)),
-            Obx(() => Text(controller.koordinat.value)),
-            Obx(() => Text(controller.status.value)),
+
             const Spacer(),
-            ElevatedButton(
-              onPressed: () {Get.offAllNamed(AppRoutes.mainPage);},
-              child: const Text("Selesaikan"),
-            )
+
+            // Tombol selesaikan
+            SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7A0019),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: () {
+                  Get.offAllNamed(AppRoutes.mainPage);
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Selesaikan Presensi",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _infoRow({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required Widget child,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: iconColor, size: 18),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 4),
+              child,
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

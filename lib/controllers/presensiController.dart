@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/routes/route.dart';
+import '../controllers/verifikasiController.dart';
 
 class PresensiController extends GetxController {
   CameraController? cameraController;
@@ -56,6 +57,10 @@ class PresensiController extends GetxController {
   }
 
   void selesaiPresensi() {
+    // Kirim foto ke VerifikasiController
+    final verifikasiCtrl = Get.put(VerifikasiController());
+    verifikasiCtrl.fotoPath.value = capturedImagePath.value;
+
     Get.offAllNamed(AppRoutes.verifikasipage);
   }
 }

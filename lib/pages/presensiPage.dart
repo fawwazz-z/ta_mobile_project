@@ -14,15 +14,18 @@ class PresensiPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5EDE2),
       appBar: AppBar(
-        title: const Text('Presensi Wajah'),
+        title: const Text(
+          'Presensi Wajah',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xFFF5EDE2),
         elevation: 0,
+        centerTitle: true,
       ),
       body: Obx(() {
         if (!controller.isCameraReady.value) {
           return const Center(child: CircularProgressIndicator());
         }
-
         return controller.capturedImagePath.value.isNotEmpty
             ? _hasilFoto()
             : _kamera();
@@ -32,71 +35,81 @@ class PresensiPage extends StatelessWidget {
 
   // ================= KAMERA =================
   Widget _kamera() {
-    return Column(
-      children: [
-        const SizedBox(height: 20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
 
-        Expanded(
-          child: Center(
+          // Preview kamera dengan bracket corner
+          Expanded(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
+              width: double.infinity,
               decoration: BoxDecoration(
+                color: const Color(0xFFF2C9B8),
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: CameraPreview(controller.cameraController!),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CameraPreview(controller.cameraController!),
+                    // Corner brackets
+                    Positioned.fill(
+                      child: CustomPaint(painter: _FaceBracketPainter()),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: SizedBox(
+          // Info lokasi & status (sama seperti verifikasi)
+          _infoCard(),
+
+          const SizedBox(height: 20),
+
+          // Tombol ambil foto
+          SizedBox(
             width: double.infinity,
             height: 55,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF7A0019),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
               onPressed: controller.ambilFoto,
               child: const Text(
                 'Ambil Foto',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
-        ),
 
-        const SizedBox(height: 30),
-      ],
+          const SizedBox(height: 24),
+        ],
+      ),
     );
   }
 
   // ================= HASIL FOTO =================
   Widget _hasilFoto() {
-    return Column(
-      children: [
-        const SizedBox(height: 20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
 
-        Expanded(
-          child: Center(
+          Expanded(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
+              width: double.infinity,
               decoration: BoxDecoration(
+                color: const Color(0xFFF2C9B8),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ClipRRect(
@@ -108,51 +121,173 @@ class PresensiPage extends StatelessWidget {
               ),
             ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const Text(
-                "Foto berhasil diambil",
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
+          _infoCard(),
+
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            height: 55,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF7A0019),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
+              onPressed: controller.selesaiPresensi,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Selesaikan Presensi',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward),
+                ],
+              ),
+            ),
+          ),
 
-              const SizedBox(height: 10),
+          const SizedBox(height: 10),
 
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7A0019),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+          TextButton(
+            onPressed: controller.ambilUlang,
+            child: const Text("Ambil Ulang",
+                style: TextStyle(color: Color(0xFF7A0019))),
+          ),
+
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          _infoRow(
+            icon: Icons.location_on,
+            iconColor: const Color(0xFF7A0019),
+            label: "LOKASI ANDA",
+            child: const Text(
+              "Jl. Pendidikan No. 45, Kebayoran Baru, Jakarta Selatan, DKI Jakarta 12130",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
+          const Divider(height: 24),
+          _infoRow(
+            icon: Icons.check_circle,
+            iconColor: Colors.green,
+            label: "STATUS RADIUS",
+            child: Row(
+              children: [
+                const Text(
+                  "Dalam Radius Sekolah",
+                  style: TextStyle(
+                    color: Colors.teal,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDFF5F0),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    "12 Meter",
+                    style: TextStyle(
+                      color: Colors.teal,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  onPressed: controller.selesaiPresensi,
-                  child: const Text('Selesaikan Presensi'),
                 ),
-              ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-              const SizedBox(height: 10),
-
-              TextButton(
-                onPressed: controller.ambilUlang,
-                child: const Text("Ambil Ulang"),
-              ),
+  Widget _infoRow({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required Widget child,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: iconColor, size: 18),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 10, color: Colors.grey, letterSpacing: 1)),
+              const SizedBox(height: 4),
+              child,
             ],
           ),
         ),
-
-        const SizedBox(height: 30),
       ],
     );
   }
+}
+
+// Painter untuk corner bracket di kamera
+class _FaceBracketPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF7A0019)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    const margin = 40.0;
+    const bracketSize = 30.0;
+
+    // Top-left
+    canvas.drawLine(Offset(margin, margin + bracketSize), Offset(margin, margin), paint);
+    canvas.drawLine(Offset(margin, margin), Offset(margin + bracketSize, margin), paint);
+
+    // Top-right
+    canvas.drawLine(Offset(size.width - margin - bracketSize, margin), Offset(size.width - margin, margin), paint);
+    canvas.drawLine(Offset(size.width - margin, margin), Offset(size.width - margin, margin + bracketSize), paint);
+
+    // Bottom-left
+    canvas.drawLine(Offset(margin, size.height - margin - bracketSize), Offset(margin, size.height - margin), paint);
+    canvas.drawLine(Offset(margin, size.height - margin), Offset(margin + bracketSize, size.height - margin), paint);
+
+    // Bottom-right
+    canvas.drawLine(Offset(size.width - margin - bracketSize, size.height - margin), Offset(size.width - margin, size.height - margin), paint);
+    canvas.drawLine(Offset(size.width - margin, size.height - margin), Offset(size.width - margin, size.height - margin - bracketSize), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
