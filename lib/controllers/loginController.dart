@@ -44,10 +44,10 @@ class LoginController extends GetxController {
         Uri.parse('https://kelompok14.rplrus.com/api/login'),
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          'Accept':        'application/json',
         },
         body: jsonEncode({
-          'email':       emailController.text,
+          'email':       emailController.text.trim(),
           'password':    passwordController.text,
           'device_name': 'Flutter',
         }),
@@ -56,9 +56,22 @@ class LoginController extends GetxController {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200) {
-        // Simpan token agar bisa dipakai di request berikutnya
         final token = data['token'] as String;
         await AuthService.saveToken(token);
+
+        // ── Ambil data user dari response ──────────────────────────────
+        // Response bisa berupa {token, role, user:{...}}
+        final userMap = data['user'] as Map<String, dynamic>?;
+        final role    = data['role']  as String? ?? '';
+
+        if (userMap != null) {
+          await AuthService.saveUserData(
+            name:   userMap['name']  as String? ?? '',
+            email:  userMap['email'] as String? ?? '',
+            role:   role,
+            userId: (userMap['id'] as num?)?.toInt() ?? 0,
+          );
+        }
 
         Get.snackbar('Sukses', 'Selamat Datang!',
             backgroundColor: Colors.green, colorText: Colors.white);

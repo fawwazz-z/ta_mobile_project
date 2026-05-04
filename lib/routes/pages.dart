@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/bindings/editProfileBinding.dart';
+import 'package:ta_mobile_project/bindings/jadwalBinding.dart';
 import 'package:ta_mobile_project/bindings/jurnalBinding.dart';
 import 'package:ta_mobile_project/bindings/loginBinding.dart';
 import 'package:ta_mobile_project/bindings/mainBinding.dart';
@@ -12,8 +13,10 @@ import 'package:ta_mobile_project/pages/mainPage.dart';
 import 'package:ta_mobile_project/pages/presensiSiswaPage.dart';
 import 'package:ta_mobile_project/pages/presensiPage.dart';
 import 'package:ta_mobile_project/pages/verifikasiPage.dart';
+import 'package:ta_mobile_project/pages/refleksiPage.dart';
 import 'package:ta_mobile_project/bindings/verifikasiBinding.dart';
 import 'package:ta_mobile_project/bindings/presensiBinding.dart';
+import 'package:ta_mobile_project/bindings/refleksiBinding.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 
 class AppPage {
@@ -52,6 +55,11 @@ class AppPage {
         name:    AppRoutes.verifikasipage,
         page:    () => VerifikasiPage(),
         binding: VerifikasiBinding(),
+      ),
+      GetPage(
+        name:    AppRoutes.refleksipage,
+        page:    () => RefleksiPage(),
+        binding: RefleksiBinding(),
       ),
   ];
 }
