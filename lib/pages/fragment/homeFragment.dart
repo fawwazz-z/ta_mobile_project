@@ -39,55 +39,44 @@ class HomeFragment extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Selamat Datang,',
-              style: TextStyle(fontSize: 14, color: Colors.brown.shade500),
-            ),
+            Text('Selamat Datang,',
+                style: TextStyle(fontSize: 14, color: Colors.brown.shade500)),
             const SizedBox(height: 2),
-            const Text(
-              'Guru Bahasa Indonesia',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3D2B1F),
-              ),
-            ),
+            Obx(() => Text(
+                  homeCtrl.teacherName.value.isEmpty
+                      ? 'Guru'
+                      : homeCtrl.teacherName.value,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3D2B1F),
+                  ),
+                )),
           ],
         ),
-        Stack(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFFD4C4A8),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.person_outline_rounded,
-                color: Color(0xFF6B1A1A),
-                size: 24,
-              ),
-            ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ],
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: const Color(0xFFD4C4A8),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(Icons.person_outline_rounded,
+              color: Color(0xFF6B1A1A), size: 24),
         ),
       ],
     );
   }
 
   Widget _buildPresensiCard() {
+    final now = DateTime.now();
+    final days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    final months = [
+      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    final dateStr = '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -96,10 +85,9 @@ class HomeFragment extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.brown.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
+              color: Colors.brown.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4))
         ],
       ),
       child: Column(
@@ -108,43 +96,30 @@ class HomeFragment extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Presensi Hari Ini',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3D2B1F),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6B1A1A),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  '07:00 - 15:00',
+              const Text('Presensi Hari Ini',
                   style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3D2B1F))),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                    color: const Color(0xFF6B1A1A),
+                    borderRadius: BorderRadius.circular(20)),
+                child: const Text('07:00 - 15:00',
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500)),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            'Senin, 22 Mei 2024',
-            style: TextStyle(fontSize: 12, color: Colors.brown.shade400),
-          ),
+          Text(dateStr,
+              style: TextStyle(fontSize: 12, color: Colors.brown.shade400)),
           const SizedBox(height: 16),
           Row(
             children: [
               Expanded(child: _buildTimeInfo('MASUK', '--:--')),
-              Container(
-                  width: 1, height: 40, color: Colors.brown.shade100),
+              Container(width: 1, height: 40, color: Colors.brown.shade100),
               const SizedBox(width: 20),
               Expanded(child: _buildTimeInfo('PULANG', '--:--')),
             ],
@@ -154,13 +129,10 @@ class HomeFragment extends StatelessWidget {
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
-              onPressed: () {Get.offAllNamed(AppRoutes.presensipage);},
+              onPressed: () {},
               icon: const Icon(Icons.fingerprint_rounded, size: 22),
-              label: const Text(
-                'Mulai Presensi',
-                style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
+              label: const Text('Mulai Presensi',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B1A1A),
                 foregroundColor: Colors.white,
@@ -179,24 +151,18 @@ class HomeFragment extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.brown.shade400,
-            letterSpacing: 0.8,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(label,
+            style: TextStyle(
+                fontSize: 11,
+                color: Colors.brown.shade400,
+                letterSpacing: 0.8,
+                fontWeight: FontWeight.w500)),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF3D2B1F),
-          ),
-        ),
+        Text(value,
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3D2B1F))),
       ],
     );
   }
@@ -241,10 +207,9 @@ class HomeFragment extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.brown.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
+              color: Colors.brown.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4))
         ],
       ),
       child: Column(
@@ -258,24 +223,18 @@ class HomeFragment extends StatelessWidget {
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(height: 12),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.brown.shade400,
-              letterSpacing: 0.5,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.brown.shade400,
+                  letterSpacing: 0.5,
+                  fontWeight: FontWeight.w500)),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D2B1F),
-            ),
-          ),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF3D2B1F))),
         ],
       ),
     );
@@ -287,49 +246,77 @@ class HomeFragment extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Jurnal Mengajar',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3D2B1F),
-              ),
-            ),
-            // ← LIHAT SEMUA → navigasi ke JurnalPage
+            const Text('Jadwal Hari Ini',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3D2B1F))),
             GestureDetector(
               onTap: () => Get.toNamed(AppRoutes.jurnalPage),
-              child: const Text(
-                'Lihat Semua',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF6B1A1A),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: const Text('Lihat Semua',
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF6B1A1A),
+                      fontWeight: FontWeight.w600)),
             ),
           ],
         ),
         const SizedBox(height: 14),
-        // Preview 2 item jurnal — klik → PresensiSiswa
-        _buildJurnalItem(
-          icon: Icons.menu_book_outlined,
-          iconColor: const Color(0xFF2196F3),
-          iconBg: const Color(0xFFE3F2FD),
-          className: 'Kelas X - MIPA 1',
-          subject: 'Teks Eksposisi',
-          time: '08:00 - 09:30',
-          jurnalId: 1,
-        ),
-        const SizedBox(height: 12),
-        _buildJurnalItem(
-          icon: Icons.auto_stories_outlined,
-          iconColor: const Color(0xFF9C27B0),
-          iconBg: const Color(0xFFF3E5F5),
-          className: 'Kelas XI - IPS 2',
-          subject: 'Analisis Puisi',
-          time: '10:00 - 11:30',
-          jurnalId: 2,
-        ),
+        Obx(() {
+          if (homeCtrl.isLoadingJadwal.value) {
+            return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF6B1A1A)));
+          }
+          if (homeCtrl.errorJadwal.isNotEmpty) {
+            return Center(
+                child: Text(homeCtrl.errorJadwal.value,
+                    style: TextStyle(color: Colors.brown.shade400)));
+          }
+          if (homeCtrl.jadwalHariIni.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.event_available_rounded,
+                      color: Colors.brown.shade300),
+                  const SizedBox(width: 12),
+                  Text('Tidak ada jadwal mengajar hari ini',
+                      style: TextStyle(color: Colors.brown.shade400)),
+                ],
+              ),
+            );
+          }
+          // Tampilkan maksimal 2 jadwal pertama di home
+          final preview = homeCtrl.jadwalHariIni.take(2).toList();
+          return Column(
+            children: preview.asMap().entries.map((entry) {
+              final jadwal = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildJurnalItem(
+                  icon: Icons.menu_book_outlined,
+                  iconColor: entry.key == 0
+                      ? const Color(0xFF2196F3)
+                      : const Color(0xFF9C27B0),
+                  iconBg: entry.key == 0
+                      ? const Color(0xFFE3F2FD)
+                      : const Color(0xFFF3E5F5),
+                  className: jadwal.classroomName,
+                  subject: jadwal.subjectName,
+                  time: '${jadwal.startTime} - ${jadwal.endTime}',
+                  scheduleId: jadwal.id,
+                  mapel: jadwal.subjectName,
+                  startTime: jadwal.startTime,
+                  endTime: jadwal.endTime,
+                ),
+              );
+            }).toList(),
+          );
+        }),
       ],
     );
   }
@@ -341,26 +328,32 @@ class HomeFragment extends StatelessWidget {
     required String className,
     required String subject,
     required String time,
-    required int jurnalId,
+    required int scheduleId,
+    required String mapel,
+    required String startTime,
+    required String endTime,
   }) {
     return GestureDetector(
-      // ← KLIK KELAS → PresensiSiswaPage
       onTap: () => Get.toNamed(
         AppRoutes.presensiSiswa,
-        arguments: {'jurnal_id': jurnalId, 'kelas': className},
+        arguments: {
+          'schedule_id': scheduleId,
+          'kelas':       className,
+          'mapel':       mapel,
+          'start_time':  startTime,
+          'end_time':    endTime,
+        },
       ),
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.brown.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
+                color: Colors.brown.withOpacity(0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4))
           ],
         ),
         child: Row(
@@ -369,9 +362,7 @@ class HomeFragment extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(12),
-              ),
+                  color: iconBg, borderRadius: BorderRadius.circular(12)),
               child: Icon(icon, color: iconColor, size: 22),
             ),
             const SizedBox(width: 14),
@@ -379,20 +370,14 @@ class HomeFragment extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    className,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF3D2B1F),
-                    ),
-                  ),
+                  Text(className,
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3D2B1F))),
                   const SizedBox(height: 2),
-                  Text(
-                    '$subject • $time',
-                    style: TextStyle(
-                        fontSize: 13, color: Colors.brown.shade400),
-                  ),
+                  Text('$subject • $time',
+                      style: TextStyle(fontSize: 13, color: Colors.brown.shade400)),
                 ],
               ),
             ),

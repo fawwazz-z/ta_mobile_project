@@ -6,4 +6,5 @@ class AppRoutes {
   static const String editprofile   = '/editprofile';
   static const String verifikasipage   = '/verifikasipage';
   static const String presensipage   = '/presensipage';
+  static const String refleksipage   = '/refleksipage';
 }
