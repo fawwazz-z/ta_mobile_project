@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/mainController.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({super.key});
@@ -12,7 +13,7 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
-        backgroundColor: const Color(0xFFEFE8D8), // Warna latar global
+        backgroundColor: AppColors.bgCard, // Warna latar global
         body: IndexedStack(
           // Menggunakan IndexedStack agar state halaman terjaga
           index: controller.selectedIndex.value,
@@ -34,10 +35,10 @@ class MainPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white, 
         boxShadow: [
           BoxShadow(
-            color: Colors.brown.withOpacity(0.08),
+            color: AppColors.shadowNav,
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -56,8 +57,8 @@ class MainPage extends StatelessWidget {
                   Icon(
                     items[index]['icon'] as IconData,
                     color: isSelected
-                        ? const Color(0xFF6B1A1A)
-                        : Colors.brown.shade300,
+                        ? AppColors.primary
+                        : AppColors.brownshade, 
                     size: 24,
                   ),
                   const SizedBox(height: 4),
@@ -69,8 +70,8 @@ class MainPage extends StatelessWidget {
                           ? FontWeight.w600
                           : FontWeight.normal,
                       color: isSelected
-                          ? const Color(0xFF6B1A1A)
-                          : Colors.brown.shade300,
+                          ? AppColors.primary
+                          : AppColors.brownshade,
                     ),
                   ),
                 ],

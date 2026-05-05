@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/Editprofilecontroller.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 
 class EditProfilPages extends StatelessWidget {
   const EditProfilPages({super.key});
@@ -10,7 +11,7 @@ class EditProfilPages extends StatelessWidget {
     final ctrl = Get.find<EditProfileController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8DCC8),
+      backgroundColor: AppColors.bgMain,
       body: SafeArea(
         child: Column(
           children: [
@@ -25,11 +26,11 @@ class EditProfilPages extends StatelessWidget {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.6),
+                        color: AppColors.white.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(Icons.chevron_left_rounded,
-                          color: Color(0xFF3D2B1F), size: 22),
+                          color: AppColors.textDark, size: 22),
                     ),
                   ),
                   const Expanded(
@@ -39,7 +40,7 @@ class EditProfilPages extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D2B1F),
+                        color: AppColors.textDark,
                       ),
                     ),
                   ),
@@ -63,12 +64,12 @@ class EditProfilPages extends StatelessWidget {
                             width: 88,
                             height: 88,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFD4C4A8),
+                              color: AppColors.bgField,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 3),
+                              border: Border.all(color: AppColors.white, width: 3),
                             ),
                             child: const Icon(Icons.person_outline_rounded,
-                                color: Color(0xFF6B1A1A), size: 44),
+                                color: AppColors.primary, size: 44),
                           ),
                           Positioned(
                             bottom: 0,
@@ -77,7 +78,7 @@ class EditProfilPages extends StatelessWidget {
                               width: 28,
                               height: 28,
                               decoration: const BoxDecoration(
-                                color: Color(0xFF6B1A1A),
+                                color: AppColors.primary,
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.camera_alt_outlined,
@@ -93,7 +94,7 @@ class EditProfilPages extends StatelessWidget {
                       'INFORMASI PERSONAL',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.brown.shade500,
+                        color: AppColors.brownshade2,
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.w600,
                       ),
@@ -142,20 +143,20 @@ class EditProfilPages extends StatelessWidget {
                                     width: 18,
                                     height: 18,
                                     child: CircularProgressIndicator(
-                                        color: Colors.white, strokeWidth: 2))
+                                        color: AppColors.white, strokeWidth: 2))
                                 : const Icon(Icons.save_outlined,
-                                    size: 18, color: Colors.white),
+                                    size: 18, color: AppColors.white),
                             label: const Text(
                               'Simpan Perubahan',
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white),
+                                  color: AppColors.white),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6B1A1A),
+                              backgroundColor: AppColors.primary,
                               disabledBackgroundColor:
-                                  const Color(0xFF6B1A1A).withOpacity(0.6),
+                                  AppColors.primary.withOpacity(0.6),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14)),
                               elevation: 0,
@@ -171,16 +172,16 @@ class EditProfilPages extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: ctrl.resetPassword,
                         icon: const Icon(Icons.lock_reset_rounded,
-                            size: 18, color: Color(0xFF6B1A1A)),
+                            size: 18, color: AppColors.primary),
                         label: const Text(
                           'Reset Password',
                           style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF6B1A1A)),
+                              color: AppColors.primary),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFEFE8D8),
+                          backgroundColor: AppColors.bgCard,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
@@ -216,16 +217,16 @@ class EditProfilPages extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
-        style: const TextStyle(fontSize: 14, color: Color(0xFF3D2B1F)),
+        style: const TextStyle(fontSize: 14, color: AppColors.textDark),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.brown.shade300, fontSize: 14),
+          hintStyle: TextStyle(color: AppColors.brownshade  , fontSize: 14),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           border: InputBorder.none,

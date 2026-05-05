@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 import '../controllers/verifikasiController.dart';
 import '../routes/route.dart';
 
@@ -12,13 +13,13 @@ class VerifikasiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EDE2),
+      backgroundColor: AppColors.bgMain,
       appBar: AppBar(
         title: const Text(
           "Verifikasi Lokasi",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFFF5EDE2),
+        backgroundColor: AppColors.bgCream,
         elevation: 0,
         centerTitle: true,
       ),
@@ -35,7 +36,7 @@ class VerifikasiPage extends StatelessWidget {
                 width: double.infinity,
                 height: 220,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF2C9B8),
+                  color: AppColors.bgPreview,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Stack(
@@ -55,7 +56,7 @@ class VerifikasiPage extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.white,
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
@@ -88,7 +89,7 @@ class VerifikasiPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: AppColors.white.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -96,7 +97,7 @@ class VerifikasiPage extends StatelessWidget {
                   // Lokasi
                   _infoRow(
                     icon: Icons.location_on,
-                    iconColor: const Color(0xFF7A0019),
+                    iconColor: AppColors.primaryLight,
                     label: "LOKASI ANDA",
                     child: Obx(() => Text(
                           controller.alamat.value,
@@ -109,7 +110,7 @@ class VerifikasiPage extends StatelessWidget {
                   // Koordinat
                   _infoRow(
                     icon: Icons.explore,
-                    iconColor: const Color(0xFF7A0019),
+                    iconColor: AppColors.primaryLight,
                     label: "KOORDINAT",
                     child: Obx(() => Text(
                           controller.koordinat.value,
@@ -122,14 +123,14 @@ class VerifikasiPage extends StatelessWidget {
                   // Status radius
                   _infoRow(
                     icon: Icons.check_circle,
-                    iconColor: Colors.green,
+                    iconColor: AppColors.success,
                     label: "STATUS RADIUS",
                     child: Obx(() => Row(
                           children: [
                             Text(
                               controller.status.value,
                               style: const TextStyle(
-                                color: Colors.teal,
+                                color: AppColors.teal,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
@@ -138,13 +139,13 @@ class VerifikasiPage extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFDFF5F0),
+                                color: AppColors.tealLight,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: const Text(
                                 "12 Meter",
                                 style: TextStyle(
-                                  color: Colors.teal,
+                                  color: AppColors.teal,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -165,7 +166,7 @@ class VerifikasiPage extends StatelessWidget {
               height: 55,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF7A0019),
+                  backgroundColor: AppColors.primaryLight,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -220,7 +221,7 @@ class VerifikasiPage extends StatelessWidget {
                 label,
                 style: const TextStyle(
                   fontSize: 10,
-                  color: Colors.grey,
+                  color: AppColors.defalt,
                   letterSpacing: 1,
                 ),
               ),
