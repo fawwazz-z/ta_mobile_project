@@ -8,7 +8,7 @@ class JadwalModel {
   final int    id;
   final String subjectName;
   final String classroomName;
-  final String day;
+  final String day;          // "Senin", "Selasa", dst — dari API
   final String startTime;
   final String endTime;
 
@@ -22,16 +22,56 @@ class JadwalModel {
   });
 
   factory JadwalModel.fromJson(Map<String, dynamic> j) {
+    // Relasi subject & classroom bisa berupa nested object atau hanya id
     final subject   = j['subject']   as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
+
+    // Normalkan field "day" — API mungkin kirim dalam bahasa Inggris
+    final rawDay = j['day'] as String? ?? '';
+    final day    = _normalizeDay(rawDay);
+
     return JadwalModel(
       id:            (j['id'] as num).toInt(),
-      subjectName:   subject?['name']   as String? ?? j['subject_name']   as String? ?? 'Mata Pelajaran',
-      classroomName: classroom?['name'] as String? ?? j['classroom_name'] as String? ?? 'Kelas',
-      day:           j['day']        as String? ?? '',
-      startTime:     j['start_time'] as String? ?? '--:--',
-      endTime:       j['end_time']   as String? ?? '--:--',
+      subjectName:   subject?['name']   as String?
+                  ?? j['subject_name']  as String?
+                  ?? j['mapel']         as String?
+                  ?? 'Mata Pelajaran',
+      classroomName: classroom?['name'] as String?
+                  ?? j['classroom_name'] as String?
+                  ?? j['kelas']          as String?
+                  ?? 'Kelas',
+      day:           day,
+      startTime:     _formatTime(j['start_time'] as String? ?? '--:--'),
+      endTime:       _formatTime(j['end_time']   as String? ?? '--:--'),
     );
+  }
+
+  /// Konversi nama hari dari bahasa Inggris → Indonesia jika perlu
+  static String _normalizeDay(String raw) {
+    const map = {
+      'monday':    'Senin',
+      'tuesday':   'Selasa',
+      'wednesday': 'Rabu',
+      'thursday':  'Kamis',
+      'friday':    'Jumat',
+      'saturday':  'Sabtu',
+      'sunday':    'Minggu',
+      // jika sudah dalam bahasa Indonesia, kembalikan apa adanya
+      'senin':    'Senin',
+      'selasa':   'Selasa',
+      'rabu':     'Rabu',
+      'kamis':    'Kamis',
+      'jumat':    'Jumat',
+      'sabtu':    'Sabtu',
+      'minggu':   'Minggu',
+    };
+    return map[raw.toLowerCase()] ?? raw;
+  }
+
+  /// Format "08:00:00" → "08:00"
+  static String _formatTime(String t) {
+    if (t.length >= 5) return t.substring(0, 5);
+    return t;
   }
 }
 
@@ -40,8 +80,10 @@ class JadwalController extends GetxController {
   var jadwalList = <JadwalModel>[].obs;
   var errorMsg   = ''.obs;
 
-  // Group by day for display
-  final List<String> dayOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  // Urutan hari untuk tampilan
+  final List<String> dayOrder = [
+    'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
+  ];
 
   @override
   void onInit() {
@@ -49,45 +91,82 @@ class JadwalController extends GetxController {
     fetchJadwal();
   }
 
+  /// GET /api/schedules  — semua jadwal mengajar (mingguan)
+  /// Fallback ke /api/schedules/today jika endpoint semua tidak tersedia
   Future<void> fetchJadwal() async {
     try {
       isLoading.value = true;
       errorMsg.value  = '';
 
-      final token    = await AuthService.getToken();
-      final response = await http.get(
-        Uri.parse('https://kelompok14.rplrus.com/api/schedules/today'),
-        headers: {
-          'Accept':        'application/json',
-          'Authorization': 'Bearer $token',
-        },
+      final token = await AuthService.getToken();
+      final headers = {
+        'Accept':        'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      // Coba endpoint jadwal mingguan dulu
+      var response = await http.get(
+        Uri.parse('https://kelompok14.rplrus.com/api/schedules'),
+        headers: headers,
       );
+
+      // Jika 404 atau error, coba endpoint today sebagai fallback
+      if (response.statusCode == 404 || response.statusCode == 405) {
+        response = await http.get(
+          Uri.parse('https://kelompok14.rplrus.com/api/schedules/today'),
+          headers: headers,
+        );
+      }
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        final List raw = body is List ? body : (body['data'] ?? []);
+        // Handle berbagai bentuk response:
+        // { success, data: [...] }  atau langsung [...]
+        List raw;
+        if (body is List) {
+          raw = body;
+        } else if (body is Map) {
+          raw = (body['data'] as List?) ?? [];
+        } else {
+          raw = [];
+        }
+
         jadwalList.value = raw
             .map((e) => JadwalModel.fromJson(e as Map<String, dynamic>))
             .toList();
+
+        if (jadwalList.isEmpty) {
+          errorMsg.value = ''; // kosong tapi bukan error
+        }
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
       } else {
-        errorMsg.value = 'Gagal memuat jadwal';
+        errorMsg.value = 'Gagal memuat jadwal (${response.statusCode})';
       }
-    } catch (_) {
+    } catch (e) {
       errorMsg.value = 'Tidak dapat terhubung ke server';
     } finally {
       isLoading.value = false;
     }
   }
 
-  List<JadwalModel> getByDay(String day) =>
-      jadwalList.where((j) => j.day.toLowerCase() == day.toLowerCase()).toList();
+  /// Ambil jadwal untuk hari tertentu
+  List<JadwalModel> getByDay(String day) => jadwalList
+      .where((j) => j.day.toLowerCase() == day.toLowerCase())
+      .toList()
+    ..sort((a, b) => a.startTime.compareTo(b.startTime)); // urutkan by jam
+
+  /// Apakah ada jadwal sama sekali
+  bool get hasJadwal => jadwalList.isNotEmpty;
 
   void _handleUnauthorized() {
     AuthService.clearToken();
     Get.offAllNamed('/loginPage');
-    Get.snackbar('Sesi Berakhir', 'Silakan login kembali',
-        backgroundColor: Colors.red, colorText: Colors.white);
+    Get.snackbar(
+      'Sesi Berakhir',
+      'Silakan login kembali',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 }
