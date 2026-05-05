@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/routes/route.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -49,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8DCC8),
+      backgroundColor: AppColors.bgMain, 
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -68,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF6B1A1A),
+                      color: AppColors.primary,
                       height: 1.3,
                     ),
                   ),
@@ -100,9 +101,9 @@ class _SplashScreenState extends State<SplashScreen>
       width: 230,
       height: 230,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.4),
+        color: AppColors.white.withOpacity(0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF6B1A1A).withOpacity(0.2)),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
       ),
       child: const Center(
         child: Text(
@@ -110,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen>
           style: TextStyle(
             fontSize: 36,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF6B1A1A),
+            color: AppColors.primary,
           ),
         ),
       ),

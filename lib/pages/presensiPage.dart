@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:camera/camera.dart';
 import '../controllers/presensiController.dart';
+import '../routes/colors.dart';
 
 class PresensiPage extends StatelessWidget {
   PresensiPage({super.key});
@@ -12,13 +13,13 @@ class PresensiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EDE2),
+      backgroundColor: AppColors.bgMain,
       appBar: AppBar(
         title: const Text(
           'Presensi Wajah',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFFF5EDE2),
+        backgroundColor: AppColors.bgCream,
         elevation: 0,
         centerTitle: true,
       ),
@@ -46,7 +47,7 @@ class PresensiPage extends StatelessWidget {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFFF2C9B8),
+                color: AppColors.bgPreview,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ClipRRect(
@@ -78,7 +79,7 @@ class PresensiPage extends StatelessWidget {
             height: 55,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7A0019),
+                backgroundColor: AppColors.primaryLight,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -109,7 +110,7 @@ class PresensiPage extends StatelessWidget {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color(0xFFF2C9B8),
+                color: AppColors.bgPreview,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ClipRRect(
@@ -133,7 +134,7 @@ class PresensiPage extends StatelessWidget {
             height: 55,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7A0019),
+                backgroundColor: AppColors.primaryLight,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -156,7 +157,7 @@ class PresensiPage extends StatelessWidget {
           TextButton(
             onPressed: controller.ambilUlang,
             child: const Text("Ambil Ulang",
-                style: TextStyle(color: Color(0xFF7A0019))),
+                style: TextStyle(color: AppColors.primaryLight)),
           ),
 
           const SizedBox(height: 10),
@@ -170,14 +171,14 @@ class PresensiPage extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
+        color: AppColors.white.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
           _infoRow(
             icon: Icons.location_on,
-            iconColor: const Color(0xFF7A0019),
+            iconColor: AppColors.primaryLight,
             label: "LOKASI ANDA",
             child: const Text(
               "Jl. Pendidikan No. 45, Kebayoran Baru, Jakarta Selatan, DKI Jakarta 12130",
@@ -187,14 +188,14 @@ class PresensiPage extends StatelessWidget {
           const Divider(height: 24),
           _infoRow(
             icon: Icons.check_circle,
-            iconColor: Colors.green,
+            iconColor: AppColors.success,
             label: "STATUS RADIUS",
             child: Row(
               children: [
                 const Text(
                   "Dalam Radius Sekolah",
                   style: TextStyle(
-                    color: Colors.teal,
+                    color: AppColors.teal,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -203,13 +204,13 @@ class PresensiPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDFF5F0),
+                    color: AppColors.tealLight,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
                     "12 Meter",
                     style: TextStyle(
-                      color: Colors.teal,
+                      color: AppColors.teal,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -247,7 +248,7 @@ class PresensiPage extends StatelessWidget {
             children: [
               Text(label,
                   style: const TextStyle(
-                      fontSize: 10, color: Colors.grey, letterSpacing: 1)),
+                      fontSize: 10, color: AppColors.defalt, letterSpacing: 1)),
               const SizedBox(height: 4),
               child,
             ],
@@ -263,7 +264,7 @@ class _FaceBracketPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF7A0019)
+      ..color = AppColors.primaryLight
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

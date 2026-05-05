@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/homeController.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 
 class HomeFragment extends StatelessWidget {
@@ -40,7 +41,7 @@ class HomeFragment extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Selamat Datang,',
-                style: TextStyle(fontSize: 14, color: Colors.brown.shade500)),
+                style: TextStyle(fontSize: 14, color: AppColors.brownshade2)),
             const SizedBox(height: 2),
             Obx(() => Text(
                   homeCtrl.teacherName.value.isEmpty
@@ -49,7 +50,7 @@ class HomeFragment extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D2B1F),
+                    color: AppColors.textBrown,
                   ),
                 )),
           ],
@@ -58,11 +59,11 @@ class HomeFragment extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: const Color(0xFFD4C4A8),
+            color: AppColors.bgField,
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(Icons.person_outline_rounded,
-              color: Color(0xFF6B1A1A), size: 24),
+              color: AppColors.primary, size: 24),
         ),
       ],
     );
@@ -101,29 +102,29 @@ class HomeFragment extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF3D2B1F))),
+                      color: AppColors.textDark)),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                    color: const Color(0xFF6B1A1A),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(20)),
                 child: const Text('07:00 - 15:00',
                     style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.w500)),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(dateStr,
-              style: TextStyle(fontSize: 12, color: Colors.brown.shade400)),
+              style: TextStyle(fontSize: 12, color: AppColors.brownshade)),
           const SizedBox(height: 16),
           Row(
             children: [
               Expanded(child: _buildTimeInfo('MASUK', '--:--')),
-              Container(width: 1, height: 40, color: Colors.brown.shade100),
+              Container(width: 1, height: 40, color: AppColors.brownshade3),
               const SizedBox(width: 20),
               Expanded(child: _buildTimeInfo('PULANG', '--:--')),
             ],
@@ -140,8 +141,8 @@ class HomeFragment extends StatelessWidget {
                   style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6B1A1A),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
@@ -160,7 +161,7 @@ class HomeFragment extends StatelessWidget {
         Text(label,
             style: TextStyle(
                 fontSize: 11,
-                color: Colors.brown.shade400,
+                color: AppColors.brownshade4,
                 letterSpacing: 0.8,
                 fontWeight: FontWeight.w500)),
         const SizedBox(height: 4),
@@ -168,7 +169,7 @@ class HomeFragment extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF3D2B1F))),
+                color: AppColors.textDark)),
       ],
     );
   }
@@ -179,8 +180,8 @@ class HomeFragment extends StatelessWidget {
         Expanded(
           child: _buildStatCard(
             icon: Icons.calendar_month_outlined,
-            iconColor: const Color(0xFF2196F3),
-            iconBg: const Color(0xFFE3F2FD),
+            iconColor: AppColors.info,
+            iconBg: AppColors.infoLight,
             label: 'KEHADIRAN',
             value: '98%',
           ),
@@ -189,8 +190,8 @@ class HomeFragment extends StatelessWidget {
         Expanded(
           child: _buildStatCard(
             icon: Icons.medical_services_outlined,
-            iconColor: const Color(0xFFFF6B35),
-            iconBg: const Color(0xFFFFF3EE),
+            iconColor: AppColors.warning,
+            iconBg: AppColors.warningLight,
             label: 'IZIN/SAKIT',
             value: '2 Hari',
           ),
@@ -305,11 +306,11 @@ class HomeFragment extends StatelessWidget {
                 child: _buildJurnalItem(
                   icon: Icons.menu_book_outlined,
                   iconColor: entry.key == 0
-                      ? const Color(0xFF2196F3)
-                      : const Color(0xFF9C27B0),
+                      ? AppColors.info
+                      : AppColors.purple,
                   iconBg: entry.key == 0
-                      ? const Color(0xFFE3F2FD)
-                      : const Color(0xFFF3E5F5),
+                      ? AppColors.iconBgBlue
+                      : AppColors.iconBgPurple,
                   className: jadwal.classroomName,
                   subject: jadwal.subjectName,
                   time: '${jadwal.startTime} - ${jadwal.endTime}',
@@ -355,11 +356,11 @@ class HomeFragment extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: Colors.brown.withOpacity(0.06),
+                color: AppColors.brownshade2.withOpacity(0.06),
                 blurRadius: 12,
                 offset: const Offset(0, 4))
           ],
@@ -382,16 +383,16 @@ class HomeFragment extends StatelessWidget {
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF3D2B1F))),
+                          color: AppColors.textDark)),
                   const SizedBox(height: 2),
                   Text('$subject • $time',
                       style: TextStyle(
-                          fontSize: 13, color: Colors.brown.shade400)),
+                          fontSize: 13, color: AppColors.brownshade4)),
                 ],
               ),
             ),
             Icon(Icons.chevron_right_rounded,
-                color: Colors.brown.shade300, size: 22),
+                color: AppColors.brownshade , size: 22),
           ],
         ),
       ),

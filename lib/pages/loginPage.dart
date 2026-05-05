@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/loginController.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 
 class LoginPage extends GetView<LoginController> {
   const LoginPage({super.key});
@@ -8,7 +9,7 @@ class LoginPage extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8DCC8),
+      backgroundColor:  AppColors.bgMain,
       body: Stack(
         children: [
           _buildBackgroundWatermark(),
@@ -71,7 +72,7 @@ class LoginPage extends GetView<LoginController> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: const Color(0xFFD4C4A8),
+        color: AppColors.bgField,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Icon(Icons.school_rounded, size: 44, color: Color(0xFF6B1A1A)),
@@ -85,10 +86,10 @@ class LoginPage extends GetView<LoginController> {
             style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF6B1A1A))),
+                color: AppColors.primary)),
         const SizedBox(height: 6),
         Text('Sistem Manajemen & Presensi Guru',
-            style: TextStyle(fontSize: 14, color: Colors.brown.shade400)),
+            style: TextStyle(fontSize: 14, color: AppColors.brownshade4)),
       ],
     );
   }
@@ -101,7 +102,7 @@ class LoginPage extends GetView<LoginController> {
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF3D2B1F))),
+                color: AppColors.textDark)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller.emailController,
@@ -121,7 +122,7 @@ class LoginPage extends GetView<LoginController> {
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF3D2B1F))),
+                color: AppColors.textDark)),
         const SizedBox(height: 8),
         Obx(() => TextFormField(
               controller: controller.passwordController,
@@ -135,7 +136,7 @@ class LoginPage extends GetView<LoginController> {
                     controller.obscurePassword.value
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: Colors.brown.shade400,
+                    color: AppColors.brownshade4,
                     size: 20,
                   ),
                 ),
@@ -153,7 +154,7 @@ class LoginPage extends GetView<LoginController> {
         child: const Text('Lupa Kata Sandi?',
             style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF6B1A1A),
+                color: AppColors.primary,
                 fontWeight: FontWeight.w500)),
       ),
     );
@@ -167,10 +168,10 @@ class LoginPage extends GetView<LoginController> {
             onPressed:
                 controller.isLoading.value ? null : controller.login,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6B1A1A),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               disabledBackgroundColor:
-                  const Color(0xFF6B1A1A).withOpacity(0.6),
+                  AppColors.primary.withOpacity(0.6),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
             ),
@@ -179,7 +180,7 @@ class LoginPage extends GetView<LoginController> {
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2.5))
+                        color: AppColors.white, strokeWidth: 2.5))
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -198,17 +199,17 @@ class LoginPage extends GetView<LoginController> {
     return Row(
       children: [
         Expanded(
-            child: Divider(color: Colors.brown.shade300, thickness: 0.8)),
+            child: Divider(color: AppColors.brownshade, thickness: 0.8)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text('ATAU MASUK DENGAN',
               style: TextStyle(
                   fontSize: 11,
-                  color: Colors.brown.shade400,
+                  color: AppColors.brownshade4,
                   fontWeight: FontWeight.w500)),
         ),
         Expanded(
-            child: Divider(color: Colors.brown.shade300, thickness: 0.8)),
+            child: Divider(color: AppColors.brownshade, thickness: 0.8)),
       ],
     );
   }
@@ -223,8 +224,8 @@ class LoginPage extends GetView<LoginController> {
                 ? null
                 : controller.loginWithGoogle,
             style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.white,
-              side: BorderSide(color: Colors.brown.shade200, width: 1),
+              backgroundColor: AppColors.white,
+              side: BorderSide(color: AppColors.brownshade, width: 1),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
             ),
@@ -233,7 +234,7 @@ class LoginPage extends GetView<LoginController> {
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
-                        color: Color(0xFF6B1A1A), strokeWidth: 2.5))
+                        color: AppColors.primary, strokeWidth: 2.5))
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -245,7 +246,7 @@ class LoginPage extends GetView<LoginController> {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF3D2B1F),
+                          color: AppColors.textDark,
                         ),
                       ),
                     ],
@@ -267,14 +268,14 @@ class LoginPage extends GetView<LoginController> {
     return Column(
       children: [
         Text('Mengalami kendala teknis?',
-            style: TextStyle(fontSize: 13, color: Colors.brown.shade400)),
+            style: TextStyle(fontSize: 13, color: AppColors.brownshade4)),
         const SizedBox(height: 4),
         GestureDetector(
           onTap: () {},
           child: const Text('Hubungi Admin IT Sekolah',
               style: TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF6B1A1A),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w600)),
         ),
       ],
@@ -288,7 +289,7 @@ class LoginPage extends GetView<LoginController> {
   }) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: Icon(icon, color: Colors.brown.shade400, size: 20),
+      prefixIcon: Icon(icon, color: AppColors.brownshade4, size: 20),
       suffixIcon: suffix,
       filled: true,
       fillColor: Colors.white,
@@ -301,7 +302,7 @@ class LoginPage extends GetView<LoginController> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide:
-            const BorderSide(color: Color(0xFF6B1A1A), width: 1.5),
+            const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     );
   }
@@ -315,7 +316,7 @@ class _GoogleLogoPainter extends CustomPainter {
     final radius = size.width / 2;
 
     // Lingkaran luar putih sebagai background
-    final bgPaint = Paint()..color = Colors.white;
+    final bgPaint = Paint()..color = AppColors.white;
     canvas.drawCircle(center, radius, bgPaint);
 
     // Gambar huruf "G" Google sederhana dengan 4 warna via arc
@@ -324,19 +325,19 @@ class _GoogleLogoPainter extends CustomPainter {
 
     final paints = [
       Paint()
-        ..color = const Color(0xFF4285F4)
+        ..color = AppColors.info
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeW,
       Paint()
-        ..color = const Color(0xFF34A853)
+        ..color = AppColors.success
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeW,
       Paint()
-        ..color = const Color(0xFFFBBC05)
+        ..color = AppColors.warning
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeW,
       Paint()
-        ..color = const Color(0xFFEA4335)
+        ..color = AppColors.error
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeW,
     ];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/riwayatController.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 
 class RiwayatFragment extends StatelessWidget {
   RiwayatFragment({super.key});
@@ -11,11 +12,11 @@ class RiwayatFragment extends StatelessWidget {
 
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'hadir':      return const Color(0xFF4CAF50);
-      case 'terlambat':  return const Color(0xFFF44336);
-      case 'sakit':      return const Color(0xFFFF9800);
-      case 'izin':       return const Color(0xFF2196F3);
-      default:           return const Color(0xFF9E9E9E);
+      case 'hadir':      return AppColors.success;
+      case 'terlambat':  return AppColors.error;
+      case 'sakit':      return AppColors.warning;
+      case 'izin':       return AppColors.info;
+      default:           return AppColors.defalt;
     }
   }
 
@@ -37,7 +38,7 @@ class RiwayatFragment extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF3D2B1F),
+                      color: AppColors.textDark,
                     ),
                   ),
                   GestureDetector(
@@ -46,12 +47,12 @@ class RiwayatFragment extends StatelessWidget {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.6),
+                        color: AppColors.white.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
                         Icons.refresh_rounded,
-                        color: Color(0xFF3D2B1F),
+                        color: AppColors.textDark,
                         size: 20,
                       ),
                     ),
@@ -73,7 +74,7 @@ class RiwayatFragment extends StatelessWidget {
               child: Obx(() {
                 if (controller.isLoading.value) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF3D2B1F)),
+                    child: CircularProgressIndicator(color: AppColors.textDark),
                   );
                 }
 
@@ -83,21 +84,21 @@ class RiwayatFragment extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.wifi_off_rounded,
-                            size: 48, color: Color(0xFF9E9E9E)),
+                            size: 48, color: AppColors.defalt),
                         const SizedBox(height: 12),
                         Text(
                           controller.errorMessage.value,
-                          style: const TextStyle(color: Color(0xFF9E9E9E)),
+                          style: const TextStyle(color: AppColors.defalt),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: controller.fetchHistory,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF3D2B1F),
+                            backgroundColor: AppColors.primary,
                           ),
                           child: const Text('Coba Lagi',
-                              style: TextStyle(color: Colors.white)),
+                              style: TextStyle(color: AppColors.white)),
                         ),
                       ],
                     ),
@@ -110,13 +111,13 @@ class RiwayatFragment extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.inbox_rounded,
-                            size: 48, color: Color(0xFF9E9E9E)),
+                            size: 48, color: AppColors.defalt),
                         const SizedBox(height: 12),
                         Text(
                           controller.searchQuery.isNotEmpty
                               ? 'Tidak ada hasil untuk\n"${controller.searchQuery.value}"'
                               : 'Tidak ada data presensi\npada bulan ini',
-                          style: const TextStyle(color: Color(0xFF9E9E9E)),
+                          style: const TextStyle(color: AppColors.defalt),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -126,7 +127,7 @@ class RiwayatFragment extends StatelessWidget {
 
                 return RefreshIndicator(
                   onRefresh: controller.fetchHistory,
-                  color: const Color(0xFF3D2B1F),
+                  color: AppColors.textDark,
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemCount: controller.filteredRecords.length,
@@ -156,21 +157,21 @@ class RiwayatFragment extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: TextField(
           onChanged: controller.onSearchChanged,
           decoration: InputDecoration(
             hintText: 'Cari tanggal atau status...',
-            hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
+            hintStyle: const TextStyle(color: AppColors.defalt, fontSize: 14),
             prefixIcon: const Icon(Icons.search_rounded,
-                color: Color(0xFF3D2B1F), size: 20),
+                color: AppColors.textDark, size: 20),
             suffixIcon: Obx(() => controller.searchQuery.isNotEmpty
                 ? GestureDetector(
                     onTap: controller.clearSearch,
                     child: const Icon(Icons.close_rounded,
-                        color: Color(0xFF9E9E9E), size: 18),
+                        color: AppColors.defalt, size: 18),
                   )
                 : const SizedBox.shrink()),
             border: InputBorder.none,
@@ -189,7 +190,7 @@ class RiwayatFragment extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -226,7 +227,7 @@ class RiwayatFragment extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -236,7 +237,7 @@ class RiwayatFragment extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('HARI/TANGGAL',
-                  style: TextStyle(fontSize: 10, color: Color(0xFF9E9E9E))),
+                  style: TextStyle(fontSize: 10, color: AppColors.defalt)),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -259,7 +260,7 @@ class RiwayatFragment extends StatelessWidget {
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Color(0xFF3D2B1F))),
+                  color: AppColors.textDark)),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -277,12 +278,12 @@ class RiwayatFragment extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(fontSize: 10, color: Color(0xFF9E9E9E))),
+            style: const TextStyle(fontSize: 10, color: AppColors.defalt)),
         Text(time,
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Color(0xFF3D2B1F))),
+                color: AppColors.textDark)),
       ],
     );
   }
