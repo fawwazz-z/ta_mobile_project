@@ -1,9 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'routes/pages.dart';
 import 'routes/route.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MainApp());
 }
 
@@ -15,9 +18,7 @@ class MainApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Presensi Guru',
       debugShowCheckedModeBanner: false,
-      // Mengambil initial route dari class Routes
-      initialRoute: AppRoutes.mainPage, 
-      // Mengambil daftar halaman dari AppPages
+      initialRoute: AppRoutes.loginPage,   // ← harus loginPage, bukan mainPage
       getPages: AppPage.pages,
       theme: ThemeData(
         useMaterial3: true,
