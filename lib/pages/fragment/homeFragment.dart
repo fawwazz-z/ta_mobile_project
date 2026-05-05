@@ -75,7 +75,8 @@ class HomeFragment extends StatelessWidget {
       '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
     ];
-    final dateStr = '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
+    final dateStr =
+        '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
 
     return Container(
       width: double.infinity,
@@ -102,13 +103,16 @@ class HomeFragment extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF3D2B1F))),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                     color: const Color(0xFF6B1A1A),
                     borderRadius: BorderRadius.circular(20)),
                 child: const Text('07:00 - 15:00',
                     style: TextStyle(
-                        fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500)),
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500)),
               ),
             ],
           ),
@@ -129,10 +133,12 @@ class HomeFragment extends StatelessWidget {
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              // ── PERBAIKAN: navigasi ke PresensiPage (kamera wajah) ──
+              onPressed: () => Get.toNamed(AppRoutes.presensipage),
               icon: const Icon(Icons.fingerprint_rounded, size: 22),
               label: const Text('Mulai Presensi',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B1A1A),
                 foregroundColor: Colors.white,
@@ -290,7 +296,6 @@ class HomeFragment extends StatelessWidget {
               ),
             );
           }
-          // Tampilkan maksimal 2 jadwal pertama di home
           final preview = homeCtrl.jadwalHariIni.take(2).toList();
           return Column(
             children: preview.asMap().entries.map((entry) {
@@ -338,10 +343,10 @@ class HomeFragment extends StatelessWidget {
         AppRoutes.presensiSiswa,
         arguments: {
           'schedule_id': scheduleId,
-          'kelas':       className,
-          'mapel':       mapel,
-          'start_time':  startTime,
-          'end_time':    endTime,
+          'kelas': className,
+          'mapel': mapel,
+          'start_time': startTime,
+          'end_time': endTime,
         },
       ),
       child: Container(
@@ -377,7 +382,8 @@ class HomeFragment extends StatelessWidget {
                           color: Color(0xFF3D2B1F))),
                   const SizedBox(height: 2),
                   Text('$subject • $time',
-                      style: TextStyle(fontSize: 13, color: Colors.brown.shade400)),
+                      style: TextStyle(
+                          fontSize: 13, color: Colors.brown.shade400)),
                 ],
               ),
             ),

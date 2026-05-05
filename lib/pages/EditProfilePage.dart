@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ta_mobile_project/routes/route.dart';
 
 class EditProfilPages extends StatelessWidget {
   const EditProfilPages({super.key});
