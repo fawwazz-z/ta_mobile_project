@@ -14,11 +14,17 @@ import 'package:ta_mobile_project/pages/loginPage.dart';
 import 'package:ta_mobile_project/pages/mainPage.dart';
 import 'package:ta_mobile_project/pages/presensiPage.dart';
 import 'package:ta_mobile_project/pages/presensiSiswaPage.dart';
+import 'package:ta_mobile_project/pages/SplashScreenPage.dart';   // ← tambahan
 import 'package:ta_mobile_project/pages/verifikasiPage.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 
 class AppPage {
   static final pages = [
+    // ── Splash (root) ──
+    GetPage(
+      name: AppRoutes.splashPage,
+      page: () => const SplashScreen(),
+    ),
     GetPage(
       name:    AppRoutes.loginPage,
       page:    () => const LoginPage(),
@@ -44,19 +50,16 @@ class AppPage {
       page:    () => const EditProfilPages(),
       binding: EditProfileBinding(),
     ),
-    // ── Presensi wajah (kamera) ──
     GetPage(
       name:    AppRoutes.presensipage,
       page:    () => PresensiPage(),
       binding: PresensiBinding(),
     ),
-    // ── Verifikasi lokasi ──
     GetPage(
       name:    AppRoutes.verifikasipage,
       page:    () => VerifikasiPage(),
       binding: VerifikasiBinding(),
     ),
-    // ── Refleksi mengajar ──
     GetPage(
       name:    AppRoutes.refleksipage,
       page:    () => RefleksiPage(),

@@ -6,9 +6,10 @@ import 'package:ta_mobile_project/services/authService.dart';
 
 /// Model untuk satu slot jadwal mengajar
 class JadwalHariIniModel {
-  final int    id;
-  final String subjectName;  // dari relasi subject
+  final int id;
+  final String subjectName; // dari relasi subject
   final String classroomName; // dari relasi classroom
+  final int classroomId; // ✅ TAMBAHAN
   final String day;
   final String startTime;
   final String endTime;
@@ -17,6 +18,7 @@ class JadwalHariIniModel {
     required this.id,
     required this.subjectName,
     required this.classroomName,
+    required this.classroomId,
     required this.day,
     required this.startTime,
     required this.endTime,
@@ -25,27 +27,35 @@ class JadwalHariIniModel {
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
     // API: {id, user_id, subject_id, classroom_id, day, start_time, end_time, ...}
     // Relasi subject/classroom mungkin di-load as nested object atau hanya id
-    final subject   = j['subject']   as Map<String, dynamic>?;
+    final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
 
     return JadwalHariIniModel(
-      id:            (j['id'] as num).toInt(),
-      subjectName:   subject?['name']   as String? ?? j['subject_name']   as String? ?? 'Mata Pelajaran',
-      classroomName: classroom?['name'] as String? ?? j['classroom_name'] as String? ?? 'Kelas',
-      day:           j['day']        as String? ?? '',
-      startTime:     j['start_time'] as String? ?? '--:--',
-      endTime:       j['end_time']   as String? ?? '--:--',
+      id: (j['id'] as num).toInt(),
+
+      subjectName:
+          subject?['name'] as String? ??
+          j['subject_name'] as String? ??
+          'Mata Pelajaran',
+      classroomName:
+          classroom?['name'] as String? ??
+          j['classroom_name'] as String? ??
+          'Kelas',
+      classroomId: (j['classroom_id'] as num?)?.toInt() ?? 0, // ✅ INI PENTING
+      day: j['day'] as String? ?? '',
+      startTime: j['start_time'] as String? ?? '--:--',
+      endTime: j['end_time'] as String? ?? '--:--',
     );
   }
 }
 
 class HomeController extends GetxController {
-  var teacherName    = ''.obs;
-  var teacherRole    = ''.obs;
-  var isLoadingUser  = false.obs;
+  var teacherName = ''.obs;
+  var teacherRole = ''.obs;
+  var isLoadingUser = false.obs;
   var isLoadingJadwal = false.obs;
-  var jadwalHariIni  = <JadwalHariIniModel>[].obs;
-  var errorJadwal    = ''.obs;
+  var jadwalHariIni = <JadwalHariIniModel>[].obs;
+  var errorJadwal = ''.obs;
 
   @override
   void onInit() {
@@ -62,17 +72,17 @@ class HomeController extends GetxController {
     teacherRole.value = role ?? '';
   }
 
-  /// GET /api/schedules/today  — jadwal mengajar hari ini
+  /// GET /api/schedules  — jadwal mengajar hari ini
   Future<void> fetchJadwalHariIni() async {
     try {
       isLoadingJadwal.value = true;
-      errorJadwal.value     = '';
+      errorJadwal.value = '';
 
-      final token    = await AuthService.getToken();
+      final token = await AuthService.getToken();
       final response = await http.get(
-        Uri.parse('https://kelompok14.rplrus.com/api/schedules/today'),
+        Uri.parse('https://kelompok14.rplrus.com/api/journals/schedules'),
         headers: {
-          'Accept':        'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
@@ -80,7 +90,8 @@ class HomeController extends GetxController {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         // Response: {success: true, data: [...]}
-        final List raw = body is List ? body : (body['data'] ?? []);
+        final List raw = body['data'] ?? [];
+
         jadwalHariIni.value = raw
             .map((e) => JadwalHariIniModel.fromJson(e as Map<String, dynamic>))
             .toList();
@@ -101,7 +112,11 @@ class HomeController extends GetxController {
   void _handleUnauthorized() {
     AuthService.clearToken();
     Get.offAllNamed('/loginPage');
-    Get.snackbar('Sesi Berakhir', 'Silakan login kembali',
-        backgroundColor: Colors.red, colorText: Colors.white);
+    Get.snackbar(
+      'Sesi Berakhir',
+      'Silakan login kembali',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 }

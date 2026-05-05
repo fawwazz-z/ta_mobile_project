@@ -5,17 +5,28 @@ import 'package:ta_mobile_project/controllers/riwayatController.dart';
 class RiwayatFragment extends StatelessWidget {
   RiwayatFragment({super.key});
 
-  final RiwayatController controller = Get.put(RiwayatController());
+  // Gunakan find, bukan put — controller sudah di-register oleh RiwayatBinding
+  // MainController membuat fragment di onInit sehingga binding sudah jalan duluan
+  final RiwayatController controller = Get.find<RiwayatController>();
+
+  Color _statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'hadir':      return const Color(0xFF4CAF50);
+      case 'terlambat':  return const Color(0xFFF44336);
+      case 'sakit':      return const Color(0xFFFF9800);
+      case 'izin':       return const Color(0xFF2196F3);
+      default:           return const Color(0xFF9E9E9E);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Kita langsung mengembalikan Container/Column, bukan Scaffold
     return Container(
       color: const Color(0xFFE8DCC8),
       child: SafeArea(
         child: Column(
           children: [
-            // Header Riwayat
+            // ── Header ─────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
               child: Row(
@@ -29,59 +40,109 @@ class RiwayatFragment extends StatelessWidget {
                       color: Color(0xFF3D2B1F),
                     ),
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.search_rounded,
-                      color: Color(0xFF3D2B1F),
-                      size: 20,
+                  GestureDetector(
+                    onTap: controller.fetchHistory,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.refresh_rounded,
+                        color: Color(0xFF3D2B1F),
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            // Month Selector
-            _buildMonthSelector(),
+            // ── Search Bar ─────────────────────────────────────────────────
+            _buildSearchBar(),
+            const SizedBox(height: 10),
 
+            // ── Month Selector ─────────────────────────────────────────────
+            _buildMonthSelector(),
             const SizedBox(height: 12),
 
-            // List Riwayat
+            // ── List / State ───────────────────────────────────────────────
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    _buildRiwayatCard(
-                      tanggal: 'Senin, 22 Mei 2024',
-                      status: 'Hadir',
-                      statusColor: const Color(0xFF4CAF50),
-                      masuk: '06:45',
-                      pulang: '15:10',
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF3D2B1F)),
+                  );
+                }
+
+                if (controller.errorMessage.isNotEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.wifi_off_rounded,
+                            size: 48, color: Color(0xFF9E9E9E)),
+                        const SizedBox(height: 12),
+                        Text(
+                          controller.errorMessage.value,
+                          style: const TextStyle(color: Color(0xFF9E9E9E)),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: controller.fetchHistory,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3D2B1F),
+                          ),
+                          child: const Text('Coba Lagi',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
-                    _buildRiwayatCard(
-                      tanggal: 'Selasa, 21 Mei 2024',
-                      status: 'Hadir',
-                      statusColor: const Color(0xFF4CAF50),
-                      masuk: '06:52',
-                      pulang: '15:05',
+                  );
+                }
+
+                if (controller.filteredRecords.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.inbox_rounded,
+                            size: 48, color: Color(0xFF9E9E9E)),
+                        const SizedBox(height: 12),
+                        Text(
+                          controller.searchQuery.isNotEmpty
+                              ? 'Tidak ada hasil untuk\n"${controller.searchQuery.value}"'
+                              : 'Tidak ada data presensi\npada bulan ini',
+                          style: const TextStyle(color: Color(0xFF9E9E9E)),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                    _buildRiwayatCard(
-                      tanggal: 'Senin, 20 Mei 2024',
-                      status: 'Sakit',
-                      statusColor: const Color(0xFFFF9800),
-                      masuk: '--:--',
-                      pulang: '--:--',
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: controller.fetchHistory,
+                  color: const Color(0xFF3D2B1F),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: controller.filteredRecords.length,
+                    itemBuilder: (_, i) {
+                      final r = controller.filteredRecords[i];
+                      return _buildRiwayatCard(
+                        tanggal:     r.formattedDate,
+                        status:      r.displayStatus,
+                        statusColor: _statusColor(r.displayStatus),
+                        masuk:       r.formattedCheckIn,
+                        pulang:      r.formattedCheckOut,
+                      );
+                    },
+                  ),
+                );
+              }),
             ),
           ],
         ),
@@ -89,6 +150,39 @@ class RiwayatFragment extends StatelessWidget {
     );
   }
 
+  // ── Search Bar ──────────────────────────────────────────────────────────────
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: TextField(
+          onChanged: controller.onSearchChanged,
+          decoration: InputDecoration(
+            hintText: 'Cari tanggal atau status...',
+            hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
+            prefixIcon: const Icon(Icons.search_rounded,
+                color: Color(0xFF3D2B1F), size: 20),
+            suffixIcon: Obx(() => controller.searchQuery.isNotEmpty
+                ? GestureDetector(
+                    onTap: controller.clearSearch,
+                    child: const Icon(Icons.close_rounded,
+                        color: Color(0xFF9E9E9E), size: 18),
+                  )
+                : const SizedBox.shrink()),
+            border: InputBorder.none,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Month Selector ──────────────────────────────────────────────────────────
   Widget _buildMonthSelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -101,19 +195,30 @@ class RiwayatFragment extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Icon(Icons.chevron_left_rounded, size: 22),
-            Text('Mei 2024', style: TextStyle(fontWeight: FontWeight.bold)),
-            const Icon(Icons.chevron_right_rounded, size: 22),
+            GestureDetector(
+              onTap: controller.previousMonth,
+              child: const Icon(Icons.chevron_left_rounded, size: 26),
+            ),
+            Obx(() => Text(
+                  controller.selectedMonthLabel,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 15),
+                )),
+            GestureDetector(
+              onTap: controller.nextMonth,
+              child: const Icon(Icons.chevron_right_rounded, size: 26),
+            ),
           ],
         ),
       ),
     );
   }
 
+  // ── Card ────────────────────────────────────────────────────────────────────
   Widget _buildRiwayatCard({
     required String tanggal,
     required String status,
-    required Color statusColor,
+    required Color  statusColor,
     required String masuk,
     required String pulang,
   }) {
@@ -130,18 +235,31 @@ class RiwayatFragment extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('HARI/TANGGAL', style: TextStyle(fontSize: 10)),
-              Text(
-                '● $status',
-                style: TextStyle(color: statusColor, fontSize: 11),
+              const Text('HARI/TANGGAL',
+                  style: TextStyle(fontSize: 10, color: Color(0xFF9E9E9E))),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '● $status',
+                  style: TextStyle(
+                      color: statusColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            tanggal,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
+          Text(tanggal,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF3D2B1F))),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -158,11 +276,13 @@ class RiwayatFragment extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10)),
-        Text(
-          time,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
+        Text(label,
+            style: const TextStyle(fontSize: 10, color: Color(0xFF9E9E9E))),
+        Text(time,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color(0xFF3D2B1F))),
       ],
     );
   }

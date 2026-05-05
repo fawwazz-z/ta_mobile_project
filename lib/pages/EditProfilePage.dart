@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ta_mobile_project/controllers/Editprofilecontroller.dart';
 
 class EditProfilPages extends StatelessWidget {
   const EditProfilPages({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ctrl = Get.find<EditProfileController>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFE8DCC8),
       body: SafeArea(
         child: Column(
           children: [
+            // ── Header ────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      Get.back(); 
-                    },
+                    onTap: () => Get.back(),
                     child: Container(
                       width: 36,
                       height: 36,
@@ -45,12 +47,15 @@ class EditProfilPages extends StatelessWidget {
                 ],
               ),
             ),
+
+            // ── Body ──────────────────────────────────────────────────────
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Avatar
                     Center(
                       child: Stack(
                         children: [
@@ -60,8 +65,7 @@ class EditProfilPages extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: const Color(0xFFD4C4A8),
                               shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.white, width: 3),
+                              border: Border.all(color: Colors.white, width: 3),
                             ),
                             child: const Icon(Icons.person_outline_rounded,
                                 color: Color(0xFF6B1A1A), size: 44),
@@ -96,54 +100,78 @@ class EditProfilPages extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
 
+                    // ── Nama ──────────────────────────────────────────────
                     _buildFieldLabel('Nama Lengkap'),
                     const SizedBox(height: 6),
-                    _buildTextField('Ahmad Fauzi, S.Pd.'),
+                    _buildEditableField(
+                      controller: ctrl.namaController,
+                      hint: 'Masukkan nama lengkap',
+                    ),
                     const SizedBox(height: 14),
 
+                    // ── NIP ───────────────────────────────────────────────
                     _buildFieldLabel('NIP'),
                     const SizedBox(height: 6),
-                    _buildTextField('19850312 201001 1 004'),
+                    _buildEditableField(
+                      controller: ctrl.nipController,
+                      hint: 'Masukkan NIP',
+                      keyboardType: TextInputType.number,
+                    ),
                     const SizedBox(height: 14),
 
+                    // ── Email ─────────────────────────────────────────────
                     _buildFieldLabel('Email'),
                     const SizedBox(height: 6),
-                    _buildTextField('ahmad.fauzi@dikbud.go.id'),
+                    _buildEditableField(
+                      controller: ctrl.emailController,
+                      hint: 'Masukkan email',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
                     const SizedBox(height: 28),
 
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        onPressed: null,
-                        icon: const Icon(Icons.save_outlined,
-                            size: 18, color: Colors.white),
-                        label: const Text(
-                          'Simpan Perubahan',
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6B1A1A),
-                          disabledBackgroundColor: const Color(0xFF6B1A1A),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
-                          elevation: 0,
-                        ),
-                      ),
-                    ),
+                    // ── Tombol Simpan ─────────────────────────────────────
+                    Obx(() => SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton.icon(
+                            onPressed: ctrl.isLoading.value
+                                ? null
+                                : ctrl.simpanPerubahan,
+                            icon: ctrl.isLoading.value
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        color: Colors.white, strokeWidth: 2))
+                                : const Icon(Icons.save_outlined,
+                                    size: 18, color: Colors.white),
+                            label: const Text(
+                              'Simpan Perubahan',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6B1A1A),
+                              disabledBackgroundColor:
+                                  const Color(0xFF6B1A1A).withOpacity(0.6),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14)),
+                              elevation: 0,
+                            ),
+                          ),
+                        )),
                     const SizedBox(height: 10),
 
+                    // ── Tombol Reset Password ─────────────────────────────
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton.icon(
-                        onPressed: null,
+                        onPressed: ctrl.resetPassword,
                         icon: const Icon(Icons.lock_reset_rounded,
-                            size: 18,
-                            color: Color(0xFF6B1A1A)),
+                            size: 18, color: Color(0xFF6B1A1A)),
                         label: const Text(
                           'Reset Password',
                           style: TextStyle(
@@ -153,7 +181,6 @@ class EditProfilPages extends StatelessWidget {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFEFE8D8),
-                          disabledBackgroundColor: const Color(0xFFEFE8D8),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
@@ -165,7 +192,6 @@ class EditProfilPages extends StatelessWidget {
                 ),
               ),
             ),
-            _buildBottomNav(selectedIndex: 3),
           ],
         ),
       ),
@@ -183,60 +209,27 @@ class EditProfilPages extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String value) {
+  Widget _buildEditableField({
+    required TextEditingController controller,
+    String? hint,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Container(
-      width: double.infinity,
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF3D2B1F),
-          ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        style: const TextStyle(fontSize: 14, color: Color(0xFF3D2B1F)),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.brown.shade300, fontSize: 14),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          border: InputBorder.none,
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNav({required int selectedIndex}) {
-    final items = [
-      {'icon': Icons.home_rounded, 'label': 'Beranda'},
-      {'icon': Icons.history_rounded, 'label': 'Riwayat'},
-      {'icon': Icons.calendar_today_outlined, 'label': 'Jadwal'},
-      {'icon': Icons.person_outline_rounded, 'label': 'Profil'},
-    ];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (i) {
-          final sel = i == selectedIndex;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(items[i]['icon'] as IconData,
-                  color: sel
-                      ? const Color(0xFF6B1A1A)
-                      : Colors.brown.shade300),
-              const SizedBox(height: 3),
-              Text(items[i]['label'] as String,
-                  style: TextStyle(
-                      fontSize: 11,
-                      color: sel
-                          ? const Color(0xFF6B1A1A)
-                          : Colors.brown.shade300)),
-            ],
-          );
-        }),
       ),
     );
   }

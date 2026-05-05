@@ -33,7 +33,7 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
-        <!-- Diperlukan oleh google_sign_in untuk memanggil browser/akun Google -->
+        <!-- Diperlukan oleh google_sign_in untuk memanggil browser/akun  Google -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>

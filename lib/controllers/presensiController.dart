@@ -1,14 +1,15 @@
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
+import 'package:ta_mobile_project/controllers/riwayatController.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 import '../controllers/verifikasiController.dart';
 
 class PresensiController extends GetxController {
   CameraController? cameraController;
 
-  var isCameraReady = false.obs;
-  var isTakingPhoto = false.obs;
-  var capturedImagePath = ''.obs;
+  var isCameraReady      = false.obs;
+  var isTakingPhoto      = false.obs;
+  var capturedImagePath  = ''.obs;
 
   @override
   void onInit() {
@@ -45,10 +46,8 @@ class PresensiController extends GetxController {
         !cameraController!.value.isInitialized) return;
 
     isTakingPhoto.value = true;
-
     final file = await cameraController!.takePicture();
     capturedImagePath.value = file.path;
-
     isTakingPhoto.value = false;
   }
 
@@ -60,6 +59,11 @@ class PresensiController extends GetxController {
     // Kirim foto ke VerifikasiController
     final verifikasiCtrl = Get.put(VerifikasiController());
     verifikasiCtrl.fotoPath.value = capturedImagePath.value;
+
+    // Refresh riwayat jika controller sudah terdaftar
+    if (Get.isRegistered<RiwayatController>()) {
+      Get.find<RiwayatController>().fetchHistory();
+    }
 
     Get.offAllNamed(AppRoutes.verifikasipage);
   }
