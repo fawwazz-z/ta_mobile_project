@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
-/// Model untuk satu slot jadwal mengajar
 class JadwalHariIniModel {
   final int id;
   final String subjectName;
@@ -54,13 +54,12 @@ class HomeController extends GetxController {
   var jadwalHariIni = <JadwalHariIniModel>[].obs;
   var errorJadwal = ''.obs;
 
-  // ── Statistik kehadiran siswa (diupdate setelah guru simpan presensi) ──
   var totalSiswa = 0.obs;
   var totalHadir = 0.obs;
   var totalIzin = 0.obs;
   var totalSakit = 0.obs;
   var totalAlpa = 0.obs;
-  var sudahPresensi = false.obs; // true setelah guru berhasil simpan presensi
+  var sudahPresensi = false.obs;
 
   @override
   void onInit() {
@@ -69,7 +68,6 @@ class HomeController extends GetxController {
     fetchJadwalHariIni();
   }
 
-  /// Ambil nama & role dari SharedPreferences (sudah disimpan saat login)
   Future<void> _loadUserFromLocal() async {
     final name = await AuthService.getUserName();
     final role = await AuthService.getUserRole();
@@ -85,7 +83,7 @@ class HomeController extends GetxController {
 
       final token = await AuthService.getToken();
       final response = await http.get(
-        Uri.parse('https://kelompok14.rplrus.com/api/journals/schedules'),
+        Uri.parse('${AppStatic.base_url}/journals/schedules'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
@@ -110,8 +108,6 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Dipanggil dari PresensiSiswaController setelah simpan presensi berhasil.
-  /// Data ini akan langsung muncul di stats card Home.
   void updateStatistikPresensi({
     required int hadir,
     required int izin,
@@ -126,13 +122,9 @@ class HomeController extends GetxController {
     sudahPresensi.value = true;
   }
 
-  /// Persentase siswa hadir (0–100), sudah dibulatkan
   double get persenHadir =>
-      totalSiswa.value == 0
-          ? 0
-          : (totalHadir.value / totalSiswa.value) * 100;
+      totalSiswa.value == 0 ? 0 : (totalHadir.value / totalSiswa.value) * 100;
 
-  /// Total siswa izin + sakit
   int get totalIzinSakit => totalIzin.value + totalSakit.value;
 
   void refreshData() => fetchJadwalHariIni();

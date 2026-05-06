@@ -11,7 +11,7 @@ class MainBinding extends Bindings {
     Get.lazyPut(() => HomeController());
     Get.lazyPut(() => RiwayatController());
     Get.lazyPut(() => ProfileController());
-    Get.lazyPut(() => JadwalController());  // ← Untuk JadwalFragment
+    Get.lazyPut(() => JadwalController());
     Get.put(MainController());
   }
 }

@@ -31,7 +31,7 @@ class VerifikasiPage extends StatelessWidget {
 
             // Preview foto
             Obx(() {
-              final path = controller.fotoPath.value; // sesuaikan nama field di controller kamu
+              final path = controller.fotoPath.value;
               return Container(
                 width: double.infinity,
                 height: 220,
@@ -44,17 +44,31 @@ class VerifikasiPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: path.isNotEmpty
-                          ? Image.file(File(path), fit: BoxFit.cover, width: double.infinity, height: 220)
-                          : const Center(child: Icon(Icons.person, size: 80, color: Colors.white54)),
+                          ? Image.file(
+                              File(path),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 220,
+                            )
+                          : const Center(
+                              child: Icon(
+                                Icons.person,
+                                size: 80,
+                                color: Colors.white54,
+                              ),
+                            ),
                     ),
-                    // Tombol ambil ulang foto di bawah preview
+
                     Positioned(
                       bottom: 16,
                       left: 0,
                       right: 0,
                       child: Center(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(30),
@@ -99,10 +113,15 @@ class VerifikasiPage extends StatelessWidget {
                     icon: Icons.location_on,
                     iconColor: AppColors.primaryLight,
                     label: "LOKASI ANDA",
-                    child: Obx(() => Text(
-                          controller.alamat.value,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                        )),
+                    child: Obx(
+                      () => Text(
+                        controller.alamat.value,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ),
 
                   const Divider(height: 24),
@@ -112,10 +131,12 @@ class VerifikasiPage extends StatelessWidget {
                     icon: Icons.explore,
                     iconColor: AppColors.primaryLight,
                     label: "KOORDINAT",
-                    child: Obx(() => Text(
-                          controller.koordinat.value,
-                          style: const TextStyle(fontSize: 14),
-                        )),
+                    child: Obx(
+                      () => Text(
+                        controller.koordinat.value,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
                   ),
 
                   const Divider(height: 24),
@@ -125,34 +146,39 @@ class VerifikasiPage extends StatelessWidget {
                     icon: Icons.check_circle,
                     iconColor: AppColors.success,
                     label: "STATUS RADIUS",
-                    child: Obx(() => Row(
-                          children: [
-                            Text(
-                              controller.status.value,
-                              style: const TextStyle(
+                    child: Obx(
+                      () => Row(
+                        children: [
+                          Text(
+                            controller.status.value,
+                            style: const TextStyle(
+                              color: AppColors.teal,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.tealLight,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              "12 Meter",
+                              style: TextStyle(
                                 color: AppColors.teal,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.tealLight,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                "12 Meter",
-                                style: TextStyle(
-                                  color: AppColors.teal,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -179,7 +205,10 @@ class VerifikasiPage extends StatelessWidget {
                   children: [
                     Text(
                       "Selesaikan Presensi",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(width: 8),
                     Icon(Icons.arrow_forward),

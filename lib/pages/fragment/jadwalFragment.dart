@@ -17,9 +17,7 @@ class JadwalFragment extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(ctrl),
-            Expanded(
-              child: Obx(() => _buildBody(ctrl)),
-            ),
+            Expanded(child: Obx(() => _buildBody(ctrl))),
           ],
         ),
       ),
@@ -53,16 +51,21 @@ class JadwalFragment extends StatelessWidget {
                 color: AppColors.white.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Obx(() => ctrl.isLoading.value
-                  ? const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.primary,
+              child: Obx(
+                () => ctrl.isLoading.value
+                    ? const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.refresh_rounded,
+                        color: AppColors.textDark,
+                        size: 20,
                       ),
-                    )
-                  : const Icon(Icons.refresh_rounded,
-                      color: AppColors.textDark, size: 20)),
+              ),
             ),
           ),
         ],
@@ -80,8 +83,10 @@ class JadwalFragment extends StatelessWidget {
           children: [
             CircularProgressIndicator(color: AppColors.primary),
             SizedBox(height: 16),
-            Text('Memuat jadwal...',
-                style: TextStyle(color: AppColors.primary, fontSize: 14)),
+            Text(
+              'Memuat jadwal...',
+              style: TextStyle(color: AppColors.primary, fontSize: 14),
+            ),
           ],
         ),
       );
@@ -95,7 +100,11 @@ class JadwalFragment extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.wifi_off_rounded, color: AppColors.brownshade, size: 56),
+              Icon(
+                Icons.wifi_off_rounded,
+                color: AppColors.brownshade,
+                size: 56,
+              ),
               const SizedBox(height: 16),
               Text(
                 ctrl.errorMsg.value,
@@ -111,9 +120,12 @@ class JadwalFragment extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 12),
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ],
@@ -128,15 +140,19 @@ class JadwalFragment extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.calendar_today_outlined,
-                color: AppColors.brownshade, size: 56),
+            Icon(
+              Icons.calendar_today_outlined,
+              color: AppColors.brownshade,
+              size: 56,
+            ),
             const SizedBox(height: 16),
             Text(
               'Belum ada jadwal mengajar',
               style: TextStyle(
-                  color: AppColors.brownshade4,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500),
+                color: AppColors.brownshade4,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -163,12 +179,24 @@ class JadwalFragment extends StatelessWidget {
 
   // ── Section per hari ─────────────────────────────────────────────────────
   Widget _buildDaySection(
-      JadwalController ctrl, String hari, List<JadwalModel> items) {
+    JadwalController ctrl,
+    String hari,
+    List<JadwalModel> items,
+  ) {
     // Hari ini
-    final now        = DateTime.now();
-    final days       = ['', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-    final todayName  = days[now.weekday]; // weekday: 1=Mon...7=Sun
-    final isToday    = hari == todayName;
+    final now = DateTime.now();
+    final days = [
+      '',
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+      'Minggu',
+    ];
+    final todayName = days[now.weekday]; // weekday: 1=Mon...7=Sun
+    final isToday = hari == todayName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,17 +210,14 @@ class JadwalFragment extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: isToday
-                    ? AppColors.primary
-                    : AppColors.brownshade2,
+                color: isToday ? AppColors.primary : AppColors.brownshade2,
                 letterSpacing: 1.2,
               ),
             ),
             if (isToday) ...[
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
@@ -229,17 +254,22 @@ class JadwalFragment extends StatelessWidget {
         color: AppColors.white.withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: AppColors.brownshade3, width: 1, style: BorderStyle.solid),
+          color: AppColors.brownshade3,
+          width: 1,
+          style: BorderStyle.solid,
+        ),
       ),
       child: Row(
         children: [
-          Icon(Icons.event_busy_outlined,
-              color: AppColors.brownshade, size: 18),
+          Icon(
+            Icons.event_busy_outlined,
+            color: AppColors.brownshade,
+            size: 18,
+          ),
           const SizedBox(width: 10),
           Text(
             'Tidak ada jadwal mengajar',
-            style:
-                TextStyle(fontSize: 13, color: AppColors.brownshade4),
+            style: TextStyle(fontSize: 13, color: AppColors.brownshade4),
           ),
         ],
       ),
@@ -253,10 +283,10 @@ class JadwalFragment extends StatelessWidget {
         AppRoutes.presensiSiswa,
         arguments: {
           'schedule_id': item.id,
-          'kelas':       item.classroomName,
-          'mapel':       item.subjectName,
-          'start_time':  item.startTime,
-          'end_time':    item.endTime,
+          'kelas': item.classroomName,
+          'mapel': item.subjectName,
+          'start_time': item.startTime,
+          'end_time': item.endTime,
         },
       ),
       child: Container(
@@ -283,8 +313,11 @@ class JadwalFragment extends StatelessWidget {
                 color: AppColors.iconBgBrown,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.menu_book_outlined,
-                  color: AppColors.primary, size: 22),
+              child: const Icon(
+                Icons.menu_book_outlined,
+                color: AppColors.primary,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 14),
             // Info mapel & kelas
@@ -295,9 +328,10 @@ class JadwalFragment extends StatelessWidget {
                   Text(
                     'MATA PELAJARAN',
                     style: TextStyle(
-                        fontSize: 9,
-                        color: AppColors.brownshade4,
-                        letterSpacing: 0.5),
+                      fontSize: 9,
+                      color: AppColors.brownshade4,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -313,13 +347,18 @@ class JadwalFragment extends StatelessWidget {
                   const SizedBox(height: 3),
                   Row(
                     children: [
-                      Icon(Icons.door_front_door_outlined,
-                          size: 12, color: AppColors.brownshade4),
+                      Icon(
+                        Icons.door_front_door_outlined,
+                        size: 12,
+                        color: AppColors.brownshade4,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         item.classroomName,
                         style: TextStyle(
-                            fontSize: 12, color: AppColors.brownshade2),
+                          fontSize: 12,
+                          color: AppColors.brownshade2,
+                        ),
                       ),
                     ],
                   ),
@@ -340,12 +379,14 @@ class JadwalFragment extends StatelessWidget {
                 ),
                 Text(
                   item.endTime,
-                  style: TextStyle(
-                      fontSize: 12, color: AppColors.brownshade4),
+                  style: TextStyle(fontSize: 12, color: AppColors.brownshade4),
                 ),
                 const SizedBox(height: 4),
-                Icon(Icons.chevron_right_rounded,
-                    color: AppColors.brownshade, size: 18),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.brownshade,
+                  size: 18,
+                ),
               ],
             ),
           ],

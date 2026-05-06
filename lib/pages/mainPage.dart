@@ -13,9 +13,8 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
-        backgroundColor: AppColors.bgCard, // Warna latar global
+        backgroundColor: AppColors.bgCard,
         body: IndexedStack(
-          // Menggunakan IndexedStack agar state halaman terjaga
           index: controller.selectedIndex.value,
           children: controller.fragments,
         ),
@@ -35,7 +34,7 @@ class MainPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.white, 
+        color: AppColors.white,
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowNav,
@@ -58,7 +57,7 @@ class MainPage extends StatelessWidget {
                     items[index]['icon'] as IconData,
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.brownshade, 
+                        : AppColors.brownshade,
                     size: 24,
                   ),
                   const SizedBox(height: 4),

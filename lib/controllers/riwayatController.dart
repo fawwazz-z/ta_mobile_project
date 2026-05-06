@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
 // ─── Model ────────────────────────────────────────────────────────────────────
@@ -54,7 +55,9 @@ class AttendanceRecord {
       final dt = DateTime.parse(checkInTime).toLocal();
       return DateFormat('HH:mm').format(dt);
     } catch (_) {
-      return checkInTime.length >= 5 ? checkInTime.substring(0, 5) : checkInTime;
+      return checkInTime.length >= 5
+          ? checkInTime.substring(0, 5)
+          : checkInTime;
     }
   }
 
@@ -64,7 +67,9 @@ class AttendanceRecord {
       final dt = DateTime.parse(checkOutTime).toLocal();
       return DateFormat('HH:mm').format(dt);
     } catch (_) {
-      return checkOutTime.length >= 5 ? checkOutTime.substring(0, 5) : checkOutTime;
+      return checkOutTime.length >= 5
+          ? checkOutTime.substring(0, 5)
+          : checkOutTime;
     }
   }
 
@@ -79,28 +84,47 @@ class AttendanceRecord {
   }
 
   int get month {
-    try { return DateTime.parse(attendanceDate).toLocal().month; } catch (_) { return 0; }
+    try {
+      return DateTime.parse(attendanceDate).toLocal().month;
+    } catch (_) {
+      return 0;
+    }
   }
 
   int get year {
-    try { return DateTime.parse(attendanceDate).toLocal().year; } catch (_) { return 0; }
+    try {
+      return DateTime.parse(attendanceDate).toLocal().year;
+    } catch (_) {
+      return 0;
+    }
   }
 }
 
 // ─── Controller ───────────────────────────────────────────────────────────────
 class RiwayatController extends GetxController {
-  final RxList<AttendanceRecord> allRecords    = <AttendanceRecord>[].obs;
+  final RxList<AttendanceRecord> allRecords = <AttendanceRecord>[].obs;
   final RxList<AttendanceRecord> filteredRecords = <AttendanceRecord>[].obs;
 
-  final RxBool   isLoading     = false.obs;
-  final RxString errorMessage  = ''.obs;
-  final RxInt    selectedMonth = DateTime.now().month.obs;
-  final RxInt    selectedYear  = DateTime.now().year.obs;
-  final RxString searchQuery   = ''.obs;
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+  final RxInt selectedMonth = DateTime.now().month.obs;
+  final RxInt selectedYear = DateTime.now().year.obs;
+  final RxString searchQuery = ''.obs;
 
   static const _monthNames = [
-    '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    '',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
   ];
 
   String get selectedMonthLabel =>
@@ -110,25 +134,25 @@ class RiwayatController extends GetxController {
   void onInit() {
     super.onInit();
     fetchHistory();
-    ever(searchQuery,    (_) => _applyFilter());
-    ever(selectedMonth,  (_) => _applyFilter());
-    ever(selectedYear,   (_) => _applyFilter());
+    ever(searchQuery, (_) => _applyFilter());
+    ever(selectedMonth, (_) => _applyFilter());
+    ever(selectedYear, (_) => _applyFilter());
   }
 
   // ── Fetch dari API ──────────────────────────────────────────────────────────
   Future<void> fetchHistory() async {
-    isLoading.value     = true;
-    errorMessage.value  = '';
+    isLoading.value = true;
+    errorMessage.value = '';
 
     try {
       // Pakai AuthService._keyToken = 'auth_token'
       final token = await AuthService.getToken() ?? '';
 
       final response = await http.get(
-        Uri.parse('https://kelompok14.rplrus.com/api/attendance/history'),
+        Uri.parse('${AppStatic.base_url}/attendance/history'),
         headers: {
           'Content-Type': 'application/json',
-          'Accept'      : 'application/json',
+          'Accept': 'application/json',
           if (token.isNotEmpty) 'Authorization': 'Bearer $token',
         },
       );
@@ -144,9 +168,12 @@ class RiwayatController extends GetxController {
           // Urutkan terbaru di atas
           allRecords.sort((a, b) {
             try {
-              return DateTime.parse(b.attendanceDate)
-                  .compareTo(DateTime.parse(a.attendanceDate));
-            } catch (_) { return 0; }
+              return DateTime.parse(
+                b.attendanceDate,
+              ).compareTo(DateTime.parse(a.attendanceDate));
+            } catch (_) {
+              return 0;
+            }
           });
 
           _applyFilter();
@@ -168,16 +195,22 @@ class RiwayatController extends GetxController {
   // ── Filter bulan + search ───────────────────────────────────────────────────
   void _applyFilter() {
     var result = allRecords
-        .where((r) => r.month == selectedMonth.value && r.year == selectedYear.value)
+        .where(
+          (r) => r.month == selectedMonth.value && r.year == selectedYear.value,
+        )
         .toList();
 
     final q = searchQuery.value.trim().toLowerCase();
     if (q.isNotEmpty) {
-      result = result.where((r) =>
-          r.formattedDate.toLowerCase().contains(q) ||
-          r.displayStatus.toLowerCase().contains(q) ||
-          r.formattedCheckIn.contains(q) ||
-          r.formattedCheckOut.contains(q)).toList();
+      result = result
+          .where(
+            (r) =>
+                r.formattedDate.toLowerCase().contains(q) ||
+                r.displayStatus.toLowerCase().contains(q) ||
+                r.formattedCheckIn.contains(q) ||
+                r.formattedCheckOut.contains(q),
+          )
+          .toList();
     }
 
     filteredRecords.value = result;
@@ -187,7 +220,7 @@ class RiwayatController extends GetxController {
   void previousMonth() {
     if (selectedMonth.value == 1) {
       selectedMonth.value = 12;
-      selectedYear.value  = selectedYear.value - 1;
+      selectedYear.value = selectedYear.value - 1;
     } else {
       selectedMonth.value = selectedMonth.value - 1;
     }
@@ -196,7 +229,7 @@ class RiwayatController extends GetxController {
   void nextMonth() {
     if (selectedMonth.value == 12) {
       selectedMonth.value = 1;
-      selectedYear.value  = selectedYear.value + 1;
+      selectedYear.value = selectedYear.value + 1;
     } else {
       selectedMonth.value = selectedMonth.value + 1;
     }
@@ -204,5 +237,5 @@ class RiwayatController extends GetxController {
 
   // ── Search ──────────────────────────────────────────────────────────────────
   void onSearchChanged(String v) => searchQuery.value = v;
-  void clearSearch()              => searchQuery.value = '';
+  void clearSearch() => searchQuery.value = '';
 }

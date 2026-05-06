@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
 class JurnalModel {
-  final int    id;
+  final int id;
   final String kelas;
   final String mapel;
   final String waktu;
@@ -21,10 +22,10 @@ class JurnalModel {
 
   factory JurnalModel.fromJson(Map<String, dynamic> j) {
     return JurnalModel(
-      id:     j['id'] as int,
-      kelas:  j['kelas']         ?? j['nama_kelas']      ?? '-',
-      mapel:  j['mata_pelajaran'] ?? j['mapel']           ?? '-',
-      waktu:  j['waktu']         ?? j['jam']              ?? '-',
+      id: j['id'] as int,
+      kelas: j['kelas'] ?? j['nama_kelas'] ?? '-',
+      mapel: j['mata_pelajaran'] ?? j['mapel'] ?? '-',
+      waktu: j['waktu'] ?? j['jam'] ?? '-',
       idKode: 'ID: J-${j['id']}',
     );
   }
@@ -44,13 +45,13 @@ class JurnalController extends GetxController {
   Future<void> fetchJurnal() async {
     try {
       isLoading.value = true;
-      errorMsg.value  = '';
+      errorMsg.value = '';
 
       final token = await AuthService.getToken();
       final response = await http.get(
-        Uri.parse('https://kelompok14.rplrus.com/api/jurnal'),
+        Uri.parse('${AppStatic.base_url}/jurnal'),
         headers: {
-          'Accept':        'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
@@ -59,8 +60,9 @@ class JurnalController extends GetxController {
         final body = jsonDecode(response.body);
         // handle both {data:[]} and [] response shapes
         final List raw = body is List ? body : (body['data'] ?? []);
-        jurnalList.value =
-            raw.map((e) => JurnalModel.fromJson(e as Map<String, dynamic>)).toList();
+        jurnalList.value = raw
+            .map((e) => JurnalModel.fromJson(e as Map<String, dynamic>))
+            .toList();
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
       } else {
@@ -76,7 +78,11 @@ class JurnalController extends GetxController {
   void _handleUnauthorized() {
     AuthService.clearToken();
     Get.offAllNamed('/loginPage');
-    Get.snackbar('Sesi Berakhir', 'Silakan login kembali',
-        backgroundColor: Colors.red, colorText: Colors.white);
+    Get.snackbar(
+      'Sesi Berakhir',
+      'Silakan login kembali',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 }
