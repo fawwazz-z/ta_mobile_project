@@ -35,8 +35,11 @@ class PresensiSiswaController extends GetxController {
   var isSaving = false.obs;
   var siswaList = <SiswaModel>[].obs;
   var errorMsg = ''.obs;
-  late final int classroomId;
+  var isEditMode = false.obs;
+  var journalId = 0.obs;
+  var materi = ''.obs;
 
+  late final int classroomId;
   late final int scheduleId;
   late final String kelasNama;
   late final String mapelNama;
@@ -53,6 +56,17 @@ class PresensiSiswaController extends GetxController {
     jamMulai = args['start_time'] as String? ?? '';
     jamSelesai = args['end_time'] as String? ?? '';
     classroomId = args['classroom_id'] as int? ?? 0;
+
+    isEditMode.value = args['is_journal_filled'] ?? false;
+
+    print("IS EDIT MODE: ${args['is_journal_filled']}");
+
+    if (isEditMode.value) {
+      fetchDetailJurnal();
+    } else {
+      fetchSiswa();
+    }
+
     fetchSiswa();
   }
 
@@ -84,6 +98,9 @@ class PresensiSiswaController extends GetxController {
           siswaList.value = raw
               .map((e) => SiswaModel.fromJson(e as Map<String, dynamic>))
               .toList();
+
+          journalId.value = body['journal_id'] ?? 0;
+          materi.value = body['material'] ?? '';
         } else {
           errorMsg.value = 'Data siswa tidak ditemukan';
         }
@@ -162,9 +179,13 @@ class PresensiSiswaController extends GetxController {
           );
         }
 
+        final data = jsonDecode(response.body);
+        final journalId = data['journal_id'];
+
         Get.toNamed(
           AppRoutes.refleksipage,
           arguments: {
+            'journal_id': journalId,
             'schedule_id': scheduleId,
             'kelas': kelasNama,
             'mapel': mapelNama,
@@ -209,5 +230,99 @@ class PresensiSiswaController extends GetxController {
       backgroundColor: Colors.red,
       colorText: Colors.white,
     );
+  }
+
+  Future<void> fetchDetailJurnal() async {
+    try {
+      isLoading.value = true;
+
+      final token = await AuthService.getToken();
+      final url = '${AppStatic.base_url}/journals/$scheduleId/detail';
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final data = body['data'];
+
+        journalId.value = data['id'];
+        materi.value = data['material'] ?? '';
+
+        final List attendances = data['attendances'];
+
+        siswaList.value = attendances.map((a) {
+          final s = a['student'];
+          return SiswaModel(
+            id: s['id'],
+            nama: s['name'],
+            nis: s['nis'] ?? '-',
+            status: a['status'],
+          );
+        }).toList();
+      } else {
+        errorMsg.value = 'Gagal load data jurnal';
+      }
+    } catch (e) {
+      errorMsg.value = 'Error mengambil jurnal';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updatePresensi({required String material}) async {
+    try {
+      isSaving.value = true;
+
+      final token = await AuthService.getToken();
+
+      final payload = {
+        'material': material,
+        'attendances': siswaList
+            .map((s) => {'student_id': s.id, 'status': s.status.toLowerCase()})
+            .toList(),
+      };
+
+      final response = await http.put(
+        Uri.parse('${AppStatic.base_url}/journals/${journalId.value}/update'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        Get.snackbar(
+          'Berhasil',
+          'Presensi berhasil diupdate',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        Get.back(); // balik ke home
+      } else {
+        Get.snackbar(
+          'Gagal',
+          'Update gagal',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (_) {
+      Get.snackbar(
+        'Error',
+        'Server error',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isSaving.value = false;
+    }
   }
 }
