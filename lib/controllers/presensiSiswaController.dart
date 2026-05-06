@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_mobile_project/controllers/homeController.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
@@ -23,7 +24,6 @@ class SiswaModel {
       id: (j['id'] as num).toInt(),
       nama: j['name'] as String? ?? j['nama'] as String? ?? '-',
       nis: j['nis'] as String? ?? '-',
-      // Status bisa sudah terisi jika presensi sudah ada
       status: j['status'] as String? ?? '',
     );
   }
@@ -37,7 +37,7 @@ class PresensiSiswaController extends GetxController {
   late final int classroomId;
 
   // Data dari argument navigasi
-  late final int scheduleId; // teaching_schedule_id
+  late final int scheduleId;
   late final String kelasNama;
   late final String mapelNama;
   late final String jamMulai;
@@ -47,24 +47,22 @@ class PresensiSiswaController extends GetxController {
   void onInit() {
     super.onInit();
     final args = Get.arguments as Map<String, dynamic>? ?? {};
-    scheduleId = args['schedule_id'] as int? ?? 0;
-    kelasNama = args['kelas'] as String? ?? 'Kelas';
-    mapelNama = args['mapel'] as String? ?? '';
-    jamMulai = args['start_time'] as String? ?? '';
-    jamSelesai = args['end_time'] as String? ?? '';
-    classroomId = args['classroom_id'] as int? ?? 0;
+    scheduleId  = args['schedule_id']  as int?    ?? 0;
+    kelasNama   = args['kelas']        as String? ?? 'Kelas';
+    mapelNama   = args['mapel']        as String? ?? '';
+    jamMulai    = args['start_time']   as String? ?? '';
+    jamSelesai  = args['end_time']     as String? ?? '';
+    classroomId = args['classroom_id'] as int?    ?? 0;
     fetchSiswa();
   }
 
-  /// GET /api/schedules/{schedule_id}/students
-  /// Response: { success, classroom, data: [{id, classroom_id, name, nis, ...}] }
+  /// GET /api/journals/students/{classroom_id}
   Future<void> fetchSiswa() async {
     try {
       isLoading.value = true;
       errorMsg.value = '';
 
       final token = await AuthService.getToken();
-
       final url =
           'https://kelompok14.rplrus.com/api/journals/students/$classroomId';
 
@@ -76,18 +74,14 @@ class PresensiSiswaController extends GetxController {
         },
       );
 
-      // 🔍 DEBUG WAJIB (hapus nanti kalau sudah aman)
       print('URL: $url');
       print('STATUS: ${response.statusCode}');
       print('BODY: ${response.body}');
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-
-        // Pastikan format sesuai API
         if (body['success'] == true) {
           final List raw = body['data'] ?? [];
-
           siswaList.value = raw
               .map((e) => SiswaModel.fromJson(e as Map<String, dynamic>))
               .toList();
@@ -103,7 +97,6 @@ class PresensiSiswaController extends GetxController {
             'Gagal memuat data siswa (Code: ${response.statusCode})';
       }
     } catch (e) {
-      // 🔥 Jangan pakai (_) biar tahu errornya apa
       print('ERROR: $e');
       errorMsg.value = 'Tidak dapat terhubung ke server';
     } finally {
@@ -144,7 +137,7 @@ class PresensiSiswaController extends GetxController {
             .map(
               (s) => {
                 'student_id': s.id,
-                'status': s.status.toLowerCase(), // hadir|izin|sakit|alpa
+                'status': s.status.toLowerCase(),
               },
             )
             .toList(),
@@ -161,7 +154,23 @@ class PresensiSiswaController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Navigasi ke halaman refleksi, kirim schedule_id
+        // ── Hitung statistik kehadiran ──
+        final hadir = siswaList.where((s) => s.status == 'hadir').length;
+        final izin  = siswaList.where((s) => s.status == 'izin').length;
+        final sakit = siswaList.where((s) => s.status == 'sakit').length;
+        final alpa  = siswaList.where((s) => s.status == 'alpa').length;
+
+        // ── Kirim ke HomeController agar stats card langsung update ──
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().updateStatistikPresensi(
+            hadir: hadir,
+            izin: izin,
+            sakit: sakit,
+            alpa: alpa,
+          );
+        }
+
+        // ── Navigasi ke halaman refleksi ──
         Get.toNamed(
           AppRoutes.refleksipage,
           arguments: {

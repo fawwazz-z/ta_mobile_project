@@ -71,7 +71,9 @@ class HomeFragment extends StatelessWidget {
 
   Widget _buildPresensiCard() {
     final now = DateTime.now();
-    final days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    final days = [
+      'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
+    ];
     final months = [
       '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
@@ -134,7 +136,6 @@ class HomeFragment extends StatelessWidget {
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
-              // ── PERBAIKAN: navigasi ke PresensiPage (kamera wajah) ──
               onPressed: () => Get.toNamed(AppRoutes.presensipage),
               icon: const Icon(Icons.fingerprint_rounded, size: 22),
               label: const Text('Mulai Presensi',
@@ -174,30 +175,64 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
+  // ── Stats row: reactive terhadap data presensi siswa ──
   Widget _buildStatsRow() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildStatCard(
-            icon: Icons.calendar_month_outlined,
-            iconColor: AppColors.info,
-            iconBg: AppColors.infoLight,
-            label: 'KEHADIRAN',
-            value: '98%',
+    return Obx(() {
+      // Belum ada presensi siswa → tampilkan placeholder
+      if (!homeCtrl.sudahPresensi.value) {
+        return Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                icon: Icons.calendar_month_outlined,
+                iconColor: AppColors.info,
+                iconBg: AppColors.infoLight,
+                label: 'KEHADIRAN SISWA',
+                value: '--%',
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: _buildStatCard(
+                icon: Icons.medical_services_outlined,
+                iconColor: AppColors.warning,
+                iconBg: AppColors.warningLight,
+                label: 'IZIN/SAKIT',
+                value: '-- Siswa',
+              ),
+            ),
+          ],
+        );
+      }
+
+      // Sudah ada data → tampilkan angka real
+      final persenHadir = homeCtrl.persenHadir.toStringAsFixed(0);
+      final izinSakit = homeCtrl.totalIzinSakit;
+
+      return Row(
+        children: [
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.calendar_month_outlined,
+              iconColor: AppColors.info,
+              iconBg: AppColors.infoLight,
+              label: 'KEHADIRAN',
+              value: '$persenHadir%',
+            ),
           ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: _buildStatCard(
-            icon: Icons.medical_services_outlined,
-            iconColor: AppColors.warning,
-            iconBg: AppColors.warningLight,
-            label: 'IZIN/SAKIT',
-            value: '2 Hari',
+          const SizedBox(width: 14),
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.medical_services_outlined,
+              iconColor: AppColors.warning,
+              iconBg: AppColors.warningLight,
+              label: 'IZIN/SAKIT',
+              value: '$izinSakit Siswa',
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildStatCard({
@@ -392,7 +427,7 @@ class HomeFragment extends StatelessWidget {
               ),
             ),
             Icon(Icons.chevron_right_rounded,
-                color: AppColors.brownshade , size: 22),
+                color: AppColors.brownshade, size: 22),
           ],
         ),
       ),

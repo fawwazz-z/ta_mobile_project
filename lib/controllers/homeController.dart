@@ -7,9 +7,9 @@ import 'package:ta_mobile_project/services/authService.dart';
 /// Model untuk satu slot jadwal mengajar
 class JadwalHariIniModel {
   final int id;
-  final String subjectName; // dari relasi subject
-  final String classroomName; // dari relasi classroom
-  final int classroomId; // ✅ TAMBAHAN
+  final String subjectName;
+  final String classroomName;
+  final int classroomId;
   final String day;
   final String startTime;
   final String endTime;
@@ -25,14 +25,11 @@ class JadwalHariIniModel {
   });
 
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
-    // API: {id, user_id, subject_id, classroom_id, day, start_time, end_time, ...}
-    // Relasi subject/classroom mungkin di-load as nested object atau hanya id
     final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
 
     return JadwalHariIniModel(
       id: (j['id'] as num).toInt(),
-
       subjectName:
           subject?['name'] as String? ??
           j['subject_name'] as String? ??
@@ -41,7 +38,7 @@ class JadwalHariIniModel {
           classroom?['name'] as String? ??
           j['classroom_name'] as String? ??
           'Kelas',
-      classroomId: (j['classroom_id'] as num?)?.toInt() ?? 0, // ✅ INI PENTING
+      classroomId: (j['classroom_id'] as num?)?.toInt() ?? 0,
       day: j['day'] as String? ?? '',
       startTime: j['start_time'] as String? ?? '--:--',
       endTime: j['end_time'] as String? ?? '--:--',
@@ -56,6 +53,14 @@ class HomeController extends GetxController {
   var isLoadingJadwal = false.obs;
   var jadwalHariIni = <JadwalHariIniModel>[].obs;
   var errorJadwal = ''.obs;
+
+  // ── Statistik kehadiran siswa (diupdate setelah guru simpan presensi) ──
+  var totalSiswa = 0.obs;
+  var totalHadir = 0.obs;
+  var totalIzin = 0.obs;
+  var totalSakit = 0.obs;
+  var totalAlpa = 0.obs;
+  var sudahPresensi = false.obs; // true setelah guru berhasil simpan presensi
 
   @override
   void onInit() {
@@ -72,7 +77,7 @@ class HomeController extends GetxController {
     teacherRole.value = role ?? '';
   }
 
-  /// GET /api/schedules  — jadwal mengajar hari ini
+  /// GET /api/journals/schedules — jadwal mengajar hari ini
   Future<void> fetchJadwalHariIni() async {
     try {
       isLoadingJadwal.value = true;
@@ -89,9 +94,7 @@ class HomeController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        // Response: {success: true, data: [...]}
         final List raw = body['data'] ?? [];
-
         jadwalHariIni.value = raw
             .map((e) => JadwalHariIniModel.fromJson(e as Map<String, dynamic>))
             .toList();
@@ -106,6 +109,31 @@ class HomeController extends GetxController {
       isLoadingJadwal.value = false;
     }
   }
+
+  /// Dipanggil dari PresensiSiswaController setelah simpan presensi berhasil.
+  /// Data ini akan langsung muncul di stats card Home.
+  void updateStatistikPresensi({
+    required int hadir,
+    required int izin,
+    required int sakit,
+    required int alpa,
+  }) {
+    totalHadir.value = hadir;
+    totalIzin.value = izin;
+    totalSakit.value = sakit;
+    totalAlpa.value = alpa;
+    totalSiswa.value = hadir + izin + sakit + alpa;
+    sudahPresensi.value = true;
+  }
+
+  /// Persentase siswa hadir (0–100), sudah dibulatkan
+  double get persenHadir =>
+      totalSiswa.value == 0
+          ? 0
+          : (totalHadir.value / totalSiswa.value) * 100;
+
+  /// Total siswa izin + sakit
+  int get totalIzinSakit => totalIzin.value + totalSakit.value;
 
   void refreshData() => fetchJadwalHariIni();
 
