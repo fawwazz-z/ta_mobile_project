@@ -6,6 +6,8 @@ import 'package:ta_mobile_project/bindings/mainBinding.dart';
 import 'package:ta_mobile_project/bindings/presensiBinding.dart';
 import 'package:ta_mobile_project/bindings/presensiSiswa_Binding.dart';
 import 'package:ta_mobile_project/bindings/refleksiBinding.dart';
+import 'package:ta_mobile_project/bindings/splashScreenBinding.dart';
+import 'package:ta_mobile_project/bindings/splashScreenBinding.dart';
 import 'package:ta_mobile_project/bindings/verifikasiBinding.dart';
 import 'package:ta_mobile_project/pages/EditProfilePage.dart';
 import 'package:ta_mobile_project/pages/RefleksiPage.dart';
@@ -20,7 +22,11 @@ import 'package:ta_mobile_project/routes/route.dart';
 
 class AppPage {
   static final pages = [
-    GetPage(name: AppRoutes.splashPage, page: () => const SplashScreen()),
+    GetPage(
+      name: AppRoutes.splashPage,
+      page: () => const SplashScreen(),
+      binding: SplashBinding(),
+    ),
     GetPage(
       name: AppRoutes.loginPage,
       page: () => const LoginPage(),

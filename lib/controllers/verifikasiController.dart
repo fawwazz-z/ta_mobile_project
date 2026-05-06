@@ -5,4 +5,4 @@ class VerifikasiController extends GetxController {
   var koordinat = "-6.2008, 106.8456".obs;
   var status = "Dalam Radius Sekolah".obs;
   var fotoPath = ''.obs; 
-}
+} 
