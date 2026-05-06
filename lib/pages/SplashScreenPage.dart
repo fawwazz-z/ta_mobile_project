@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ta_mobile_project/routes/route.dart';
+import 'package:ta_mobile_project/controllers/SplashScreenController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,6 +20,8 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    Get.find<SplashController>();
+
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -35,11 +37,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _animController.forward();
-
-    // Pindah ke loginPage setelah 3 detik
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      if (mounted) Get.offNamed(AppRoutes.loginPage);
-    });
   }
 
   @override
