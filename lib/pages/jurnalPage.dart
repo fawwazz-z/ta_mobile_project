@@ -33,8 +33,11 @@ class JurnalPage extends StatelessWidget {
                             color: AppColors.white.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(Icons.chevron_left_rounded,
-                              color: AppColors.textDark, size: 22),
+                          child: const Icon(
+                            Icons.chevron_left_rounded,
+                            color: AppColors.textDark,
+                            size: 22,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -61,13 +64,18 @@ class JurnalPage extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search_rounded,
-                            color: AppColors.brownshade, size: 20),
+                        Icon(
+                          Icons.search_rounded,
+                          color: AppColors.brownshade,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Cari materi atau kelas...',
                           style: TextStyle(
-                              fontSize: 13, color: AppColors.brownshade),
+                            fontSize: 13,
+                            color: AppColors.brownshade,
+                          ),
                         ),
                       ],
                     ),
@@ -93,17 +101,26 @@ class JurnalPage extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: ctrl.fetchJurnal,
-                            child: Icon(Icons.refresh_rounded,
-                                color: AppColors.brownshade2, size: 18),
+                            child: Icon(
+                              Icons.refresh_rounded,
+                              color: AppColors.brownshade2,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(width: 10),
-                          Icon(Icons.filter_list_rounded,
-                              color: AppColors.brownshade2, size: 16),
+                          Icon(
+                            Icons.filter_list_rounded,
+                            color: AppColors.brownshade2,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
-                          Text('Filter',
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.brownshade2)),
+                          Text(
+                            'Filter',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.brownshade2,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -116,7 +133,8 @@ class JurnalPage extends StatelessWidget {
                     if (ctrl.isLoading.value) {
                       return const Center(
                         child: CircularProgressIndicator(
-                            color: AppColors.primary),
+                          color: AppColors.primary,
+                        ),
                       );
                     }
                     if (ctrl.errorMsg.isNotEmpty) {
@@ -124,21 +142,26 @@ class JurnalPage extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.wifi_off_rounded,
-                                color: AppColors.brownshade, size: 48),
+                            Icon(
+                              Icons.wifi_off_rounded,
+                              color: AppColors.brownshade,
+                              size: 48,
+                            ),
                             const SizedBox(height: 12),
-                            Text(ctrl.errorMsg.value,
-                                style: TextStyle(
-                                    color: AppColors.brownshade2)),
+                            Text(
+                              ctrl.errorMsg.value,
+                              style: TextStyle(color: AppColors.brownshade2),
+                            ),
                             const SizedBox(height: 12),
                             ElevatedButton(
                               onPressed: ctrl.fetchJurnal,
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      AppColors.primary),
-                              child: const Text('Coba Lagi',
-                                  style:
-                                      TextStyle(color: AppColors.white)),
+                                backgroundColor: AppColors.primary,
+                              ),
+                              child: const Text(
+                                'Coba Lagi',
+                                style: TextStyle(color: AppColors.white),
+                              ),
                             ),
                           ],
                         ),
@@ -146,14 +169,14 @@ class JurnalPage extends StatelessWidget {
                     }
                     if (ctrl.jurnalList.isEmpty) {
                       return Center(
-                        child: Text('Belum ada jurnal',
-                            style: TextStyle(
-                                color: AppColors.brownshade4)),
+                        child: Text(
+                          'Belum ada jurnal',
+                          style: TextStyle(color: AppColors.brownshade4),
+                        ),
                       );
                     }
                     return SingleChildScrollView(
-                      padding:
-                          const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
                       child: Column(
                         children: ctrl.jurnalList
                             .map((j) => _buildJurnalCard(j))
@@ -176,15 +199,13 @@ class JurnalPage extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          AppColors.primary.withOpacity(0.35),
+                      color: AppColors.primary.withOpacity(0.35),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                child: const Icon(Icons.add,
-                    color: AppColors.white, size: 26),
+                child: const Icon(Icons.add, color: AppColors.white, size: 26),
               ),
             ),
           ],
@@ -207,7 +228,7 @@ class JurnalPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color:  AppColors.brownshade2.withOpacity(0.05),
+              color: AppColors.brownshade2.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -217,22 +238,21 @@ class JurnalPage extends StatelessWidget {
           children: [
             // Header card
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: const BoxDecoration(
                 color: AppColors.bgCard,
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color:
-                          AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -247,7 +267,9 @@ class JurnalPage extends StatelessWidget {
                   Text(
                     jurnal.idKode,
                     style: TextStyle(
-                        fontSize: 11, color: AppColors.brownshade4),
+                      fontSize: 11,
+                      color: AppColors.brownshade4,
+                    ),
                   ),
                 ],
               ),
@@ -260,8 +282,11 @@ class JurnalPage extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.menu_outlined,
-                          color: AppColors.brownshade4, size: 18),
+                      Icon(
+                        Icons.menu_outlined,
+                        color: AppColors.brownshade4,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,8 +315,11 @@ class JurnalPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.access_time_rounded,
-                          color: AppColors.brownshade4, size: 18),
+                      Icon(
+                        Icons.access_time_rounded,
+                        color: AppColors.brownshade4,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,9 +368,11 @@ class JurnalPage extends StatelessWidget {
                                 color: const Color(0xFF6D4C41),
                               ),
                             ),
-                            Icon(Icons.chevron_right_rounded,
-                                color: AppColors.brownshade2,
-                                size: 16),
+                            Icon(
+                              Icons.chevron_right_rounded,
+                              color: AppColors.brownshade2,
+                              size: 16,
+                            ),
                           ],
                         ),
                       ),
@@ -350,7 +380,7 @@ class JurnalPage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),  
+            ),
           ],
         ),
       ),

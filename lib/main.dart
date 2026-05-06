@@ -20,7 +20,7 @@ class MainApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Presensi Guru',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.splashPage,   // ← ubah dari loginPage ke splashPage
+      initialRoute: AppRoutes.splashPage,
       getPages: AppPage.pages,
       theme: ThemeData(
         useMaterial3: true,

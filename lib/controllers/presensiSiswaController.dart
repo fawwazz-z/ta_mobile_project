@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/controllers/homeController.dart';
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
@@ -36,7 +37,6 @@ class PresensiSiswaController extends GetxController {
   var errorMsg = ''.obs;
   late final int classroomId;
 
-  // Data dari argument navigasi
   late final int scheduleId;
   late final String kelasNama;
   late final String mapelNama;
@@ -47,12 +47,12 @@ class PresensiSiswaController extends GetxController {
   void onInit() {
     super.onInit();
     final args = Get.arguments as Map<String, dynamic>? ?? {};
-    scheduleId  = args['schedule_id']  as int?    ?? 0;
-    kelasNama   = args['kelas']        as String? ?? 'Kelas';
-    mapelNama   = args['mapel']        as String? ?? '';
-    jamMulai    = args['start_time']   as String? ?? '';
-    jamSelesai  = args['end_time']     as String? ?? '';
-    classroomId = args['classroom_id'] as int?    ?? 0;
+    scheduleId = args['schedule_id'] as int? ?? 0;
+    kelasNama = args['kelas'] as String? ?? 'Kelas';
+    mapelNama = args['mapel'] as String? ?? '';
+    jamMulai = args['start_time'] as String? ?? '';
+    jamSelesai = args['end_time'] as String? ?? '';
+    classroomId = args['classroom_id'] as int? ?? 0;
     fetchSiswa();
   }
 
@@ -63,8 +63,7 @@ class PresensiSiswaController extends GetxController {
       errorMsg.value = '';
 
       final token = await AuthService.getToken();
-      final url =
-          'https://kelompok14.rplrus.com/api/journals/students/$classroomId';
+      final url = '${AppStatic.base_url}/journals/students/$classroomId';
 
       final response = await http.get(
         Uri.parse(url),
@@ -134,17 +133,12 @@ class PresensiSiswaController extends GetxController {
         'teaching_schedule_id': scheduleId,
         'material': material,
         'attendances': siswaList
-            .map(
-              (s) => {
-                'student_id': s.id,
-                'status': s.status.toLowerCase(),
-              },
-            )
+            .map((s) => {'student_id': s.id, 'status': s.status.toLowerCase()})
             .toList(),
       };
 
       final response = await http.post(
-        Uri.parse('https://kelompok14.rplrus.com/api/journals/attendance'),
+        Uri.parse('${AppStatic.base_url}/journals/attendance'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -154,13 +148,11 @@ class PresensiSiswaController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // ── Hitung statistik kehadiran ──
         final hadir = siswaList.where((s) => s.status == 'hadir').length;
-        final izin  = siswaList.where((s) => s.status == 'izin').length;
+        final izin = siswaList.where((s) => s.status == 'izin').length;
         final sakit = siswaList.where((s) => s.status == 'sakit').length;
-        final alpa  = siswaList.where((s) => s.status == 'alpa').length;
+        final alpa = siswaList.where((s) => s.status == 'alpa').length;
 
-        // ── Kirim ke HomeController agar stats card langsung update ──
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().updateStatistikPresensi(
             hadir: hadir,
@@ -170,7 +162,6 @@ class PresensiSiswaController extends GetxController {
           );
         }
 
-        // ── Navigasi ke halaman refleksi ──
         Get.toNamed(
           AppRoutes.refleksipage,
           arguments: {
@@ -179,6 +170,7 @@ class PresensiSiswaController extends GetxController {
             'mapel': mapelNama,
           },
         );
+
         Get.snackbar(
           'Berhasil',
           'Presensi berhasil disimpan',

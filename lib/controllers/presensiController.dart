@@ -7,9 +7,9 @@ import '../controllers/verifikasiController.dart';
 class PresensiController extends GetxController {
   CameraController? cameraController;
 
-  var isCameraReady      = false.obs;
-  var isTakingPhoto      = false.obs;
-  var capturedImagePath  = ''.obs;
+  var isCameraReady = false.obs;
+  var isTakingPhoto = false.obs;
+  var capturedImagePath = ''.obs;
 
   @override
   void onInit() {
@@ -42,8 +42,8 @@ class PresensiController extends GetxController {
   }
 
   Future<void> ambilFoto() async {
-    if (cameraController == null ||
-        !cameraController!.value.isInitialized) return;
+    if (cameraController == null || !cameraController!.value.isInitialized)
+      return;
 
     isTakingPhoto.value = true;
     final file = await cameraController!.takePicture();
@@ -56,11 +56,9 @@ class PresensiController extends GetxController {
   }
 
   void selesaiPresensi() {
-    // Kirim foto ke VerifikasiController
     final verifikasiCtrl = Get.put(VerifikasiController());
     verifikasiCtrl.fotoPath.value = capturedImagePath.value;
 
-    // Refresh riwayat jika controller sudah terdaftar
     if (Get.isRegistered<RiwayatController>()) {
       Get.find<RiwayatController>().fetchHistory();
     }

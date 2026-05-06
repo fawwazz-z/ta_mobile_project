@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
@@ -18,8 +19,8 @@ class RefleksiController extends GetxController {
     super.onInit();
     final args = Get.arguments as Map<String, dynamic>? ?? {};
     scheduleId = args['schedule_id'] as int? ?? 0;
-    kelasNama  = args['kelas']       as String? ?? '';
-    mapelNama  = args['mapel']       as String? ?? '';
+    kelasNama = args['kelas'] as String? ?? '';
+    mapelNama = args['mapel'] as String? ?? '';
   }
 
   /// PUT /api/journals/{schedule_id}/reflection
@@ -40,17 +41,16 @@ class RefleksiController extends GetxController {
       final token = await AuthService.getToken();
 
       final response = await http.put(
-        Uri.parse(
-            'https://kelompok14.rplrus.com/api/journals/$scheduleId/reflection'),
+        Uri.parse('${AppStatic.base_url}/journals/$scheduleId/reflection'),
         headers: {
-          'Content-Type':  'application/json',
-          'Accept':        'application/json',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({'reflection': teks}),
       );
 
-      print('URL: https://kelompok14.rplrus.com/api/journals/$scheduleId/reflection');
+      print('URL: ${AppStatic.base_url}/journals/$scheduleId/reflection');
       print('STATUS: ${response.statusCode}');
       print('BODY: ${response.body}');
 

@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
 class JadwalModel {
-  final int    id;
+  final int id;
   final String subjectName;
   final String classroomName;
-  final String day;          // "Senin", "Selasa", dst — dari API
+  final String day;
   final String startTime;
   final String endTime;
 
@@ -22,53 +23,51 @@ class JadwalModel {
   });
 
   factory JadwalModel.fromJson(Map<String, dynamic> j) {
-    // Relasi subject & classroom bisa berupa nested object atau hanya id
-    final subject   = j['subject']   as Map<String, dynamic>?;
+    final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
-
-    // Normalkan field "day" — API mungkin kirim dalam bahasa Inggris
     final rawDay = j['day'] as String? ?? '';
-    final day    = _normalizeDay(rawDay);
+    final day = _normalizeDay(rawDay);
 
     return JadwalModel(
-      id:            (j['id'] as num).toInt(),
-      subjectName:   subject?['name']   as String?
-                  ?? j['subject_name']  as String?
-                  ?? j['mapel']         as String?
-                  ?? 'Mata Pelajaran',
-      classroomName: classroom?['name'] as String?
-                  ?? j['classroom_name'] as String?
-                  ?? j['kelas']          as String?
-                  ?? 'Kelas',
-      day:           day,
-      startTime:     _formatTime(j['start_time'] as String? ?? '--:--'),
-      endTime:       _formatTime(j['end_time']   as String? ?? '--:--'),
+      id: (j['id'] as num).toInt(),
+      subjectName:
+          subject?['name'] as String? ??
+          j['subject_name'] as String? ??
+          j['mapel'] as String? ??
+          'Mata Pelajaran',
+      classroomName:
+          classroom?['name'] as String? ??
+          j['classroom_name'] as String? ??
+          j['kelas'] as String? ??
+          'Kelas',
+      day: day,
+      startTime: _formatTime(j['start_time'] as String? ?? '--:--'),
+      endTime: _formatTime(j['end_time'] as String? ?? '--:--'),
     );
   }
 
   /// Konversi nama hari dari bahasa Inggris → Indonesia jika perlu
   static String _normalizeDay(String raw) {
     const map = {
-      'monday':    'Senin',
-      'tuesday':   'Selasa',
+      'monday': 'Senin',
+      'tuesday': 'Selasa',
       'wednesday': 'Rabu',
-      'thursday':  'Kamis',
-      'friday':    'Jumat',
-      'saturday':  'Sabtu',
-      'sunday':    'Minggu',
+      'thursday': 'Kamis',
+      'friday': 'Jumat',
+      'saturday': 'Sabtu',
+      'sunday': 'Minggu',
       // jika sudah dalam bahasa Indonesia, kembalikan apa adanya
-      'senin':    'Senin',
-      'selasa':   'Selasa',
-      'rabu':     'Rabu',
-      'kamis':    'Kamis',
-      'jumat':    'Jumat',
-      'sabtu':    'Sabtu',
-      'minggu':   'Minggu',
+      'senin': 'Senin',
+      'selasa': 'Selasa',
+      'rabu': 'Rabu',
+      'kamis': 'Kamis',
+      'jumat': 'Jumat',
+      'sabtu': 'Sabtu',
+      'minggu': 'Minggu',
     };
     return map[raw.toLowerCase()] ?? raw;
   }
 
-  /// Format "08:00:00" → "08:00"
   static String _formatTime(String t) {
     if (t.length >= 5) return t.substring(0, 5);
     return t;
@@ -76,13 +75,17 @@ class JadwalModel {
 }
 
 class JadwalController extends GetxController {
-  var isLoading  = false.obs;
+  var isLoading = false.obs;
   var jadwalList = <JadwalModel>[].obs;
-  var errorMsg   = ''.obs;
+  var errorMsg = ''.obs;
 
-  // Urutan hari untuk tampilan
   final List<String> dayOrder = [
-    'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu',
   ];
 
   @override
@@ -96,24 +99,22 @@ class JadwalController extends GetxController {
   Future<void> fetchJadwal() async {
     try {
       isLoading.value = true;
-      errorMsg.value  = '';
+      errorMsg.value = '';
 
       final token = await AuthService.getToken();
       final headers = {
-        'Accept':        'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       };
 
-      // Coba endpoint jadwal mingguan dulu
       var response = await http.get(
-        Uri.parse('https://kelompok14.rplrus.com/api/schedules'),
+        Uri.parse('${AppStatic.base_url}/schedules'),
         headers: headers,
       );
 
-      // Jika 404 atau error, coba endpoint today sebagai fallback
       if (response.statusCode == 404 || response.statusCode == 405) {
         response = await http.get(
-          Uri.parse('https://kelompok14.rplrus.com/api/schedules/today'),
+          Uri.parse('${AppStatic.base_url}/schedules/today'),
           headers: headers,
         );
       }
@@ -136,7 +137,7 @@ class JadwalController extends GetxController {
             .toList();
 
         if (jadwalList.isEmpty) {
-          errorMsg.value = ''; // kosong tapi bukan error
+          errorMsg.value = '';
         }
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
@@ -150,13 +151,10 @@ class JadwalController extends GetxController {
     }
   }
 
-  /// Ambil jadwal untuk hari tertentu
-  List<JadwalModel> getByDay(String day) => jadwalList
-      .where((j) => j.day.toLowerCase() == day.toLowerCase())
-      .toList()
-    ..sort((a, b) => a.startTime.compareTo(b.startTime)); // urutkan by jam
+  List<JadwalModel> getByDay(String day) =>
+      jadwalList.where((j) => j.day.toLowerCase() == day.toLowerCase()).toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime)); // urutkan by jam
 
-  /// Apakah ada jadwal sama sekali
   bool get hasJadwal => jadwalList.isNotEmpty;
 
   void _handleUnauthorized() {

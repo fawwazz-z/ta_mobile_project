@@ -14,8 +14,6 @@ class MainController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Pastikan RiwayatController sudah ada sebelum RiwayatFragment dibuat,
-    // agar Get.find<RiwayatController>() di dalam fragment tidak error.
     if (!Get.isRegistered<RiwayatController>()) {
       Get.put(RiwayatController());
     }
@@ -30,8 +28,6 @@ class MainController extends GetxController {
 
   void changeIndex(int index) {
     selectedIndex.value = index;
-
-    // Refresh riwayat setiap kali tab Riwayat dibuka (index 1)
     if (index == 1) {
       Get.find<RiwayatController>().fetchHistory();
     }

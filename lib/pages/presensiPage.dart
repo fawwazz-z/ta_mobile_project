@@ -143,8 +143,10 @@ class PresensiPage extends StatelessWidget {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Selesaikan Presensi',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    'Selesaikan Presensi',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(width: 8),
                   Icon(Icons.arrow_forward),
                 ],
@@ -156,8 +158,10 @@ class PresensiPage extends StatelessWidget {
 
           TextButton(
             onPressed: controller.ambilUlang,
-            child: const Text("Ambil Ulang",
-                style: TextStyle(color: AppColors.primaryLight)),
+            child: const Text(
+              "Ambil Ulang",
+              style: TextStyle(color: AppColors.primaryLight),
+            ),
           ),
 
           const SizedBox(height: 10),
@@ -202,7 +206,10 @@ class PresensiPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.tealLight,
                     borderRadius: BorderRadius.circular(20),
@@ -246,9 +253,14 @@ class PresensiPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 10, color: AppColors.defalt, letterSpacing: 1)),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.defalt,
+                  letterSpacing: 1,
+                ),
+              ),
               const SizedBox(height: 4),
               child,
             ],
@@ -273,20 +285,52 @@ class _FaceBracketPainter extends CustomPainter {
     const bracketSize = 30.0;
 
     // Top-left
-    canvas.drawLine(Offset(margin, margin + bracketSize), Offset(margin, margin), paint);
-    canvas.drawLine(Offset(margin, margin), Offset(margin + bracketSize, margin), paint);
+    canvas.drawLine(
+      Offset(margin, margin + bracketSize),
+      Offset(margin, margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(margin, margin),
+      Offset(margin + bracketSize, margin),
+      paint,
+    );
 
     // Top-right
-    canvas.drawLine(Offset(size.width - margin - bracketSize, margin), Offset(size.width - margin, margin), paint);
-    canvas.drawLine(Offset(size.width - margin, margin), Offset(size.width - margin, margin + bracketSize), paint);
+    canvas.drawLine(
+      Offset(size.width - margin - bracketSize, margin),
+      Offset(size.width - margin, margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - margin, margin),
+      Offset(size.width - margin, margin + bracketSize),
+      paint,
+    );
 
     // Bottom-left
-    canvas.drawLine(Offset(margin, size.height - margin - bracketSize), Offset(margin, size.height - margin), paint);
-    canvas.drawLine(Offset(margin, size.height - margin), Offset(margin + bracketSize, size.height - margin), paint);
+    canvas.drawLine(
+      Offset(margin, size.height - margin - bracketSize),
+      Offset(margin, size.height - margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(margin, size.height - margin),
+      Offset(margin + bracketSize, size.height - margin),
+      paint,
+    );
 
     // Bottom-right
-    canvas.drawLine(Offset(size.width - margin - bracketSize, size.height - margin), Offset(size.width - margin, size.height - margin), paint);
-    canvas.drawLine(Offset(size.width - margin, size.height - margin), Offset(size.width - margin, size.height - margin - bracketSize), paint);
+    canvas.drawLine(
+      Offset(size.width - margin - bracketSize, size.height - margin),
+      Offset(size.width - margin, size.height - margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - margin, size.height - margin),
+      Offset(size.width - margin, size.height - margin - bracketSize),
+      paint,
+    );
   }
 
   @override

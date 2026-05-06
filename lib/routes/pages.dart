@@ -14,55 +14,51 @@ import 'package:ta_mobile_project/pages/loginPage.dart';
 import 'package:ta_mobile_project/pages/mainPage.dart';
 import 'package:ta_mobile_project/pages/presensiPage.dart';
 import 'package:ta_mobile_project/pages/presensiSiswaPage.dart';
-import 'package:ta_mobile_project/pages/SplashScreenPage.dart';   // ← tambahan
+import 'package:ta_mobile_project/pages/SplashScreenPage.dart';
 import 'package:ta_mobile_project/pages/verifikasiPage.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 
 class AppPage {
   static final pages = [
-    // ── Splash (root) ──
+    GetPage(name: AppRoutes.splashPage, page: () => const SplashScreen()),
     GetPage(
-      name: AppRoutes.splashPage,
-      page: () => const SplashScreen(),
-    ),
-    GetPage(
-      name:    AppRoutes.loginPage,
-      page:    () => const LoginPage(),
+      name: AppRoutes.loginPage,
+      page: () => const LoginPage(),
       binding: LoginBinding(),
     ),
     GetPage(
-      name:    AppRoutes.mainPage,
-      page:    () => MainPage(),
+      name: AppRoutes.mainPage,
+      page: () => MainPage(),
       binding: MainBinding(),
     ),
     GetPage(
-      name:    AppRoutes.jurnalPage,
-      page:    () => const JurnalPage(),
+      name: AppRoutes.jurnalPage,
+      page: () => const JurnalPage(),
       binding: JurnalBinding(),
     ),
     GetPage(
-      name:    AppRoutes.presensiSiswa,
-      page:    () => const PresensiSiswaPages(),
+      name: AppRoutes.presensiSiswa,
+      page: () => const PresensiSiswaPages(),
       binding: PresensiSiswaBinding(),
     ),
     GetPage(
-      name:    AppRoutes.editprofile,
-      page:    () => const EditProfilPages(),
+      name: AppRoutes.editprofile,
+      page: () => const EditProfilPages(),
       binding: EditProfileBinding(),
     ),
     GetPage(
-      name:    AppRoutes.presensipage,
-      page:    () => PresensiPage(),
+      name: AppRoutes.presensipage,
+      page: () => PresensiPage(),
       binding: PresensiBinding(),
     ),
     GetPage(
-      name:    AppRoutes.verifikasipage,
-      page:    () => VerifikasiPage(),
+      name: AppRoutes.verifikasipage,
+      page: () => VerifikasiPage(),
       binding: VerifikasiBinding(),
     ),
     GetPage(
-      name:    AppRoutes.refleksipage,
-      page:    () => RefleksiPage(),
+      name: AppRoutes.refleksipage,
+      page: () => RefleksiPage(),
       binding: RefleksiBinding(),
     ),
   ];

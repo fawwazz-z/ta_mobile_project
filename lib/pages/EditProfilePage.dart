@@ -29,8 +29,11 @@ class EditProfilPages extends StatelessWidget {
                         color: AppColors.white.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.chevron_left_rounded,
-                          color: AppColors.textDark, size: 22),
+                      child: const Icon(
+                        Icons.chevron_left_rounded,
+                        color: AppColors.textDark,
+                        size: 22,
+                      ),
                     ),
                   ),
                   const Expanded(
@@ -66,10 +69,16 @@ class EditProfilPages extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: AppColors.bgField,
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.white, width: 3),
+                              border: Border.all(
+                                color: AppColors.white,
+                                width: 3,
+                              ),
                             ),
-                            child: const Icon(Icons.person_outline_rounded,
-                                color: AppColors.primary, size: 44),
+                            child: const Icon(
+                              Icons.person_outline_rounded,
+                              color: AppColors.primary,
+                              size: 44,
+                            ),
                           ),
                           Positioned(
                             bottom: 0,
@@ -81,8 +90,11 @@ class EditProfilPages extends StatelessWidget {
                                 color: AppColors.primary,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.camera_alt_outlined,
-                                  color: Colors.white, size: 14),
+                              child: const Icon(
+                                Icons.camera_alt_outlined,
+                                color: Colors.white,
+                                size: 14,
+                              ),
                             ),
                           ),
                         ],
@@ -131,38 +143,48 @@ class EditProfilPages extends StatelessWidget {
                     const SizedBox(height: 28),
 
                     // ── Tombol Simpan ─────────────────────────────────────
-                    Obx(() => SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton.icon(
-                            onPressed: ctrl.isLoading.value
-                                ? null
-                                : ctrl.simpanPerubahan,
-                            icon: ctrl.isLoading.value
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                        color: AppColors.white, strokeWidth: 2))
-                                : const Icon(Icons.save_outlined,
-                                    size: 18, color: AppColors.white),
-                            label: const Text(
-                              'Simpan Perubahan',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              disabledBackgroundColor:
-                                  AppColors.primary.withOpacity(0.6),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14)),
-                              elevation: 0,
+                    Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          onPressed: ctrl.isLoading.value
+                              ? null
+                              : ctrl.simpanPerubahan,
+                          icon: ctrl.isLoading.value
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.save_outlined,
+                                  size: 18,
+                                  color: AppColors.white,
+                                ),
+                          label: const Text(
+                            'Simpan Perubahan',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.white,
                             ),
                           ),
-                        )),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            disabledBackgroundColor: AppColors.primary
+                                .withOpacity(0.6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 0,
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 10),
 
                     // ── Tombol Reset Password ─────────────────────────────
@@ -171,19 +193,24 @@ class EditProfilPages extends StatelessWidget {
                       height: 52,
                       child: ElevatedButton.icon(
                         onPressed: ctrl.resetPassword,
-                        icon: const Icon(Icons.lock_reset_rounded,
-                            size: 18, color: AppColors.primary),
+                        icon: const Icon(
+                          Icons.lock_reset_rounded,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
                         label: const Text(
                           'Reset Password',
                           style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.bgCard,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                           elevation: 0,
                         ),
                       ),
@@ -226,9 +253,11 @@ class EditProfilPages extends StatelessWidget {
         style: const TextStyle(fontSize: 14, color: AppColors.textDark),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: AppColors.brownshade  , fontSize: 14),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          hintStyle: TextStyle(color: AppColors.brownshade, fontSize: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 14,
+          ),
           border: InputBorder.none,
         ),
       ),
