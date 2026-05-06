@@ -13,6 +13,7 @@ class JadwalHariIniModel {
   final String day;
   final String startTime;
   final String endTime;
+  final bool isJournalFilled;
 
   const JadwalHariIniModel({
     required this.id,
@@ -22,6 +23,7 @@ class JadwalHariIniModel {
     required this.day,
     required this.startTime,
     required this.endTime,
+    required this.isJournalFilled,
   });
 
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
@@ -42,6 +44,7 @@ class JadwalHariIniModel {
       day: j['day'] as String? ?? '',
       startTime: j['start_time'] as String? ?? '--:--',
       endTime: j['end_time'] as String? ?? '--:--',
+      isJournalFilled: j['is_journal_filled'] as bool? ?? false,
     );
   }
 }
@@ -89,6 +92,8 @@ class HomeController extends GetxController {
           'Authorization': 'Bearer $token',
         },
       );
+
+      print("/journals/schedules: ${response.body}");
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);

@@ -18,7 +18,7 @@ class RefleksiController extends GetxController {
   void onInit() {
     super.onInit();
     final args = Get.arguments as Map<String, dynamic>? ?? {};
-    scheduleId = args['schedule_id'] as int? ?? 0;
+    scheduleId = args['journal_id'] as int? ?? 0;
     kelasNama = args['kelas'] as String? ?? '';
     mapelNama = args['mapel'] as String? ?? '';
   }

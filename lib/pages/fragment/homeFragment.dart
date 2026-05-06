@@ -419,6 +419,7 @@ class HomeFragment extends StatelessWidget {
                   mapel: jadwal.subjectName,
                   startTime: jadwal.startTime,
                   endTime: jadwal.endTime,
+                  isJournalFilled: jadwal.isJournalFilled,
                 ),
               );
             }).toList(),
@@ -440,19 +441,24 @@ class HomeFragment extends StatelessWidget {
     required String mapel,
     required String startTime,
     required String endTime,
+    required bool isJournalFilled,
   }) {
     return GestureDetector(
-      onTap: () => Get.toNamed(
-        AppRoutes.presensiSiswa,
-        arguments: {
-          'schedule_id': scheduleId,
-          'classroom_id': classroomId,
-          'kelas': className,
-          'mapel': mapel,
-          'start_time': startTime,
-          'end_time': endTime,
-        },
-      ),
+      onTap: () =>
+          Get.toNamed(
+            AppRoutes.presensiSiswa,
+            arguments: {
+              'schedule_id': scheduleId,
+              'classroom_id': classroomId,
+              'kelas': className,
+              'mapel': mapel,
+              'start_time': startTime,
+              'end_time': endTime,
+              'is_journal_filled': isJournalFilled,
+            },
+          )?.then((_) {
+            homeCtrl.refreshData();
+          }),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
@@ -501,6 +507,28 @@ class HomeFragment extends StatelessWidget {
                 ],
               ),
             ),
+
+            /// ✅ STATUS BADGE
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: isJournalFilled
+                    ? Colors.green.withOpacity(0.1)
+                    : Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                isJournalFilled ? 'Sudah' : 'Belum',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isJournalFilled ? Colors.green : Colors.red,
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 6),
+
             Icon(
               Icons.chevron_right_rounded,
               color: AppColors.brownshade,
