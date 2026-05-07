@@ -26,21 +26,16 @@ class JadwalHariIniModel {
     required this.isJournalFilled,
   });
 
-
-  
-
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
     final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
 
     return JadwalHariIniModel(
       id: (j['id'] as num).toInt(),
-      subjectName:
-          subject?['name'] as String? ??
+      subjectName: subject?['name'] as String? ??
           j['subject_name'] as String? ??
           'Mata Pelajaran',
-      classroomName:
-          classroom?['name'] as String? ??
+      classroomName: classroom?['name'] as String? ??
           j['classroom_name'] as String? ??
           'Kelas',
       classroomId: (j['classroom_id'] as num?)?.toInt() ?? 0,
@@ -53,16 +48,25 @@ class JadwalHariIniModel {
 }
 
 class HomeController extends GetxController {
-
+  // ── Jam sekolah (dari AttendanceSetting) ──────────────────────────────────
   var jamMasukSekolah = '07:15'.obs;
   var jamPulangSekolah = '15:00'.obs;
+
+  // ── Jam presensi aktual guru (dari API response) ───────────────────────────
+  var jamMasukDisplay = '--:--'.obs;   // check_in_time
+  var jamPulangDisplay = '--:--'.obs;  // check_out_time
+
+  // ── Data user ─────────────────────────────────────────────────────────────
   var teacherName = ''.obs;
   var teacherRole = ''.obs;
   var isLoadingUser = false.obs;
+
+  // ── Jadwal ─────────────────────────────────────────────────────────────────
   var isLoadingJadwal = false.obs;
   var jadwalHariIni = <JadwalHariIniModel>[].obs;
   var errorJadwal = ''.obs;
 
+  // ── Statistik presensi siswa ───────────────────────────────────────────────
   var totalSiswa = 0.obs;
   var totalHadir = 0.obs;
   var totalIzin = 0.obs;
@@ -70,12 +74,9 @@ class HomeController extends GetxController {
   var totalAlpa = 0.obs;
   var sudahPresensi = false.obs;
 
+  // ── Status presensi guru ───────────────────────────────────────────────────
   var presensiMasuk = ''.obs;
   bool get sudahCheckIn => presensiMasuk.value.isNotEmpty;
-  
-
-
-  
 
   @override
   void onInit() {
@@ -83,8 +84,6 @@ class HomeController extends GetxController {
     _loadUserFromLocal();
     fetchJadwalHariIni();
   }
-
-  
 
   Future<void> _loadUserFromLocal() async {
     final name = await AuthService.getUserName();
@@ -107,8 +106,6 @@ class HomeController extends GetxController {
           'Authorization': 'Bearer $token',
         },
       );
-
-      print("/journals/schedules: ${response.body}");
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);

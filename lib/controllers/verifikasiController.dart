@@ -1,8 +1,25 @@
 import 'package:get/get.dart';
+import '../controllers/presensiController.dart';
 
 class VerifikasiController extends GetxController {
-  var alamat = "Jl. Jendral Sudirman No. 54, Kelurahan Barongan, Kecamatan Kota, Kabupaten Kudus, Jawa Tengah, 59312".obs;
-  var koordinat = "-6.2008, 106.8456".obs;
-  var status = "Dalam Radius Sekolah".obs;
-  var fotoPath = ''.obs; 
-} 
+  // Data lokasi disalin dari PresensiController via lanjutKeVerifikasi()
+  var fotoPath    = ''.obs;
+  var alamat      = ''.obs;
+  var koordinat   = ''.obs;
+  var jarakMeter  = 0.0.obs;
+  var dalamRadius = false.obs;
+  var currentLat  = 0.0.obs;
+  var currentLng  = 0.0.obs;
+
+  // Submit delegasi ke PresensiController karena koordinat & foto ada di sana
+  Future<void> selesaikanPresensi() async {
+    if (Get.isRegistered<PresensiController>()) {
+      await Get.find<PresensiController>().submitPresensi();
+    }
+  }
+
+  String get statusText =>
+      dalamRadius.value ? 'Dalam Radius Sekolah' : 'Di Luar Radius Sekolah';
+
+  String get jarakText => '${jarakMeter.value.toStringAsFixed(0)} Meter';
+}
