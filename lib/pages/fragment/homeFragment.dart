@@ -32,6 +32,7 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
+  // ── Header ─────────────────────────────────────────────────────────────────
   Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -76,31 +77,13 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
+  // ── Presensi Card ──────────────────────────────────────────────────────────
   Widget _buildPresensiCard() {
     final now = DateTime.now();
-    final days = [
-      'Minggu',
-      'Senin',
-      'Selasa',
-      'Rabu',
-      'Kamis',
-      'Jumat',
-      'Sabtu',
-    ];
+    final days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     final months = [
-      '',
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
+      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     final dateStr =
         '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
@@ -122,6 +105,7 @@ class HomeFragment extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header card: judul + badge jam sekolah
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -133,70 +117,94 @@ class HomeFragment extends StatelessWidget {
                   color: AppColors.textDark,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
+             Obx(() => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Obx(
-                   () => Text(
-              homeCtrl.sudahCheckIn
-                  ? homeCtrl.jamPulangSekolah.value
-                  : homeCtrl.jamMasukSekolah.value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            dateStr,
-            style: TextStyle(fontSize: 12, color: AppColors.brownshade),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(child: _buildTimeInfo('MASUK', '--:--')),
-              Container(width: 1, height: 40, color: AppColors.brownshade3),
-              const SizedBox(width: 20),
-              Expanded(child: _buildTimeInfo('PULANG', '--:--')),
-            ],
-          ),
-          const SizedBox(height: 18),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: () => Get.toNamed(AppRoutes.presensipage),
-              icon: const Icon(Icons.fingerprint_rounded, size: 22),
-              label: const Text(
-                'Mulai Presensi',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                child: Text(
+                  homeCtrl.sudahCheckIn
+                      ? homeCtrl.jamPulangSekolah.value   // sudah absen masuk → tampil jam pulang
+                      : homeCtrl.jamMasukSekolah.value,   // belum absen → tampil jam masuk
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 ),
-                elevation: 0,
-              ),
-            ),
+              )),
+            ],
           ),
+
+          const SizedBox(height: 4),
+          Text(dateStr,
+              style: TextStyle(fontSize: 12, color: AppColors.brownshade)),
+
+          const SizedBox(height: 16),
+
+          // Jam MASUK & PULANG dari data presensi aktual
+          Obx(() => Row(
+                children: [
+                  Expanded(
+                    child: _buildTimeInfo(
+                      'MASUK',
+                      homeCtrl.jamMasukDisplay.value,
+                      filled: homeCtrl.jamMasukDisplay.value != '--:--',
+                    ),
+                  ),
+                  Container(
+                      width: 1, height: 40, color: AppColors.brownshade3),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: _buildTimeInfo(
+                      'PULANG',
+                      homeCtrl.jamPulangDisplay.value,
+                      filled: homeCtrl.jamPulangDisplay.value != '--:--',
+                    ),
+                  ),
+                ],
+              )),
+
+          const SizedBox(height: 18),
+
+          // Tombol presensi — label berubah sesuai status
+          Obx(() => SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () => Get.toNamed(AppRoutes.presensipage),
+                  icon: Icon(
+                    homeCtrl.sudahCheckIn
+                        ? Icons.logout_rounded
+                        : Icons.fingerprint_rounded,
+                    size: 22,
+                  ),
+                  label: Text(
+                    homeCtrl.sudahCheckIn
+                        ? 'Presensi Pulang'
+                        : 'Mulai Presensi',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: homeCtrl.sudahCheckIn
+                        ? AppColors.warning
+                        : AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              )),
         ],
       ),
     );
   }
 
-  Widget _buildTimeInfo(String label, String value) {
+  Widget _buildTimeInfo(String label, String value, {bool filled = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,20 +220,19 @@ class HomeFragment extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: filled ? AppColors.primary : AppColors.textDark,
           ),
         ),
       ],
     );
   }
 
-  // ── Stats row: reactive terhadap data presensi siswa ──
+  // ── Stats Row ──────────────────────────────────────────────────────────────
   Widget _buildStatsRow() {
     return Obx(() {
-      // Belum ada presensi siswa → tampilkan placeholder
       if (!homeCtrl.sudahPresensi.value) {
         return Row(
           children: [
@@ -252,7 +259,6 @@ class HomeFragment extends StatelessWidget {
         );
       }
 
-      // Sudah ada data → tampilkan angka real
       final persenHadir = homeCtrl.persenHadir.toStringAsFixed(0);
       final izinSakit = homeCtrl.totalIzinSakit;
 
@@ -338,6 +344,7 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
+  // ── Jurnal/Jadwal Section ──────────────────────────────────────────────────
   Widget _buildJurnalSection() {
     return Column(
       children: [
@@ -389,10 +396,8 @@ class HomeFragment extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.event_available_rounded,
-                    color: Colors.brown.shade300,
-                  ),
+                  Icon(Icons.event_available_rounded,
+                      color: Colors.brown.shade300),
                   const SizedBox(width: 12),
                   Text(
                     'Tidak ada jadwal mengajar hari ini',
@@ -410,7 +415,8 @@ class HomeFragment extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _buildJurnalItem(
                   icon: Icons.menu_book_outlined,
-                  iconColor: entry.key == 0 ? AppColors.info : AppColors.purple,
+                  iconColor:
+                      entry.key == 0 ? AppColors.info : AppColors.purple,
                   iconBg: entry.key == 0
                       ? AppColors.iconBgBlue
                       : AppColors.iconBgPurple,
@@ -447,21 +453,18 @@ class HomeFragment extends StatelessWidget {
     required bool isJournalFilled,
   }) {
     return GestureDetector(
-      onTap: () =>
-          Get.toNamed(
-            AppRoutes.presensiSiswa,
-            arguments: {
-              'schedule_id': scheduleId,
-              'classroom_id': classroomId,
-              'kelas': className,
-              'mapel': mapel,
-              'start_time': startTime,
-              'end_time': endTime,
-              'is_journal_filled': isJournalFilled,
-            },
-          )?.then((_) {
-            homeCtrl.refreshData();
-          }),
+      onTap: () => Get.toNamed(
+        AppRoutes.presensiSiswa,
+        arguments: {
+          'schedule_id': scheduleId,
+          'classroom_id': classroomId,
+          'kelas': className,
+          'mapel': mapel,
+          'start_time': startTime,
+          'end_time': endTime,
+          'is_journal_filled': isJournalFilled,
+        },
+      )?.then((_) => homeCtrl.refreshData()),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
@@ -491,27 +494,21 @@ class HomeFragment extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    className,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
-                    ),
-                  ),
+                  Text(className,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      )),
                   const SizedBox(height: 2),
                   Text(
                     '$subject • $time',
                     style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.brownshade4,
-                    ),
+                        fontSize: 13, color: AppColors.brownshade4),
                   ),
                 ],
               ),
             ),
-
-            /// ✅ STATUS BADGE
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
@@ -529,14 +526,9 @@ class HomeFragment extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(width: 6),
-
-            Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.brownshade,
-              size: 22,
-            ),
+            Icon(Icons.chevron_right_rounded,
+                color: AppColors.brownshade, size: 22),
           ],
         ),
       ),
