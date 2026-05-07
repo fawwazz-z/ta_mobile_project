@@ -26,6 +26,9 @@ class JadwalHariIniModel {
     required this.isJournalFilled,
   });
 
+
+  
+
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
     final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
@@ -50,6 +53,9 @@ class JadwalHariIniModel {
 }
 
 class HomeController extends GetxController {
+
+  var jamMasukSekolah = '07:15'.obs;
+  var jamPulangSekolah = '15:00'.obs;
   var teacherName = ''.obs;
   var teacherRole = ''.obs;
   var isLoadingUser = false.obs;
@@ -64,12 +70,21 @@ class HomeController extends GetxController {
   var totalAlpa = 0.obs;
   var sudahPresensi = false.obs;
 
+  var presensiMasuk = ''.obs;
+  bool get sudahCheckIn => presensiMasuk.value.isNotEmpty;
+  
+
+
+  
+
   @override
   void onInit() {
     super.onInit();
     _loadUserFromLocal();
     fetchJadwalHariIni();
   }
+
+  
 
   Future<void> _loadUserFromLocal() async {
     final name = await AuthService.getUserName();

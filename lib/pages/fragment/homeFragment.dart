@@ -142,14 +142,17 @@ class HomeFragment extends StatelessWidget {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  '07:00 - 15:00',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                child: Obx(
+                   () => Text(
+              homeCtrl.sudahCheckIn
+                  ? homeCtrl.jamPulangSekolah.value
+                  : homeCtrl.jamMasukSekolah.value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
               ),
             ],
           ),
