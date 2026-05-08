@@ -6,41 +6,33 @@ import 'package:ta_mobile_project/controllers/homeController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
-class SiswaModel {
+class SiswaUpdateModel {
   final int id;
   final String nama;
   final String nis;
-  String status; // hadir | izin | sakit | alpa
+  String status;
 
-  SiswaModel({
+  SiswaUpdateModel({
     required this.id,
     required this.nama,
     required this.nis,
-    this.status = '',
+    required this.status,
   });
-
-  factory SiswaModel.fromJson(Map<String, dynamic> j) {
-    return SiswaModel(
-      id: (j['id'] as num).toInt(),
-      nama: j['name'] as String? ?? j['nama'] as String? ?? '-',
-      nis: j['nis'] as String? ?? '-',
-      status: j['status'] as String? ?? '',
-    );
-  }
 }
 
-class PresensiSiswaController extends GetxController {
+class UpdatePresensiController extends GetxController {
   var isLoading = false.obs;
   var isSaving = false.obs;
-  var siswaList = <SiswaModel>[].obs;
+  var siswaList = <SiswaUpdateModel>[].obs;
   var errorMsg = ''.obs;
+  var materi = ''.obs;
+  var journalId = 0.obs;
+  var refleksi = ''.obs;
 
   late final int classroomId;
   late final int scheduleId;
   late final String kelasNama;
   late final String mapelNama;
-  late final String jamMulai;
-  late final String jamSelesai;
 
   @override
   void onInit() {
@@ -50,21 +42,19 @@ class PresensiSiswaController extends GetxController {
     scheduleId = args['schedule_id'] as int? ?? 0;
     kelasNama = args['kelas'] as String? ?? 'Kelas';
     mapelNama = args['mapel'] as String? ?? '';
-    jamMulai = args['start_time'] as String? ?? '';
-    jamSelesai = args['end_time'] as String? ?? '';
     classroomId = args['classroom_id'] as int? ?? 0;
 
-    fetchSiswa();
+    fetchDetailJurnal();
   }
 
-  /// GET /api/journals/students/{classroom_id}
-  Future<void> fetchSiswa() async {
+  /// GET /api/journals/{scheduleId}/detail
+  Future<void> fetchDetailJurnal() async {
     try {
       isLoading.value = true;
       errorMsg.value = '';
 
       final token = await AuthService.getToken();
-      final url = '${AppStatic.base_url}/journals/students/$classroomId';
+      final url = '${AppStatic.base_url}/journals/$scheduleId/detail';
 
       final response = await http.get(
         Uri.parse(url),
@@ -76,22 +66,41 @@ class PresensiSiswaController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
+
         if (body['success'] == true) {
-          final List raw = body['data'] ?? [];
-          siswaList.value = raw
-              .map((e) => SiswaModel.fromJson(e as Map<String, dynamic>))
-              .toList();
+          final data = body['data'];
+
+          journalId.value = data['id'] ?? 0;
+          materi.value = data['material'] ?? '';
+          refleksi.value = data['reflection'] ?? '';
+
+          final List attendances = data['attendances'] ?? [];
+
+          siswaList.value = attendances.map((a) {
+            final student = a['student'];
+            return SiswaUpdateModel(
+              id: student['id'] as int? ?? 0,
+              nama: student['name'] as String? ?? '-',
+              nis: student['nis'] as String? ?? '-',
+              status: a['status'] as String? ?? '',
+            );
+          }).toList();
+
+          if (siswaList.isEmpty) {
+            errorMsg.value = 'Data siswa tidak ditemukan';
+          }
         } else {
-          errorMsg.value = 'Data siswa tidak ditemukan';
+          errorMsg.value = 'Gagal memuat data presensi';
         }
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
       } else {
         errorMsg.value =
-            'Gagal memuat data siswa (Code: ${response.statusCode})';
+            'Gagal memuat data presensi (Code: ${response.statusCode})';
       }
     } catch (e) {
-      errorMsg.value = 'Tidak dapat terhubung ke server';
+      print("ERROR fetchDetailJurnal: $e");
+      errorMsg.value = 'Terjadi kesalahan: $e';
     } finally {
       isLoading.value = false;
     }
@@ -105,8 +114,8 @@ class PresensiSiswaController extends GetxController {
     }
   }
 
-  /// POST /api/journals/attendance
-  Future<void> simpanPresensi({required String material}) async {
+  /// PUT /api/journals/{journalId}/update
+  Future<void> updatePresensi({required String material}) async {
     final belumDiisi = siswaList.where((s) => s.status.isEmpty).toList();
 
     if (belumDiisi.isNotEmpty) {
@@ -134,15 +143,14 @@ class PresensiSiswaController extends GetxController {
       final token = await AuthService.getToken();
 
       final payload = {
-        'teaching_schedule_id': scheduleId,
         'material': material,
         'attendances': siswaList
             .map((s) => {'student_id': s.id, 'status': s.status.toLowerCase()})
             .toList(),
       };
 
-      final response = await http.post(
-        Uri.parse('${AppStatic.base_url}/journals/attendance'),
+      final response = await http.put(
+        Uri.parse('${AppStatic.base_url}/journals/${journalId.value}/update'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -151,14 +159,13 @@ class PresensiSiswaController extends GetxController {
         body: jsonEncode(payload),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Hitung statistik
+      if (response.statusCode == 200) {
+        // Update statistik ke HomeController
         final hadir = siswaList.where((s) => s.status == 'hadir').length;
         final izin = siswaList.where((s) => s.status == 'izin').length;
         final sakit = siswaList.where((s) => s.status == 'sakit').length;
         final alpa = siswaList.where((s) => s.status == 'alpa').length;
 
-        // Update statistik ke HomeController
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().updateStatistikPresensi(
             hadir: hadir,
@@ -166,24 +173,20 @@ class PresensiSiswaController extends GetxController {
             sakit: sakit,
             alpa: alpa,
           );
-          // Update status refleksi
-          Get.find<HomeController>().updateReflectionStatus(scheduleId, false);
-          // Refresh jadwal di home
           Get.find<HomeController>().refreshData();
         }
 
-        // Tampilkan snackbar sukses
         Get.snackbar(
           'Berhasil',
-          'Presensi berhasil disimpan',
+          'Presensi berhasil diupdate',
           backgroundColor: Colors.green,
           colorText: Colors.white,
-          duration: const Duration(seconds: 2),
+          duration: const Duration(seconds: 1),
         );
 
-        // LANGSUNG KEMBALI KE HOME (tanpa ke refleksi)
+        // Kembali ke home
         Future.delayed(const Duration(milliseconds: 500), () {
-          Get.back(); // Kembali ke halaman home
+          Get.offAllNamed('/mainPage');
         });
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
@@ -191,7 +194,7 @@ class PresensiSiswaController extends GetxController {
         final data = jsonDecode(response.body);
         Get.snackbar(
           'Gagal',
-          data['message'] ?? 'Gagal menyimpan presensi',
+          data['message'] ?? 'Gagal mengupdate presensi',
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );

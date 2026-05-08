@@ -8,4 +8,5 @@ class AppRoutes {
   static const String verifikasipage = '/verifikasipage';
   static const String presensipage = '/presensipage';
   static const String refleksipage = '/refleksipage';
+  static const String updatePresensiPage = '/update-presensi-page';
 }
