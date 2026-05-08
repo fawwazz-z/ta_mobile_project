@@ -7,7 +7,7 @@ import 'package:ta_mobile_project/bindings/presensiBinding.dart';
 import 'package:ta_mobile_project/bindings/presensiSiswa_Binding.dart';
 import 'package:ta_mobile_project/bindings/refleksiBinding.dart';
 import 'package:ta_mobile_project/bindings/splashScreenBinding.dart';
-import 'package:ta_mobile_project/bindings/splashScreenBinding.dart';
+import 'package:ta_mobile_project/bindings/updatePresensiBinding.dart';
 import 'package:ta_mobile_project/bindings/verifikasiBinding.dart';
 import 'package:ta_mobile_project/pages/EditProfilePage.dart';
 import 'package:ta_mobile_project/pages/RefleksiPage.dart';
@@ -17,6 +17,7 @@ import 'package:ta_mobile_project/pages/mainPage.dart';
 import 'package:ta_mobile_project/pages/presensiPage.dart';
 import 'package:ta_mobile_project/pages/presensiSiswaPage.dart';
 import 'package:ta_mobile_project/pages/SplashScreenPage.dart';
+import 'package:ta_mobile_project/pages/updatePresensiPage.dart';
 import 'package:ta_mobile_project/pages/verifikasiPage.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 
@@ -66,6 +67,11 @@ class AppPage {
       name: AppRoutes.refleksipage,
       page: () => RefleksiPage(),
       binding: RefleksiBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.updatePresensiPage,
+      page: () => const UpdatePresensiPage(),
+      binding: UpdatePresensiBinding(),
     ),
   ];
 }

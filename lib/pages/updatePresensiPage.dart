@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ta_mobile_project/controllers/presensiSiswaController.dart';
+import 'package:ta_mobile_project/controllers/updatePresensiController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
+import 'package:ta_mobile_project/routes/route.dart';
 
-class PresensiSiswaPages extends StatelessWidget {
-  const PresensiSiswaPages({super.key});
+class UpdatePresensiPage extends StatelessWidget {
+  const UpdatePresensiPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<PresensiSiswaController>();
+    final ctrl = Get.find<UpdatePresensiController>();
 
     return Scaffold(
       backgroundColor: AppColors.bgMain,
@@ -42,7 +43,7 @@ class PresensiSiswaPages extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Presensi Siswa',
+                          'Update Presensi Siswa',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -64,36 +65,7 @@ class PresensiSiswaPages extends StatelessWidget {
               ),
             ),
 
-            // Search bar (masih placeholder, bisa diimplementasikan nanti)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                height: 44,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search_rounded,
-                      color: AppColors.brownshade,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Cari nama siswa...',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.brownshade,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             // List siswa
             Expanded(
@@ -120,7 +92,7 @@ class PresensiSiswaPages extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         ElevatedButton(
-                          onPressed: ctrl.fetchSiswa,
+                          onPressed: ctrl.fetchDetailJurnal,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                           ),
@@ -151,7 +123,59 @@ class PresensiSiswaPages extends StatelessWidget {
               }),
             ),
 
-            // Tombol Simpan
+            Obx(() {
+              if (ctrl.journalId.value != 0) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        // Navigasi ke halaman refleksi
+                        Get.toNamed(
+                          AppRoutes.refleksipage,
+                          arguments: {
+                            'journal_id': ctrl.journalId.value,
+                            'schedule_id': ctrl.scheduleId,
+                            'kelas': ctrl.kelasNama,
+                            'mapel': ctrl.mapelNama,
+                            'reflection': ctrl
+                                .refleksi
+                                .value, // kirim refleksi yang sudah ada
+                          },
+                        )?.then((_) {
+                          // Refresh data setelah kembali dari refleksi
+                          ctrl.fetchDetailJurnal();
+                        });
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.info,
+                        side: BorderSide(color: AppColors.info),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      icon: const Icon(Icons.edit_note_outlined, size: 18),
+                      label: const Text(
+                        'Isi / Edit Refleksi',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+
+            // Tombol Update
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Obx(
@@ -181,10 +205,10 @@ class PresensiSiswaPages extends StatelessWidget {
                         : const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.save_outlined, size: 20),
+                              Icon(Icons.update_outlined, size: 20),
                               SizedBox(width: 8),
                               Text(
-                                'Simpan Presensi',
+                                'Update Presensi',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -202,15 +226,14 @@ class PresensiSiswaPages extends StatelessWidget {
     );
   }
 
-  /// Dialog input materi sebelum simpan presensi
-  void _showMateriDialog(PresensiSiswaController ctrl) {
-    final materiCtrl = TextEditingController();
+  void _showMateriDialog(UpdatePresensiController ctrl) {
+    final materiCtrl = TextEditingController(text: ctrl.materi.value);
 
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
-          'Materi Pembelajaran',
+          'Edit Materi Pembelajaran',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: AppColors.textDark,
@@ -221,7 +244,7 @@ class PresensiSiswaPages extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Masukkan materi yang diajarkan hari ini:',
+              'Update materi yang diajarkan:',
               style: TextStyle(fontSize: 13, color: Colors.brown.shade600),
             ),
             const SizedBox(height: 12),
@@ -256,7 +279,7 @@ class PresensiSiswaPages extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Get.back();
-              ctrl.simpanPresensi(material: materiCtrl.text.trim());
+              ctrl.updatePresensi(material: materiCtrl.text.trim());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -266,7 +289,7 @@ class PresensiSiswaPages extends StatelessWidget {
               elevation: 0,
             ),
             child: const Text(
-              'Simpan',
+              'Update',
               style: TextStyle(color: AppColors.white),
             ),
           ),
@@ -275,7 +298,10 @@ class PresensiSiswaPages extends StatelessWidget {
     );
   }
 
-  Widget _buildSiswaCard(SiswaModel siswa, PresensiSiswaController ctrl) {
+  Widget _buildSiswaCard(
+    SiswaUpdateModel siswa,
+    UpdatePresensiController ctrl,
+  ) {
     const options = ['hadir', 'izin', 'sakit', 'alpa'];
     final Map<String, Color> activeColors = {
       'hadir': AppColors.primary,
