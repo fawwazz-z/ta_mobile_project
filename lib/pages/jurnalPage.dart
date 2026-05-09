@@ -14,128 +14,37 @@ class JurnalPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgMain,
       body: SafeArea(
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // AppBar
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.chevron_left_rounded,
-                            color: AppColors.textDark,
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Daftar Jurnal Mengajar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const SizedBox(height: 10),
-                // Month Selector
-                _buildMonthSelector(ctrl),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: Obx(() {
-                    if (ctrl.isLoading.value) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primary,
-                        ),
-                      );
-                    }
-                    if (ctrl.errorMsg.isNotEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.wifi_off_rounded,
-                              color: AppColors.brownshade,
-                              size: 48,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              ctrl.errorMsg.value,
-                              style: TextStyle(color: AppColors.brownshade2),
-                            ),
-                            const SizedBox(height: 12),
-                            ElevatedButton(
-                              onPressed: ctrl.fetchJurnal,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                              ),
-                              child: const Text(
-                                'Coba Lagi',
-                                style: TextStyle(color: AppColors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    if (ctrl.jurnalList.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'Belum ada jurnal',
-                          style: TextStyle(color: AppColors.brownshade4),
-                        ),
-                      );
-                    }
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                      child: Column(
-                        children: ctrl.jurnalList
-                            .map((j) => _buildJurnalCard(j))
-                            .toList(),
-                      ),
-                    );
-                  }),
-                ),
-              ],
-            ),
-            // FAB
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.35),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.add, color: AppColors.white, size: 26),
-              ),
+            // AppBar
+            _buildAppBar(),
+            const SizedBox(height: 16),
+            // Month Selector
+            _buildMonthSelector(ctrl),
+            const SizedBox(height: 16),
+            // List Jurnal
+            Expanded(
+              child: Obx(() {
+                if (ctrl.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  );
+                }
+                if (ctrl.errorMsg.isNotEmpty) {
+                  return _buildErrorView(ctrl);
+                }
+                if (ctrl.jurnalList.isEmpty) {
+                  return _buildEmptyView();
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: ctrl.jurnalList.length,
+                  itemBuilder: (context, index) {
+                    return _buildJurnalCard(ctrl.jurnalList[index], ctrl);
+                  },
+                );
+              }),
             ),
           ],
         ),
@@ -143,7 +52,41 @@ class JurnalPage extends StatelessWidget {
     );
   }
 
-  // ── Month Selector ──────────────────────────────────────────────────────────
+  Widget _buildAppBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Get.back(),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.white.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.chevron_left_rounded,
+                color: AppColors.textDark,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Text(
+            'Riwayat Jurnal Mengajar',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMonthSelector(JurnalController ctrl) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -152,26 +95,48 @@ class JurnalPage extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.brown.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
               onTap: ctrl.previousMonth,
-              child: const Icon(Icons.chevron_left_rounded, size: 26),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.bgCard,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.chevron_left_rounded, size: 24),
+              ),
             ),
             Obx(
               () => Text(
                 ctrl.selectedMonthLabel,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 15,
+                  fontSize: 16,
+                  color: AppColors.textDark,
                 ),
               ),
             ),
             GestureDetector(
               onTap: ctrl.nextMonth,
-              child: const Icon(Icons.chevron_right_rounded, size: 26),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.bgCard,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.chevron_right_rounded, size: 24),
+              ),
             ),
           ],
         ),
@@ -179,13 +144,126 @@ class JurnalPage extends StatelessWidget {
     );
   }
 
-  // ── Jurnal Card ─────────────────────────────────────────────────────────────
-  Widget _buildJurnalCard(JurnalModel jurnal) {
-    return GestureDetector(
-      onTap: () => Get.toNamed(
-        AppRoutes.presensiSiswa,
-        arguments: {'jurnal_id': jurnal.id, 'kelas': jurnal.kelas},
+  Widget _buildErrorView(JurnalController ctrl) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded, color: AppColors.brownshade, size: 48),
+          const SizedBox(height: 12),
+          Text(
+            ctrl.errorMsg.value,
+            style: TextStyle(color: AppColors.brownshade2),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: ctrl.fetchJurnalHistory,
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: const Text(
+              'Coba Lagi',
+              style: TextStyle(color: AppColors.white),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildEmptyView() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.history_edu_rounded,
+            color: AppColors.brownshade3,
+            size: 64,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Belum ada jurnal mengajar',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.brownshade4,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'di bulan ini',
+            style: TextStyle(fontSize: 12, color: AppColors.brownshade3),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildJurnalCard(JurnalHistoryModel jurnal, JurnalController ctrl) {
+    // Format tanggal: 2026-05-08 -> 08 Mei 2026
+    final dateParts = jurnal.date.split('-');
+    final months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    final formattedDate = dateParts.length == 3
+        ? '${int.parse(dateParts[2])} ${months[int.parse(dateParts[1]) - 1]} ${dateParts[0]}'
+        : jurnal.date;
+
+    // Nama hari dalam Bahasa Indonesia
+    final dayNames = {
+      'Monday': 'Senin',
+      'Tuesday': 'Selasa',
+      'Wednesday': 'Rabu',
+      'Thursday': 'Kamis',
+      'Friday': 'Jumat',
+      'Saturday': 'Sabtu',
+      'Sunday': 'Minggu',
+    };
+    final dayName = dayNames[jurnal.day] ?? jurnal.day;
+
+    return GestureDetector(
+      // Di dalam _buildJurnalCard, pada onTap:
+      onTap: () {
+        if (jurnal.isJournalFilled) {
+          // 🔥 KIRIMKAN journal_id UNTUK MENGGUNAKAN ENDPOINT BARU
+          Get.toNamed(
+            AppRoutes.updatePresensiPage,
+            arguments: {
+              'journal_id': jurnal.journalId, // <-- UTAMA untuk endpoint baru
+              'schedule_id': jurnal.id, // <-- CADANGAN
+              'classroom_id': jurnal.classroomId,
+              'kelas': jurnal.classroomName,
+              'mapel': jurnal.subjectName,
+              'start_time': jurnal.startTime,
+              'end_time': jurnal.endTime,
+            },
+          )?.then((_) => ctrl.refreshData());
+        } else {
+          // Data baru (belum diisi) - tidak kirim journal_id
+          Get.toNamed(
+            AppRoutes.presensiSiswa,
+            arguments: {
+              'schedule_id': jurnal.id,
+              'classroom_id': jurnal.classroomId,
+              'kelas': jurnal.classroomName,
+              'mapel': jurnal.subjectName,
+              'start_time': jurnal.startTime,
+              'end_time': jurnal.endTime,
+              'is_journal_filled': jurnal.isJournalFilled,
+            },
+          )?.then((_) => ctrl.refreshData());
+        }
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
@@ -200,40 +278,78 @@ class JurnalPage extends StatelessWidget {
           ],
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header card
+            // Header card - Tanggal & Hari
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: const BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
                 color: AppColors.bgCard,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        color: AppColors.primary,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        formattedDate,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          dayName,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Status badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      color: jurnal.isJournalFilled
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      jurnal.kelas,
-                      style: const TextStyle(
-                        fontSize: 12,
+                      jurnal.isJournalFilled ? 'Sudah Diisi' : 'Belum Diisi',
+                      style: TextStyle(
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: jurnal.isJournalFilled
+                            ? Colors.green
+                            : Colors.orange,
                       ),
-                    ),
-                  ),
-                  Text(
-                    jurnal.idKode,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.brownshade4,
                     ),
                   ),
                 ],
@@ -241,104 +357,64 @@ class JurnalPage extends StatelessWidget {
             ),
             // Body card
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               child: Column(
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.menu_outlined,
-                        color: AppColors.brownshade4,
-                        size: 18,
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.infoLight.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.menu_book_outlined,
+                          color: AppColors.info,
+                          size: 22,
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'MATA PELAJARAN',
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: AppColors.brownshade4,
-                              letterSpacing: 0.5,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              jurnal.classroomName,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            jurnal.mapel,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                            const SizedBox(height: 2),
+                            Text(
+                              jurnal.subjectName,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.brownshade4,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Icon(
                         Icons.access_time_rounded,
                         color: AppColors.brownshade4,
-                        size: 18,
+                        size: 16,
                       ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'WAKTU',
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: AppColors.brownshade4,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            jurnal.waktu,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Divider(color: AppColors.brownshade3, height: 1),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Get.toNamed(
-                          AppRoutes.presensiSiswa,
-                          arguments: {
-                            'jurnal_id': jurnal.id,
-                            'kelas': jurnal.kelas,
-                          },
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Detail Jurnal',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF6D4C41),
-                              ),
-                            ),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              color: AppColors.brownshade2,
-                              size: 16,
-                            ),
-                          ],
+                      const SizedBox(width: 8),
+                      Text(
+                        '${jurnal.startTime} - ${jurnal.endTime}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.brownshade3,
                         ),
                       ),
                     ],
