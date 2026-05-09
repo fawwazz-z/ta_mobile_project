@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/jadwalController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
-import 'package:ta_mobile_project/routes/route.dart';
 
 class JadwalFragment extends StatelessWidget {
   const JadwalFragment({super.key});
@@ -195,14 +194,13 @@ class JadwalFragment extends StatelessWidget {
       'Sabtu',
       'Minggu',
     ];
-    final todayName = days[now.weekday]; // weekday: 1=Mon...7=Sun
+    final todayName = days[now.weekday];
     final isToday = hari == todayName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 14),
-        // Label hari
         Row(
           children: [
             Text(
@@ -236,11 +234,10 @@ class JadwalFragment extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        // Isi jadwal atau label kosong
         if (items.isEmpty)
           _buildEmptyDay()
         else
-          ...items.map((item) => _buildJadwalCard(item)).toList(),
+          ...items.map((item) => _buildJadwalCard(item)),
       ],
     );
   }
@@ -276,121 +273,103 @@ class JadwalFragment extends StatelessWidget {
     );
   }
 
-  // ── Card satu slot jadwal ─────────────────────────────────────────────────
+  // ── Card satu slot jadwal (TANPA onTap, hanya display) ───────────────────
   Widget _buildJadwalCard(JadwalModel item) {
-    return GestureDetector(
-      onTap: () => Get.toNamed(
-        AppRoutes.presensiSiswa,
-        arguments: {
-          'schedule_id': item.id,
-          'kelas': item.classroomName,
-          'mapel': item.subjectName,
-          'start_time': item.startTime,
-          'end_time': item.endTime,
-        },
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brownshade2.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.brownshade2.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
+      child: Row(
+        children: [
+          // Icon mapel
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: AppColors.iconBgBrown,
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Icon mapel
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: AppColors.iconBgBrown,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.menu_book_outlined,
-                color: AppColors.primary,
-                size: 22,
-              ),
+            child: const Icon(
+              Icons.menu_book_outlined,
+              color: AppColors.primary,
+              size: 22,
             ),
-            const SizedBox(width: 14),
-            // Info mapel & kelas
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'MATA PELAJARAN',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: AppColors.brownshade4,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item.subjectName,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.door_front_door_outlined,
-                        size: 12,
-                        color: AppColors.brownshade4,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        item.classroomName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.brownshade2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Waktu & chevron
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+          ),
+          const SizedBox(width: 14),
+          // Info mapel & kelas
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.startTime,
+                  'MATA PELAJARAN',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: AppColors.brownshade4,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  item.subjectName,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  item.endTime,
-                  style: TextStyle(fontSize: 12, color: AppColors.brownshade4),
-                ),
-                const SizedBox(height: 4),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.brownshade,
-                  size: 18,
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.door_front_door_outlined,
+                      size: 12,
+                      color: AppColors.brownshade4,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      item.classroomName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.brownshade2,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          // Waktu
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                item.startTime,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+              Text(
+                item.endTime,
+                style: TextStyle(fontSize: 12, color: AppColors.brownshade4),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
