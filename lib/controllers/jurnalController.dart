@@ -36,6 +36,39 @@ class JurnalController extends GetxController {
   var jurnalList = <JurnalModel>[].obs;
   var errorMsg = ''.obs;
 
+  // ── Month & Year State ────────────────────────────────────────────────────
+  final RxInt selectedMonth = DateTime.now().month.obs;
+  final RxInt selectedYear = DateTime.now().year.obs;
+
+  final List<String> _monthNames = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+
+  String get selectedMonthLabel =>
+      '${_monthNames[selectedMonth.value - 1]} ${selectedYear.value}';
+
+  void previousMonth() {
+    if (selectedMonth.value == 1) {
+      selectedMonth.value = 12;
+      selectedYear.value--;
+    } else {
+      selectedMonth.value--;
+    }
+    fetchJurnal();
+  }
+
+  void nextMonth() {
+    if (selectedMonth.value == 12) {
+      selectedMonth.value = 1;
+      selectedYear.value++;
+    } else {
+      selectedMonth.value++;
+    }
+    fetchJurnal();
+  }
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
   @override
   void onInit() {
     super.onInit();
@@ -58,7 +91,6 @@ class JurnalController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        // handle both {data:[]} and [] response shapes
         final List raw = body is List ? body : (body['data'] ?? []);
         jurnalList.value = raw
             .map((e) => JurnalModel.fromJson(e as Map<String, dynamic>))

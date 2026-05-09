@@ -127,6 +127,9 @@ class JurnalPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Month Selector
+                _buildMonthSelector(ctrl),
+                const SizedBox(height: 10),
                 // Konten
                 Expanded(
                   child: Obx(() {
@@ -214,9 +217,45 @@ class JurnalPage extends StatelessWidget {
     );
   }
 
+  // ── Month Selector ──────────────────────────────────────────────────────────
+  Widget _buildMonthSelector(JurnalController ctrl) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: ctrl.previousMonth,
+              child: const Icon(Icons.chevron_left_rounded, size: 26),
+            ),
+            Obx(
+              () => Text(
+                ctrl.selectedMonthLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: ctrl.nextMonth,
+              child: const Icon(Icons.chevron_right_rounded, size: 26),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Jurnal Card ─────────────────────────────────────────────────────────────
   Widget _buildJurnalCard(JurnalModel jurnal) {
     return GestureDetector(
-      // ← KLIK CARD → PresensiSiswaPage
       onTap: () => Get.toNamed(
         AppRoutes.presensiSiswa,
         arguments: {'jurnal_id': jurnal.id, 'kelas': jurnal.kelas},
