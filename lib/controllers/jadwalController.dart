@@ -12,6 +12,7 @@ class JadwalModel {
   final String day;
   final String startTime;
   final String endTime;
+  final int session;
 
   const JadwalModel({
     required this.id,
@@ -20,52 +21,32 @@ class JadwalModel {
     required this.day,
     required this.startTime,
     required this.endTime,
+    required this.session,
   });
 
-  factory JadwalModel.fromJson(Map<String, dynamic> j) {
-    final subject = j['subject'] as Map<String, dynamic>?;
-    final classroom = j['classroom'] as Map<String, dynamic>?;
-    final rawDay = j['day'] as String? ?? '';
-    final day = _normalizeDay(rawDay);
-
+  factory JadwalModel.fromJson(Map<String, dynamic> j, String day) {
     return JadwalModel(
       id: (j['id'] as num).toInt(),
-      subjectName:
-          subject?['name'] as String? ??
-          j['subject_name'] as String? ??
-          j['mapel'] as String? ??
-          'Mata Pelajaran',
-      classroomName:
-          classroom?['name'] as String? ??
-          j['classroom_name'] as String? ??
-          j['kelas'] as String? ??
-          'Kelas',
-      day: day,
+      subjectName: j['subject'] as String? ?? 'Mata Pelajaran',
+      classroomName: j['classroom'] as String? ?? 'Kelas',
+      day: _normalizeDay(day),
       startTime: _formatTime(j['start_time'] as String? ?? '--:--'),
       endTime: _formatTime(j['end_time'] as String? ?? '--:--'),
+      session: (j['session'] as num?)?.toInt() ?? 0,
     );
   }
 
-  /// Konversi nama hari dari bahasa Inggris → Indonesia jika perlu
-  static String _normalizeDay(String raw) {
+  static String _normalizeDay(String rawDay) {
     const map = {
-      'monday': 'Senin',
-      'tuesday': 'Selasa',
-      'wednesday': 'Rabu',
-      'thursday': 'Kamis',
-      'friday': 'Jumat',
-      'saturday': 'Sabtu',
-      'sunday': 'Minggu',
-      // jika sudah dalam bahasa Indonesia, kembalikan apa adanya
-      'senin': 'Senin',
-      'selasa': 'Selasa',
-      'rabu': 'Rabu',
-      'kamis': 'Kamis',
-      'jumat': 'Jumat',
-      'sabtu': 'Sabtu',
-      'minggu': 'Minggu',
+      'Monday': 'Senin',
+      'Tuesday': 'Selasa',
+      'Wednesday': 'Rabu',
+      'Thursday': 'Kamis',
+      'Friday': 'Jumat',
+      'Saturday': 'Sabtu',
+      'Sunday': 'Minggu',
     };
-    return map[raw.toLowerCase()] ?? raw;
+    return map[rawDay] ?? rawDay;
   }
 
   static String _formatTime(String t) {
@@ -79,6 +60,7 @@ class JadwalController extends GetxController {
   var jadwalList = <JadwalModel>[].obs;
   var errorMsg = ''.obs;
 
+  // Urutan hari dari Senin sampai Sabtu (Minggu opsional)
   final List<String> dayOrder = [
     'Senin',
     'Selasa',
@@ -88,74 +70,93 @@ class JadwalController extends GetxController {
     'Sabtu',
   ];
 
+  // Mapping hari Inggris ke Indonesia
+  final Map<String, String> _dayMapping = {
+    'Monday': 'Senin',
+    'Tuesday': 'Selasa',
+    'Wednesday': 'Rabu',
+    'Thursday': 'Kamis',
+    'Friday': 'Jumat',
+    'Saturday': 'Sabtu',
+    'Sunday': 'Minggu',
+  };
+
   @override
   void onInit() {
     super.onInit();
     fetchJadwal();
   }
 
-  /// GET /api/schedules  — semua jadwal mengajar (mingguan)
-  /// Fallback ke /api/schedules/today jika endpoint semua tidak tersedia
+  /// GET /api/journals/schedules/all
   Future<void> fetchJadwal() async {
     try {
       isLoading.value = true;
       errorMsg.value = '';
 
       final token = await AuthService.getToken();
-      final headers = {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
-      var response = await http.get(
-        Uri.parse('${AppStatic.base_url}/schedules'),
-        headers: headers,
+      final response = await http.get(
+        Uri.parse('${AppStatic.base_url}/journals/schedules/all'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
 
-      if (response.statusCode == 404 || response.statusCode == 405) {
-        response = await http.get(
-          Uri.parse('${AppStatic.base_url}/schedules/today'),
-          headers: headers,
-        );
-      }
+      print("Jadwal Response Status: ${response.statusCode}");
+      print("Jadwal Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        // Handle berbagai bentuk response:
-        // { success, data: [...] }  atau langsung [...]
-        List raw;
-        if (body is List) {
-          raw = body;
-        } else if (body is Map) {
-          raw = (body['data'] as List?) ?? [];
+
+        if (body['success'] == true) {
+          final Map<String, dynamic> data = body['data'];
+          final List<JadwalModel> tempList = [];
+
+          // Iterasi setiap hari yang ada di response
+          data.forEach((dayEn, schedules) {
+            final dayId = _dayMapping[dayEn] ?? dayEn;
+            // Hanya tampilkan hari yang ada di dayOrder (Senin-Sabtu)
+            if (dayOrder.contains(dayId)) {
+              final List schedulesList = schedules as List;
+              for (var schedule in schedulesList) {
+                tempList.add(JadwalModel.fromJson(schedule, dayEn));
+              }
+            }
+          });
+
+          jadwalList.value = tempList;
+
+          if (jadwalList.isEmpty) {
+            errorMsg.value = '';
+          }
         } else {
-          raw = [];
-        }
-
-        jadwalList.value = raw
-            .map((e) => JadwalModel.fromJson(e as Map<String, dynamic>))
-            .toList();
-
-        if (jadwalList.isEmpty) {
-          errorMsg.value = '';
+          errorMsg.value = body['message'] ?? 'Gagal memuat jadwal';
         }
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
       } else {
         errorMsg.value = 'Gagal memuat jadwal (${response.statusCode})';
       }
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print("Error fetchJadwal: $e");
+      print("Stacktrace: $stacktrace");
       errorMsg.value = 'Tidak dapat terhubung ke server';
     } finally {
       isLoading.value = false;
     }
   }
 
-  List<JadwalModel> getByDay(String day) =>
-      jadwalList.where((j) => j.day.toLowerCase() == day.toLowerCase()).toList()
-        ..sort((a, b) => a.startTime.compareTo(b.startTime)); // urutkan by jam
+  /// Get jadwal berdasarkan hari (dalam Bahasa Indonesia)
+  List<JadwalModel> getByDay(String day) {
+    return jadwalList
+        .where((j) => j.day.toLowerCase() == day.toLowerCase())
+        .toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
 
   bool get hasJadwal => jadwalList.isNotEmpty;
+
+  void refreshData() => fetchJadwal();
 
   void _handleUnauthorized() {
     AuthService.clearToken();
