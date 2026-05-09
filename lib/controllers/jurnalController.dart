@@ -5,44 +5,82 @@ import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
-class JurnalModel {
+class JurnalHistoryModel {
   final int id;
-  final String kelas;
-  final String mapel;
-  final String waktu;
-  final String idKode;
+  final int journalId;
+  final String date;
+  final String subjectName;
+  final String classroomName;
+  final int classroomId;
+  final String day;
+  final String startTime;
+  final String endTime;
+  final bool isJournalFilled;
 
-  const JurnalModel({
+  const JurnalHistoryModel({
     required this.id,
-    required this.kelas,
-    required this.mapel,
-    required this.waktu,
-    required this.idKode,
+    required this.journalId,
+    required this.date,
+    required this.subjectName,
+    required this.classroomName,
+    required this.classroomId,
+    required this.day,
+    required this.startTime,
+    required this.endTime,
+    required this.isJournalFilled,
   });
 
-  factory JurnalModel.fromJson(Map<String, dynamic> j) {
-    return JurnalModel(
-      id: j['id'] as int,
-      kelas: j['kelas'] ?? j['nama_kelas'] ?? '-',
-      mapel: j['mata_pelajaran'] ?? j['mapel'] ?? '-',
-      waktu: j['waktu'] ?? j['jam'] ?? '-',
-      idKode: 'ID: J-${j['id']}',
+  factory JurnalHistoryModel.fromJson(Map<String, dynamic> j) {
+    final subject = j['subject'] as Map<String, dynamic>?;
+    final classroom = j['classroom'] as Map<String, dynamic>?;
+    final lessonHour = j['lesson_hour'] as Map<String, dynamic>?;
+
+    String startTime = '--:--';
+    String endTime = '--:--';
+
+    if (lessonHour != null) {
+      startTime =
+          (lessonHour['start_time'] as String?)?.substring(0, 5) ?? '--:--';
+      endTime = (lessonHour['end_time'] as String?)?.substring(0, 5) ?? '--:--';
+    }
+
+    return JurnalHistoryModel(
+      id: (j['id'] as num).toInt(),
+      journalId: (j['journal_id'] as num?)?.toInt() ?? 0,
+      date: j['date'] as String? ?? '',
+      subjectName: subject?['name'] as String? ?? 'Mata Pelajaran',
+      classroomName: classroom?['name'] as String? ?? 'Kelas',
+      classroomId: (classroom?['id'] as num?)?.toInt() ?? 0,
+      day: j['day'] as String? ?? '',
+      startTime: startTime,
+      endTime: endTime,
+      isJournalFilled: j['is_journal_filled'] as bool? ?? false,
     );
   }
 }
 
 class JurnalController extends GetxController {
   var isLoading = false.obs;
-  var jurnalList = <JurnalModel>[].obs;
+  var jurnalList = <JurnalHistoryModel>[].obs;
   var errorMsg = ''.obs;
 
-  // ── Month & Year State ────────────────────────────────────────────────────
+  // Month & Year State
   final RxInt selectedMonth = DateTime.now().month.obs;
   final RxInt selectedYear = DateTime.now().year.obs;
 
   final List<String> _monthNames = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
   ];
 
   String get selectedMonthLabel =>
@@ -55,7 +93,7 @@ class JurnalController extends GetxController {
     } else {
       selectedMonth.value--;
     }
-    fetchJurnal();
+    fetchJurnalHistory();
   }
 
   void nextMonth() {
@@ -65,24 +103,28 @@ class JurnalController extends GetxController {
     } else {
       selectedMonth.value++;
     }
-    fetchJurnal();
+    fetchJurnalHistory();
   }
 
-  // ── Lifecycle ─────────────────────────────────────────────────────────────
   @override
   void onInit() {
     super.onInit();
-    fetchJurnal();
+    fetchJurnalHistory();
   }
 
-  Future<void> fetchJurnal() async {
+  /// GET /api/journals/history?month={month}&year={year}
+  Future<void> fetchJurnalHistory() async {
     try {
       isLoading.value = true;
       errorMsg.value = '';
 
       final token = await AuthService.getToken();
+      final url =
+          '${AppStatic.base_url}/journals/history'
+          '?month=${selectedMonth.value}&year=${selectedYear.value}';
+
       final response = await http.get(
-        Uri.parse('${AppStatic.base_url}/jurnal'),
+        Uri.parse(url),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
@@ -91,21 +133,23 @@ class JurnalController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        final List raw = body is List ? body : (body['data'] ?? []);
+        final List raw = body['data'] ?? [];
         jurnalList.value = raw
-            .map((e) => JurnalModel.fromJson(e as Map<String, dynamic>))
+            .map((e) => JurnalHistoryModel.fromJson(e as Map<String, dynamic>))
             .toList();
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
       } else {
         errorMsg.value = 'Gagal memuat jurnal';
       }
-    } catch (_) {
+    } catch (e) {
       errorMsg.value = 'Tidak dapat terhubung ke server';
     } finally {
       isLoading.value = false;
     }
   }
+
+  void refreshData() => fetchJurnalHistory();
 
   void _handleUnauthorized() {
     AuthService.clearToken();
