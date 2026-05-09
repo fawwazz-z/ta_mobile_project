@@ -52,85 +52,11 @@ class JurnalPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Search bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    height: 44,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search_rounded,
-                          color: AppColors.brownshade,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Cari materi atau kelas...',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.brownshade,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 16),
-                // Label + refresh
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'SEMUA JURNAL',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.brownshade2,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: ctrl.fetchJurnal,
-                            child: Icon(
-                              Icons.refresh_rounded,
-                              color: AppColors.brownshade2,
-                              size: 18,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Icon(
-                            Icons.filter_list_rounded,
-                            color: AppColors.brownshade2,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Filter',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.brownshade2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 10),
                 // Month Selector
                 _buildMonthSelector(ctrl),
                 const SizedBox(height: 10),
-                // Konten
                 Expanded(
                   child: Obx(() {
                     if (ctrl.isLoading.value) {
