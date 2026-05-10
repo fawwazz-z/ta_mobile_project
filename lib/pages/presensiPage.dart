@@ -177,10 +177,10 @@ class PresensiPage extends StatelessWidget {
                   Text(
                     'Lanjut Verifikasi',
                     style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   SizedBox(width: 8),
-                  Icon(Icons.arrow_forward),
+                  Icon(Icons.arrow_forward, color: Colors.white),
                 ],
               ),
             ),

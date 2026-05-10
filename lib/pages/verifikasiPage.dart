@@ -267,7 +267,7 @@ class VerifikasiPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.check_circle_outline),
+                      Icon(Icons.check_circle_outline, color: Colors.white),
                     ],
                   ),
                 ),
