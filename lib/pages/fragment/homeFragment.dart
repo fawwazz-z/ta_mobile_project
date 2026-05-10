@@ -12,21 +12,29 @@ class HomeFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            _buildHeader(),
-            const SizedBox(height: 20),
-            _buildPresensiCard(),
-            const SizedBox(height: 16),
-            _buildStatsRow(),
-            const SizedBox(height: 24),
-            _buildJurnalSection(),
-            const SizedBox(height: 24),
-          ],
+      child: RefreshIndicator(
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        onRefresh: () async {
+          await homeCtrl.refreshData();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              _buildHeader(),
+              const SizedBox(height: 20),
+              _buildPresensiCard(),
+              const SizedBox(height: 16),
+              _buildStatsRow(),
+              const SizedBox(height: 24),
+              _buildJurnalSection(),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );
@@ -148,12 +156,8 @@ class HomeFragment extends StatelessWidget {
                   ),
                   child: Text(
                     homeCtrl.sudahCheckIn
-                        ? homeCtrl
-                              .jamPulangSekolah
-                              .value // sudah absen masuk → tampil jam pulang
-                        : homeCtrl
-                              .jamMasukSekolah
-                              .value, // belum absen → tampil jam masuk
+                        ? homeCtrl.jamPulangSekolah.value
+                        : homeCtrl.jamMasukSekolah.value,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -564,8 +568,6 @@ class HomeFragment extends StatelessWidget {
               ),
             ),
 
-            // Tombol Refleksi (hanya muncul jika sudah filled)
-            // Di bagian tombol refleksi, ganti dengan:
             if (isJournalFilled)
               Obx(() {
                 final hasReflection = homeCtrl.getReflectionStatus(scheduleId);
@@ -579,7 +581,6 @@ class HomeFragment extends StatelessWidget {
                         'mapel': mapel,
                       },
                     )?.then((_) {
-                      // Refresh status refleksi setelah kembali
                       homeCtrl.refreshData();
                     });
                   },

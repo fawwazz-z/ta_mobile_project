@@ -14,7 +14,7 @@ class JadwalHariIniModel {
   final String startTime;
   final String endTime;
   final bool isJournalFilled;
-  final bool hasReflection; // TAMBAHKAN field ini
+  final bool hasReflection;
 
   const JadwalHariIniModel({
     required this.id,
@@ -25,16 +25,14 @@ class JadwalHariIniModel {
     required this.startTime,
     required this.endTime,
     required this.isJournalFilled,
-    required this.hasReflection, // TAMBAHKAN
+    required this.hasReflection,
   });
 
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
-    // Ambil dari nested object
     final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
     final lessonHour = j['lesson_hour'] as Map<String, dynamic>?;
 
-    // Extract start_time & end_time dari lesson_hour
     String startTime = '--:--';
     String endTime = '--:--';
 
@@ -53,9 +51,7 @@ class JadwalHariIniModel {
       startTime: startTime,
       endTime: endTime,
       isJournalFilled: j['is_journal_filled'] as bool? ?? false,
-      hasReflection:
-          j['has_reflection'] as bool? ??
-          false, // TAMBAHKAN - ambil dari API jika ada
+      hasReflection: j['has_reflection'] as bool? ?? false,
     );
   }
 }
@@ -66,8 +62,8 @@ class HomeController extends GetxController {
   var jamPulangSekolah = '15:00'.obs;
 
   // ── Jam presensi aktual guru (dari API response) ───────────────────────────
-  var jamMasukDisplay = '--:--'.obs; // check_in_time
-  var jamPulangDisplay = '--:--'.obs; // check_out_time
+  var jamMasukDisplay = '--:--'.obs;
+  var jamPulangDisplay = '--:--'.obs;
 
   // ── Data user ─────────────────────────────────────────────────────────────
   var teacherName = ''.obs;
@@ -92,12 +88,16 @@ class HomeController extends GetxController {
 
   // ── Status presensi guru ───────────────────────────────────────────────────
   var presensiMasuk = ''.obs;
+  var presensiPulang = ''.obs; // TAMBAH: untuk tracking checkout
+
   bool get sudahCheckIn => presensiMasuk.value.isNotEmpty;
+  bool get sudahCheckOut => presensiPulang.value.isNotEmpty;
 
   @override
   void onInit() {
     super.onInit();
     _loadUserFromLocal();
+    fetchAttendanceHariIni(); // TAMBAH: fetch status presensi guru
     fetchJadwalHariIni();
   }
 
@@ -106,6 +106,50 @@ class HomeController extends GetxController {
     final role = await AuthService.getUserRole();
     teacherName.value = name ?? 'Guru';
     teacherRole.value = role ?? '';
+  }
+
+  // ── TAMBAH: Fetch status attendance guru hari ini ─────────────────────────
+  Future<void> fetchAttendanceHariIni() async {
+    try {
+      final token = await AuthService.getToken();
+      final response = await http.get(
+        Uri.parse('${AppStatic.base_url}/attendance/today'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final data = body['data'] as Map<String, dynamic>?;
+
+        if (data != null) {
+          final checkIn = data['check_in_time'] as String? ?? '';
+          final checkOut = data['check_out_time'] as String? ?? '';
+
+          if (checkIn.isNotEmpty) {
+            presensiMasuk.value = _formatTime(checkIn);
+            jamMasukDisplay.value = _formatTime(checkIn);
+          }
+
+          if (checkOut.isNotEmpty) {
+            presensiPulang.value = _formatTime(checkOut);
+            jamPulangDisplay.value = _formatTime(checkOut);
+          }
+        }
+      } else if (response.statusCode == 404) {
+        // Belum ada attendance hari ini — reset semua
+        presensiMasuk.value = '';
+        presensiPulang.value = '';
+        jamMasukDisplay.value = '--:--';
+        jamPulangDisplay.value = '--:--';
+      } else if (response.statusCode == 401) {
+        _handleUnauthorized();
+      }
+    } catch (_) {
+      // Diam-diam gagal, tidak perlu tampilkan error di home
+    }
   }
 
   /// GET /api/journals/schedules — jadwal mengajar hari ini
@@ -130,7 +174,6 @@ class HomeController extends GetxController {
             .map((e) => JadwalHariIniModel.fromJson(e as Map<String, dynamic>))
             .toList();
 
-        // Setelah dapat jadwal, fetch status refleksi untuk masing-masing schedule
         await _fetchAllReflectionStatus();
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
@@ -144,7 +187,6 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Fetch status refleksi untuk semua jadwal yang sudah diisi presensi
   Future<void> _fetchAllReflectionStatus() async {
     final token = await AuthService.getToken();
 
@@ -165,7 +207,6 @@ class HomeController extends GetxController {
             refleksiStatus[jadwal.id] = reflection.isNotEmpty;
           }
         } catch (e) {
-          print("Error fetch reflection status for schedule ${jadwal.id}: $e");
           refleksiStatus[jadwal.id] = false;
         }
       } else {
@@ -174,12 +215,10 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Get reflection status untuk schedule tertentu
   bool getReflectionStatus(int scheduleId) {
     return refleksiStatus[scheduleId] ?? false;
   }
 
-  /// Update reflection status setelah menyimpan refleksi
   void updateReflectionStatus(int scheduleId, bool hasReflection) {
     refleksiStatus[scheduleId] = hasReflection;
   }
@@ -203,7 +242,27 @@ class HomeController extends GetxController {
 
   int get totalIzinSakit => totalIzin.value + totalSakit.value;
 
-  void refreshData() => fetchJadwalHariIni();
+  // UBAH: refreshData juga fetch attendance
+  Future<void> refreshData() async {
+    await Future.wait([
+      fetchAttendanceHariIni(),
+      fetchJadwalHariIni(),
+    ]);
+  }
+
+  String _formatTime(String raw) {
+    if (raw.isEmpty) return '--:--';
+    if (raw.contains('T')) {
+      final dt = DateTime.tryParse(raw);
+      if (dt != null) {
+        return '${dt.hour.toString().padLeft(2, '0')}:'
+            '${dt.minute.toString().padLeft(2, '0')}';
+      }
+    }
+    final parts = raw.split(':');
+    if (parts.length >= 2) return '${parts[0]}:${parts[1]}';
+    return raw;
+  }
 
   void _handleUnauthorized() {
     AuthService.clearToken();

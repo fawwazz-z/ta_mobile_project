@@ -99,26 +99,24 @@ class PresensiController extends GetxController {
     capturedImagePath.value = '';
   }
 
-  // Salin semua data lokasi ke VerifikasiController, tanpa cek GPS ulang
   void lanjutKeVerifikasi() {
-  if (Get.isRegistered<VerifikasiController>()) {
-    Get.delete<VerifikasiController>();
+    if (Get.isRegistered<VerifikasiController>()) {
+      Get.delete<VerifikasiController>();
+    }
+
+    final verCtrl = Get.put(VerifikasiController());
+
+    verCtrl.fotoPath.value    = capturedImagePath.value;
+    verCtrl.alamat.value      = alamat.value;
+    verCtrl.koordinat.value   = koordinat.value;
+    verCtrl.jarakMeter.value  = jarakMeter.value;
+    verCtrl.dalamRadius.value = dalamRadius.value;
+    verCtrl.currentLat.value  = currentLat.value;
+    verCtrl.currentLng.value  = currentLng.value;
+
+    Get.toNamed(AppRoutes.verifikasipage);
   }
 
-  final verCtrl = Get.put(VerifikasiController());
-
-  verCtrl.fotoPath.value    = capturedImagePath.value;
-  verCtrl.alamat.value      = alamat.value;
-  verCtrl.koordinat.value   = koordinat.value;
-  verCtrl.jarakMeter.value  = jarakMeter.value;
-  verCtrl.dalamRadius.value = dalamRadius.value;
-  verCtrl.currentLat.value  = currentLat.value;
-  verCtrl.currentLng.value  = currentLng.value;
-
-  Get.toNamed(AppRoutes.verifikasipage);
-}
-
-  // Retry hanya dari PresensiPage
   Future<void> retryLocation() => _getLocation();
 
   Future<void> _getLocation() async {
@@ -221,6 +219,7 @@ class PresensiController extends GetxController {
           homeCtrl.jamMasukDisplay.value = _formatTime(rawTime);
         } else if (!isCheckIn && data != null) {
           final rawTime = data['check_out_time'] as String? ?? '';
+          homeCtrl.presensiPulang.value   = _formatTime(rawTime); // set checkout
           homeCtrl.jamPulangDisplay.value = _formatTime(rawTime);
         }
       }

@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import '../controllers/presensiController.dart';
+import '../routes/route.dart';
 
 class VerifikasiController extends GetxController {
-  // Data lokasi disalin dari PresensiController via lanjutKeVerifikasi()
   var fotoPath    = ''.obs;
   var alamat      = ''.obs;
   var koordinat   = ''.obs;
@@ -15,6 +15,7 @@ class VerifikasiController extends GetxController {
   Future<void> selesaikanPresensi() async {
     if (Get.isRegistered<PresensiController>()) {
       await Get.find<PresensiController>().submitPresensi();
+      Get.offAllNamed(AppRoutes.mainPage);
     }
   }
 
