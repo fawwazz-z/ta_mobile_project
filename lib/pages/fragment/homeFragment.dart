@@ -89,28 +89,11 @@ class HomeFragment extends StatelessWidget {
   Widget _buildPresensiCard() {
     final now = DateTime.now();
     final days = [
-      'Minggu',
-      'Senin',
-      'Selasa',
-      'Rabu',
-      'Kamis',
-      'Jumat',
-      'Sabtu',
+      'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu',
     ];
     final months = [
-      '',
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
+      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     final dateStr =
         '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
@@ -177,7 +160,7 @@ class HomeFragment extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Jam MASUK & PULANG dari data presensi aktual
+          // Jam MASUK & PULANG
           Obx(
             () => Row(
               children: [
@@ -203,39 +186,54 @@ class HomeFragment extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          // Tombol presensi — label berubah sesuai status
-          Obx(
-            () => SizedBox(
+          // Tombol presensi
+          Obx(() {
+            final sudahKeduanya =
+                homeCtrl.sudahCheckIn && homeCtrl.sudahCheckOut;
+
+            return SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton.icon(
-                onPressed: () => Get.toNamed(AppRoutes.presensipage),
+                onPressed: sudahKeduanya
+                    ? null
+                    : () => Get.toNamed(AppRoutes.presensipage),
                 icon: Icon(
-                  homeCtrl.sudahCheckIn
-                      ? Icons.logout_rounded
-                      : Icons.fingerprint_rounded,
+                  sudahKeduanya
+                      ? Icons.check_circle_rounded
+                      : homeCtrl.sudahCheckIn
+                          ? Icons.logout_rounded
+                          : Icons.fingerprint_rounded,
                   size: 22,
                 ),
                 label: Text(
-                  homeCtrl.sudahCheckIn ? 'Presensi Pulang' : 'Mulai Presensi',
+                  sudahKeduanya
+                      ? 'Presensi Selesai'
+                      : homeCtrl.sudahCheckIn
+                          ? 'Presensi Pulang'
+                          : 'Mulai Presensi',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: homeCtrl.sudahCheckIn
-                      ? AppColors.warning
-                      : AppColors.primary,
+                  backgroundColor: sudahKeduanya
+                      ? Colors.grey.shade400
+                      : homeCtrl.sudahCheckIn
+                          ? AppColors.warning
+                          : AppColors.primary,
                   foregroundColor: AppColors.white,
+                  disabledBackgroundColor: Colors.grey.shade400,
+                  disabledForegroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                   elevation: 0,
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -297,7 +295,7 @@ class HomeFragment extends StatelessWidget {
       }
 
       final persenHadir = homeCtrl.persenHadir.toStringAsFixed(0);
-      final izinSakit = homeCtrl.totalIzinSakit;
+      final izinSakit   = homeCtrl.totalIzinSakit;
 
       return Row(
         children: [
@@ -433,10 +431,8 @@ class HomeFragment extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.event_available_rounded,
-                    color: Colors.brown.shade300,
-                  ),
+                  Icon(Icons.event_available_rounded,
+                      color: Colors.brown.shade300),
                   const SizedBox(width: 12),
                   Text(
                     'Tidak ada jadwal mengajar hari ini',
@@ -454,7 +450,8 @@ class HomeFragment extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _buildJurnalItem(
                   icon: Icons.menu_book_outlined,
-                  iconColor: entry.key == 0 ? AppColors.info : AppColors.purple,
+                  iconColor:
+                      entry.key == 0 ? AppColors.info : AppColors.purple,
                   iconBg: entry.key == 0
                       ? AppColors.iconBgBlue
                       : AppColors.iconBgPurple,
@@ -560,9 +557,7 @@ class HomeFragment extends StatelessWidget {
                   Text(
                     '$subject • $time',
                     style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.brownshade4,
-                    ),
+                        fontSize: 13, color: AppColors.brownshade4),
                   ),
                 ],
               ),
@@ -570,7 +565,8 @@ class HomeFragment extends StatelessWidget {
 
             if (isJournalFilled)
               Obx(() {
-                final hasReflection = homeCtrl.getReflectionStatus(scheduleId);
+                final hasReflection =
+                    homeCtrl.getReflectionStatus(scheduleId);
                 return GestureDetector(
                   onTap: () {
                     Get.toNamed(
@@ -580,15 +576,11 @@ class HomeFragment extends StatelessWidget {
                         'kelas': className,
                         'mapel': mapel,
                       },
-                    )?.then((_) {
-                      homeCtrl.refreshData();
-                    });
+                    )?.then((_) => homeCtrl.refreshData());
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                        horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: hasReflection
                           ? Colors.green.withOpacity(0.1)
@@ -601,7 +593,9 @@ class HomeFragment extends StatelessWidget {
                         Icon(
                           Icons.edit_note_outlined,
                           size: 14,
-                          color: hasReflection ? Colors.green : AppColors.info,
+                          color: hasReflection
+                              ? Colors.green
+                              : AppColors.info,
                         ),
                         const SizedBox(width: 4),
                         Text(
