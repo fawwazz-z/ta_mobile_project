@@ -60,7 +60,42 @@ class JadwalController extends GetxController {
   var jadwalList = <JadwalModel>[].obs;
   var errorMsg = ''.obs;
 
-  // Urutan hari dari Senin sampai Sabtu (Minggu opsional)
+  // ── State bulan yang dipilih ─────────────────────────────────────────────
+  var selectedMonth = DateTime.now().obs;
+
+  // Label bulan yang ditampilkan di AppMonthSelector
+  String get selectedMonthLabel {
+    const months = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    return '${months[selectedMonth.value.month]} ${selectedMonth.value.year}';
+  }
+
+  // Navigasi ke bulan sebelumnya
+  void previousMonth() {
+    final current = selectedMonth.value;
+    selectedMonth.value = DateTime(current.year, current.month - 1);
+  }
+
+  // Navigasi ke bulan berikutnya
+  void nextMonth() {
+    final current = selectedMonth.value;
+    selectedMonth.value = DateTime(current.year, current.month + 1);
+  }
+
+  // ── Urutan hari ──────────────────────────────────────────────────────────
   final List<String> dayOrder = [
     'Senin',
     'Selasa',
@@ -70,7 +105,6 @@ class JadwalController extends GetxController {
     'Sabtu',
   ];
 
-  // Mapping hari Inggris ke Indonesia
   final Map<String, String> _dayMapping = {
     'Monday': 'Senin',
     'Tuesday': 'Selasa',
@@ -112,10 +146,8 @@ class JadwalController extends GetxController {
           final Map<String, dynamic> data = body['data'];
           final List<JadwalModel> tempList = [];
 
-          // Iterasi setiap hari yang ada di response
           data.forEach((dayEn, schedules) {
             final dayId = _dayMapping[dayEn] ?? dayEn;
-            // Hanya tampilkan hari yang ada di dayOrder (Senin-Sabtu)
             if (dayOrder.contains(dayId)) {
               final List schedulesList = schedules as List;
               for (var schedule in schedulesList) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/controllers/presensiSiswaController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
+import 'package:ta_mobile_project/Components/app_widget.dart';
 
 class PresensiSiswaPages extends StatelessWidget {
   const PresensiSiswaPages({super.key});
@@ -15,26 +16,15 @@ class PresensiSiswaPages extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // AppBar
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
               child: Row(
                 children: [
-                  GestureDetector(
+                  AppIconButton(
+                    icon: Icons.chevron_left_rounded,
                     onTap: () => Get.back(),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: AppColors.bgCard,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.chevron_left_rounded,
-                        color: AppColors.textDark,
-                        size: 22,
-                      ),
-                    ),
+                    backgroundColor: AppColors.bgCard,
+                    size: 22,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -64,7 +54,7 @@ class PresensiSiswaPages extends StatelessWidget {
               ),
             ),
 
-            // Search bar (masih placeholder, bisa diimplementasikan nanti)
+            // ── Search bar (placeholder)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -95,52 +85,27 @@ class PresensiSiswaPages extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // List siswa
+            // ── List siswa ─────────────────────────────────────────────────
             Expanded(
               child: Obx(() {
                 if (ctrl.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  );
+                  return const AppLoadingCenter();
                 }
+
                 if (ctrl.errorMsg.isNotEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.wifi_off_rounded,
-                          color: AppColors.brownshade,
-                          size: 48,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          ctrl.errorMsg.value,
-                          style: TextStyle(color: AppColors.brownshade2),
-                        ),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: ctrl.fetchSiswa,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                          ),
-                          child: const Text(
-                            'Coba Lagi',
-                            style: TextStyle(color: AppColors.white),
-                          ),
-                        ),
-                      ],
-                    ),
+                  return AppErrorState(
+                    message: ctrl.errorMsg.value,
+                    onRetry: ctrl.fetchSiswa,
                   );
                 }
+
                 if (ctrl.siswaList.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Tidak ada data siswa',
-                      style: TextStyle(color: AppColors.brownshade4),
-                    ),
+                  return const AppEmptyState(
+                    icon: Icons.people_outline_rounded,
+                    title: 'Tidak ada data siswa',
                   );
                 }
+
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   itemCount: ctrl.siswaList.length,
@@ -151,48 +116,14 @@ class PresensiSiswaPages extends StatelessWidget {
               }),
             ),
 
-            // Tombol Simpan
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Obx(
-                () => SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: ctrl.isSaving.value
-                        ? null
-                        : () => _showMateriDialog(ctrl),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      disabledBackgroundColor: AppColors.primary.withOpacity(
-                        0.6,
-                      ),
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: ctrl.isSaving.value
-                        ? const CircularProgressIndicator(
-                            color: AppColors.white,
-                            strokeWidth: 2,
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.save_outlined, size: 20),
-                              SizedBox(width: 8),
-                              Text(
-                                'Simpan Presensi',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
+                () => AppPrimaryButton(
+                  label: 'Simpan Presensi',
+                  icon: Icons.save_outlined,
+                  onPressed: () => _showMateriDialog(ctrl),
+                  isLoading: ctrl.isSaving.value,
                 ),
               ),
             ),
@@ -248,9 +179,9 @@ class PresensiSiswaPages extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text(
+            child: const Text(
               'Batal',
-              style: TextStyle(color: const Color(0xFF795548)),
+              style: TextStyle(color: Color(0xFF795548)),
             ),
           ),
           ElevatedButton(
@@ -290,94 +221,83 @@ class PresensiSiswaPages extends StatelessWidget {
           .status
           .toLowerCase();
 
-      return Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.brownshade2.withOpacity(0.05),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: const BoxDecoration(
-                    color: AppColors.bgCard,
-                    shape: BoxShape.circle,
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: AppCard(
+          padding: const EdgeInsets.all(14),
+          borderRadius: 16,
+          blurRadius: 6,
+          shadowColor: AppColors.brownshade2.withOpacity(0.05),
+          shadowOffset: const Offset(0, 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const AppUserAvatar(
+                    size: 38,
+                    iconSize: 20,
+                    borderRadius: 19,
                   ),
-                  child: const Icon(
-                    Icons.person_outline_rounded,
-                    color: AppColors.primary,
-                    size: 20,
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        siswa.nama,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      Text(
+                        'NIS: ${siswa.nis}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.brownshade4,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      siswa.nama,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                    Text(
-                      'NIS: ${siswa.nis}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.brownshade4,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: options.map((opt) {
-                final isSelected = opt == currentStatus;
-                final color = activeColors[opt] ?? AppColors.primary;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => ctrl.setStatus(siswa.id, opt),
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(vertical: 7),
-                      decoration: BoxDecoration(
-                        color: isSelected ? color : const Color(0xFFF5EFE6),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          opt.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected
-                                ? AppColors.white
-                                : AppColors.brownshade4,
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: options.map((opt) {
+                  final isSelected = opt == currentStatus;
+                  final color = activeColors[opt] ?? AppColors.primary;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => ctrl.setStatus(siswa.id, opt),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(vertical: 7),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? color
+                              : const Color(0xFFF5EFE6),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            opt.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? AppColors.white
+                                  : AppColors.brownshade4,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
         ),
       );
     });
