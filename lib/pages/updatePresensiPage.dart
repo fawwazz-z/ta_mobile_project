@@ -48,10 +48,7 @@ class UpdatePresensiPage extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
                   itemCount: ctrl.siswaList.length,
                   itemBuilder: (context, index) {
-                    return _SiswaCard(
-                      siswa: ctrl.siswaList[index],
-                      ctrl: ctrl,
-                    );
+                    return _SiswaCard(siswa: ctrl.siswaList[index], ctrl: ctrl);
                   },
                 );
               }),
@@ -113,7 +110,10 @@ class UpdatePresensiPage extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
           'Edit Materi Pembelajaran',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textDark,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -234,70 +234,70 @@ class _SiswaCard extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(bottom: 14),
         child: AppCard(
-        padding: const EdgeInsets.all(14),
-        borderRadius: 16,
-        shadowColor: Colors.transparent,
-        blurRadius: 0,
-        shadowOffset: Offset.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Info siswa ─────────────────────────────────────────────────
-            Row(
-              children: [
-                const AppIconTile(
-                  icon: Icons.person_outline_rounded,
-                  color: AppColors.primary,
-                  backgroundColor: AppColors.bgCard,
-                  tileSize: 38,
-                  iconSize: 20,
-                  borderRadius: 19, // circle
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      siswa.nama,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                    Text(
-                      'NIS: ${siswa.nis}',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.brownshade4,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // ── Pilihan status ─────────────────────────────────────────────
-            Row(
-              children: _options.map((opt) {
-                final isSelected = opt == currentStatus;
-                final color = _activeColors[opt] ?? AppColors.primary;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => ctrl.setStatus(siswa.id, opt),
-                    child: _StatusChip(
-                      label: opt.toUpperCase(),
-                      isSelected: isSelected,
-                      color: color,
-                    ),
+          padding: const EdgeInsets.all(14),
+          borderRadius: 16,
+          shadowColor: Colors.transparent,
+          blurRadius: 0,
+          shadowOffset: Offset.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Info siswa ─────────────────────────────────────────────────
+              Row(
+                children: [
+                  const AppIconTile(
+                    icon: Icons.person_outline_rounded,
+                    color: AppColors.primary,
+                    backgroundColor: AppColors.bgCard,
+                    tileSize: 38,
+                    iconSize: 20,
+                    borderRadius: 19, // circle
                   ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        siswa.nama,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      Text(
+                        'NIS: ${siswa.nis}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.brownshade4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // ── Pilihan status ─────────────────────────────────────────────
+              Row(
+                children: _options.map((opt) {
+                  final isSelected = opt == currentStatus;
+                  final color = _activeColors[opt] ?? AppColors.primary;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => ctrl.setStatus(siswa.id, opt),
+                      child: _StatusChip(
+                        label: opt.toUpperCase(),
+                        isSelected: isSelected,
+                        color: color,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
         ), // AppCard
       ); // Padding
     });

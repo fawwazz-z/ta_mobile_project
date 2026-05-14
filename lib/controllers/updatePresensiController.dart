@@ -31,7 +31,7 @@ class UpdatePresensiController extends GetxController {
 
   late final int classroomId;
   late final int scheduleId;
-  late final int journalIdFromArgs; // Untuk menerima journal_id dari arguments
+  late final int journalIdFromArgs;
   late final String kelasNama;
   late final String mapelNama;
   late final String jamMulai;

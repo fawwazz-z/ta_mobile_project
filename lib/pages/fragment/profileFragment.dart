@@ -27,7 +27,9 @@ class ProfileFragment extends StatelessWidget {
                       const AppUserAvatar(size: 88, iconSize: 44),
                       const SizedBox(height: 14),
                       Text(
-                        ctrl.userName.value.isEmpty ? 'Guru' : ctrl.userName.value,
+                        ctrl.userName.value.isEmpty
+                            ? 'Guru'
+                            : ctrl.userName.value,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

@@ -161,7 +161,11 @@ class JadwalFragment extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.event_busy_outlined, color: AppColors.brownshade, size: 18),
+          Icon(
+            Icons.event_busy_outlined,
+            color: AppColors.brownshade,
+            size: 18,
+          ),
           const SizedBox(width: 10),
           Text(
             'Tidak ada jadwal mengajar',

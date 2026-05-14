@@ -1,11 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const _keyToken   = 'auth_token';
-  static const _keyName    = 'user_name';
-  static const _keyEmail   = 'user_email';
-  static const _keyRole    = 'user_role';
-  static const _keyUserId  = 'user_id';
+  static const _keyToken = 'auth_token';
+  static const _keyName = 'user_name';
+  static const _keyEmail = 'user_email';
+  static const _keyRole = 'user_role';
+  static const _keyUserId = 'user_id';
 
   // ─── TOKEN ───────────────────────────────────────────────────────────────
   static Future<void> saveToken(String token) async {
@@ -23,22 +23,22 @@ class AuthService {
     required String name,
     required String email,
     required String role,
-    required int    userId,
+    required int userId,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyName,   name);
-    await prefs.setString(_keyEmail,  email);
-    await prefs.setString(_keyRole,   role);
-    await prefs.setInt   (_keyUserId, userId);
+    await prefs.setString(_keyName, name);
+    await prefs.setString(_keyEmail, email);
+    await prefs.setString(_keyRole, role);
+    await prefs.setInt(_keyUserId, userId);
   }
 
-  static Future<String?> getUserName()  async =>
+  static Future<String?> getUserName() async =>
       (await SharedPreferences.getInstance()).getString(_keyName);
 
   static Future<String?> getUserEmail() async =>
       (await SharedPreferences.getInstance()).getString(_keyEmail);
 
-  static Future<String?> getUserRole()  async =>
+  static Future<String?> getUserRole() async =>
       (await SharedPreferences.getInstance()).getString(_keyRole);
 
   static Future<int?> getUserId() async =>
