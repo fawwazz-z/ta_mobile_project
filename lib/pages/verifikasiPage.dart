@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
+import 'package:ta_mobile_project/Components/app_widget.dart';
 import '../controllers/verifikasiController.dart';
 
 class VerifikasiPage extends StatelessWidget {
@@ -62,7 +63,7 @@ class VerifikasiPage extends StatelessWidget {
                             ),
                     ),
 
-                    // Badge radius di pojok kanan bawah foto
+                    // Badge radius pojok kanan bawah foto
                     Positioned(
                       bottom: 14,
                       right: 14,
@@ -111,14 +112,11 @@ class VerifikasiPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // ── Info Card ──────────────────────────────────────────────────
-            Container(
-              width: double.infinity,
+            AppCard(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
+              color: AppColors.white.withOpacity(0.5),
+              blurRadius: 0,
+              shadowColor: Colors.transparent,
               child: Column(
                 children: [
                   // Lokasi
@@ -173,27 +171,15 @@ class VerifikasiPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: controller.dalamRadius.value
-                                  ? AppColors.tealLight
-                                  : Colors.red.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              controller.jarakText,
-                              style: TextStyle(
-                                color: controller.dalamRadius.value
-                                    ? AppColors.teal
-                                    : Colors.red,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                          AppStatusBadge(
+                            label: controller.jarakText,
+                            color: controller.dalamRadius.value
+                                ? AppColors.teal
+                                : Colors.red,
+                            dot: false,
+                            fontSize: 11,
+                            paddingH: 8,
+                            paddingV: 2,
                           ),
                         ],
                       ),
@@ -205,74 +191,30 @@ class VerifikasiPage extends StatelessWidget {
 
             const Spacer(),
 
-            // ── Tombol Foto Ulang ──────────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
+            AppOutlinedButton(
+              label: 'Ambil Ulang Foto',
+              icon: Icons.camera_alt_outlined,
+              onPressed: () => Get.back(),
+              color: AppColors.primaryLight,
+              borderColor: AppColors.primaryLight,
               height: 50,
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: AppColors.primaryLight,
-                    width: 1.5,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                onPressed: () => Get.back(),
-                icon: const Icon(
-                  Icons.camera_alt_outlined,
-                  color: AppColors.primaryLight,
-                  size: 20,
-                ),
-                label: const Text(
-                  'Ambil Ulang Foto',
-                  style: TextStyle(
-                    color: AppColors.primaryLight,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
             ),
 
             const SizedBox(height: 12),
 
-            Obx(() {
-              final ctrl = controller;
-              return SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ctrl.dalamRadius.value
-                        ? AppColors.primaryLight
-                        : Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: ctrl.dalamRadius.value
-                      ? () => ctrl.selesaikanPresensi()
+            Obx(() => AppPrimaryButton(
+                  label: 'Selesaikan Presensi',
+                  icon: Icons.check_circle_outline,
+                  onPressed: controller.dalamRadius.value
+                      ? () => controller.selesaikanPresensi()
                       : null,
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Selesaikan Presensi',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.check_circle_outline, color: Colors.white),
-                    ],
-                  ),
-                ),
-              );
-            }),
+                  color: controller.dalamRadius.value
+                      ? AppColors.primaryLight
+                      : Colors.grey,
+                  height: 55,
+                  fontSize: 16,
+                  borderRadius: 16,
+                )),
 
             const SizedBox(height: 28),
           ],

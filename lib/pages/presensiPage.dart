@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:camera/camera.dart';
 import '../controllers/presensiController.dart';
 import '../routes/colors.dart';
+import 'package:ta_mobile_project/Components/app_widget.dart';
 
 class PresensiPage extends StatelessWidget {
   PresensiPage({super.key});
@@ -25,7 +26,7 @@ class PresensiPage extends StatelessWidget {
       ),
       body: Obx(() {
         if (!controller.isCameraReady.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppLoadingCenter();
         }
         return controller.capturedImagePath.value.isNotEmpty
             ? _hasilFoto()
@@ -34,7 +35,7 @@ class PresensiPage extends StatelessWidget {
     );
   }
 
-  // ── TAMPILAN KAMERA ──────────────────────────────────────────────────────────
+  // ── TAMPILAN KAMERA ──────────────────────────────────────────────────────
   Widget _kamera() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -59,7 +60,6 @@ class PresensiPage extends StatelessWidget {
                     Positioned.fill(
                       child: CustomPaint(
                         painter: _FaceBracketPainter(
-                          // Warna bracket mengikuti status radius
                           color: controller.dalamRadius.value
                               ? AppColors.primaryLight
                               : Colors.red,
@@ -85,44 +85,20 @@ class PresensiPage extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Tombol ambil foto
-          Obx(() => SizedBox(
-                width: double.infinity,
+          Obx(() => AppPrimaryButton(
+                label: controller.dalamRadius.value
+                    ? 'Ambil Foto'
+                    : 'Di Luar Radius Sekolah',
+                onPressed: controller.ambilFoto,
+                isLoading: controller.isLoadingLocation.value,
+                color: controller.isLoadingLocation.value
+                    ? Colors.grey.shade300
+                    : controller.dalamRadius.value
+                        ? AppColors.primaryLight
+                        : Colors.grey,
                 height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: controller.isLoadingLocation.value
-                        ? Colors.grey.shade300
-                        : controller.dalamRadius.value
-                            ? AppColors.primaryLight
-                            : Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: controller.isLoadingLocation.value
-                      ? null
-                      : controller.ambilFoto,
-                  child: controller.isLoadingLocation.value
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          controller.dalamRadius.value
-                              ? 'Ambil Foto'
-                              : 'Di Luar Radius Sekolah',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
+                fontSize: 16,
+                borderRadius: 16,
               )),
 
           const SizedBox(height: 24),
@@ -131,7 +107,7 @@ class PresensiPage extends StatelessWidget {
     );
   }
 
-  // ── TAMPILAN HASIL FOTO ──────────────────────────────────────────────────────
+  // ── TAMPILAN HASIL FOTO ──────────────────────────────────────────────────
   Widget _hasilFoto() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -160,30 +136,14 @@ class PresensiPage extends StatelessWidget {
           _infoCard(),
           const SizedBox(height: 16),
 
-          SizedBox(
-            width: double.infinity,
+          AppPrimaryButton(
+            label: 'Lanjut Verifikasi',
+            icon: Icons.arrow_forward,
+            onPressed: controller.lanjutKeVerifikasi,
+            color: AppColors.primaryLight,
             height: 55,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              onPressed: controller.lanjutKeVerifikasi,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Lanjut Verifikasi',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward, color: Colors.white),
-                ],
-              ),
-            ),
+            fontSize: 16,
+            borderRadius: 16,
           ),
 
           const SizedBox(height: 10),
@@ -202,7 +162,7 @@ class PresensiPage extends StatelessWidget {
     );
   }
 
-  // ── INFO CARD ────────────────────────────────────────────────────────────────
+  // ── INFO CARD ────────────────────────────────────────────────────────────
   Widget _infoCard() {
     return Obx(() {
       if (controller.isLoadingLocation.value) {
@@ -277,21 +237,11 @@ class PresensiPage extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          // Tombol refresh
-          GestureDetector(
+          AppIconButton(
+            icon: Icons.refresh_rounded,
             onTap: controller.retryLocation,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.refresh_rounded,
-                color: Colors.red,
-                size: 20,
-              ),
-            ),
+            iconColor: Colors.red,
+            backgroundColor: Colors.red.withOpacity(0.1),
           ),
         ],
       ),
@@ -322,21 +272,13 @@ class PresensiPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Tombol refresh di data card juga
-                GestureDetector(
+                AppIconButton(
+                  icon: Icons.refresh_rounded,
                   onTap: controller.retryLocation,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.refresh_rounded,
-                      color: AppColors.primaryLight,
-                      size: 16,
-                    ),
-                  ),
+                  iconColor: AppColors.primaryLight,
+                  backgroundColor: AppColors.primaryLight.withOpacity(0.1),
+                  size: 16,
+                  borderRadius: 8,
                 ),
               ],
             ),
@@ -365,25 +307,15 @@ class PresensiPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: controller.dalamRadius.value
-                        ? AppColors.tealLight
-                        : Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '${controller.jarakMeter.value.toStringAsFixed(0)} m',
-                    style: TextStyle(
-                      color: controller.dalamRadius.value
-                          ? AppColors.teal
-                          : Colors.red,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                AppStatusBadge(
+                  label: '${controller.jarakMeter.value.toStringAsFixed(0)} m',
+                  color: controller.dalamRadius.value
+                      ? AppColors.teal
+                      : Colors.red,
+                  dot: false,
+                  fontSize: 11,
+                  paddingH: 8,
+                  paddingV: 2,
                 ),
               ],
             ),
@@ -396,8 +328,7 @@ class PresensiPage extends StatelessWidget {
   Widget _buildRadiusBadge() {
     if (controller.isLoadingLocation.value) {
       return Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.5),
           borderRadius: BorderRadius.circular(20),
@@ -425,8 +356,7 @@ class PresensiPage extends StatelessWidget {
 
     if (controller.locationError.value.isNotEmpty) {
       return Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.red.withOpacity(0.85),
           borderRadius: BorderRadius.circular(20),
@@ -434,8 +364,7 @@ class PresensiPage extends StatelessWidget {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.location_off_rounded,
-                color: Colors.white, size: 12),
+            Icon(Icons.location_off_rounded, color: Colors.white, size: 12),
             SizedBox(width: 4),
             Text(
               'GPS Error',
@@ -462,17 +391,13 @@ class PresensiPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            controller.dalamRadius.value
-                ? Icons.check_circle
-                : Icons.cancel,
+            controller.dalamRadius.value ? Icons.check_circle : Icons.cancel,
             color: Colors.white,
             size: 12,
           ),
           const SizedBox(width: 4),
           Text(
-            controller.dalamRadius.value
-                ? 'Dalam Radius'
-                : 'Luar Radius',
+            controller.dalamRadius.value ? 'Dalam Radius' : 'Luar Radius',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 11,
@@ -524,7 +449,7 @@ class PresensiPage extends StatelessWidget {
   }
 }
 
-// Corner bracket painter — warna bisa disesuaikan
+// ── Corner bracket painter ────────────────────────────────────────────────
 class _FaceBracketPainter extends CustomPainter {
   final Color color;
   const _FaceBracketPainter({required this.color});
@@ -540,16 +465,12 @@ class _FaceBracketPainter extends CustomPainter {
     const margin = 40.0;
     const bracketSize = 30.0;
 
-    // Top-left
     canvas.drawLine(Offset(margin, margin + bracketSize), Offset(margin, margin), paint);
     canvas.drawLine(Offset(margin, margin), Offset(margin + bracketSize, margin), paint);
-    // Top-right
     canvas.drawLine(Offset(size.width - margin - bracketSize, margin), Offset(size.width - margin, margin), paint);
     canvas.drawLine(Offset(size.width - margin, margin), Offset(size.width - margin, margin + bracketSize), paint);
-    // Bottom-left
     canvas.drawLine(Offset(margin, size.height - margin - bracketSize), Offset(margin, size.height - margin), paint);
     canvas.drawLine(Offset(margin, size.height - margin), Offset(margin + bracketSize, size.height - margin), paint);
-    // Bottom-right
     canvas.drawLine(Offset(size.width - margin - bracketSize, size.height - margin), Offset(size.width - margin, size.height - margin), paint);
     canvas.drawLine(Offset(size.width - margin, size.height - margin), Offset(size.width - margin, size.height - margin - bracketSize), paint);
   }
