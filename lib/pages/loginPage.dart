@@ -238,9 +238,7 @@ class LoginPage extends GetView<LoginController> {
   Widget _buildDivider() {
     return Row(
       children: [
-        Expanded(
-          child: Divider(color: AppColors.brownshade, thickness: 0.8),
-        ),
+        Expanded(child: Divider(color: AppColors.brownshade, thickness: 0.8)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text(
@@ -252,9 +250,7 @@ class LoginPage extends GetView<LoginController> {
             ),
           ),
         ),
-        Expanded(
-          child: Divider(color: AppColors.brownshade, thickness: 0.8),
-        ),
+        Expanded(child: Divider(color: AppColors.brownshade, thickness: 0.8)),
       ],
     );
   }

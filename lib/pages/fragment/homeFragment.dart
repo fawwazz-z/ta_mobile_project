@@ -40,49 +40,70 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
-// ── Header ─────────────────────────────────────────────────────────────────
-Widget _buildHeader() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Selamat Datang,',
-            style: TextStyle(fontSize: 14, color: AppColors.brownshade2),
-          ),
-          const SizedBox(height: 2),
-          Obx(
-            () => Text(
-              homeCtrl.teacherName.value.isEmpty
-                  ? 'Guru'
-                  : homeCtrl.teacherName.value,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textBrown,
+  // ── Header ─────────────────────────────────────────────────────────────────
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Selamat Datang,',
+              style: TextStyle(fontSize: 14, color: AppColors.brownshade2),
+            ),
+            const SizedBox(height: 2),
+            Obx(
+              () => Text(
+                homeCtrl.teacherName.value.isEmpty
+                    ? 'Guru'
+                    : homeCtrl.teacherName.value,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textBrown,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      
-      GestureDetector(
-        onTap: () => Get.find<MainController>().changeIndex(3),
-        child: AppUserAvatar(size: 44, iconSize: 24, borderRadius: 12),
-      ),
-    ],
-  );
-}
+          ],
+        ),
+
+        GestureDetector(
+          onTap: () => Get.find<MainController>().changeIndex(3),
+          child: AppUserAvatar(size: 44, iconSize: 24, borderRadius: 12),
+        ),
+      ],
+    );
+  }
 
   // ── Presensi Card ──────────────────────────────────────────────────────────
   Widget _buildPresensiCard() {
     final now = DateTime.now();
-    final days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    final months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    final days = [
+      'Minggu',
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+    ];
+    final months = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
     final dateStr =
         '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
 
@@ -149,7 +170,8 @@ Widget _buildHeader() {
 
           // Tombol presensi
           Obx(() {
-            final sudahKeduanya = homeCtrl.sudahCheckIn && homeCtrl.sudahCheckOut;
+            final sudahKeduanya =
+                homeCtrl.sudahCheckIn && homeCtrl.sudahCheckOut;
             return SizedBox(
               width: double.infinity,
               height: 52,
@@ -161,24 +183,27 @@ Widget _buildHeader() {
                   sudahKeduanya
                       ? Icons.check_circle_rounded
                       : homeCtrl.sudahCheckIn
-                          ? Icons.logout_rounded
-                          : Icons.fingerprint_rounded,
+                      ? Icons.logout_rounded
+                      : Icons.fingerprint_rounded,
                   size: 22,
                 ),
                 label: Text(
                   sudahKeduanya
                       ? 'Presensi Selesai'
                       : homeCtrl.sudahCheckIn
-                          ? 'Presensi Pulang'
-                          : 'Mulai Presensi',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ? 'Presensi Pulang'
+                      : 'Mulai Presensi',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: sudahKeduanya
                       ? Colors.grey.shade400
                       : homeCtrl.sudahCheckIn
-                          ? AppColors.warning
-                          : AppColors.primary,
+                      ? AppColors.warning
+                      : AppColors.primary,
                   foregroundColor: AppColors.white,
                   disabledBackgroundColor: Colors.grey.shade400,
                   disabledForegroundColor: Colors.white,
@@ -259,7 +284,10 @@ Widget _buildHeader() {
             return AppCard(
               child: Row(
                 children: [
-                  Icon(Icons.event_available_rounded, color: AppColors.brownshade),
+                  Icon(
+                    Icons.event_available_rounded,
+                    color: AppColors.brownshade,
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     'Tidak ada jadwal mengajar hari ini',
@@ -317,24 +345,30 @@ Widget _buildHeader() {
     return GestureDetector(
       onTap: () {
         if (isJournalFilled) {
-          Get.toNamed(AppRoutes.updatePresensiPage, arguments: {
-            'schedule_id': scheduleId,
-            'classroom_id': classroomId,
-            'kelas': className,
-            'mapel': mapel,
-            'start_time': startTime,
-            'end_time': endTime,
-          })?.then((_) => homeCtrl.refreshData());
+          Get.toNamed(
+            AppRoutes.updatePresensiPage,
+            arguments: {
+              'schedule_id': scheduleId,
+              'classroom_id': classroomId,
+              'kelas': className,
+              'mapel': mapel,
+              'start_time': startTime,
+              'end_time': endTime,
+            },
+          )?.then((_) => homeCtrl.refreshData());
         } else {
-          Get.toNamed(AppRoutes.presensiSiswa, arguments: {
-            'schedule_id': scheduleId,
-            'classroom_id': classroomId,
-            'kelas': className,
-            'mapel': mapel,
-            'start_time': startTime,
-            'end_time': endTime,
-            'is_journal_filled': isJournalFilled,
-          })?.then((_) => homeCtrl.refreshData());
+          Get.toNamed(
+            AppRoutes.presensiSiswa,
+            arguments: {
+              'schedule_id': scheduleId,
+              'classroom_id': classroomId,
+              'kelas': className,
+              'mapel': mapel,
+              'start_time': startTime,
+              'end_time': endTime,
+              'is_journal_filled': isJournalFilled,
+            },
+          )?.then((_) => homeCtrl.refreshData());
         }
       },
       child: AppCard(
@@ -365,7 +399,10 @@ Widget _buildHeader() {
                   const SizedBox(height: 2),
                   Text(
                     '$subject • $time',
-                    style: TextStyle(fontSize: 13, color: AppColors.brownshade4),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.brownshade4,
+                    ),
                   ),
                 ],
               ),
@@ -376,14 +413,20 @@ Widget _buildHeader() {
                 final hasReflection = homeCtrl.getReflectionStatus(scheduleId);
                 return GestureDetector(
                   onTap: () {
-                    Get.toNamed(AppRoutes.refleksipage, arguments: {
-                      'schedule_id': scheduleId,
-                      'kelas': className,
-                      'mapel': mapel,
-                    })?.then((_) => homeCtrl.refreshData());
+                    Get.toNamed(
+                      AppRoutes.refleksipage,
+                      arguments: {
+                        'schedule_id': scheduleId,
+                        'kelas': className,
+                        'mapel': mapel,
+                      },
+                    )?.then((_) => homeCtrl.refreshData());
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: hasReflection
                           ? Colors.green.withOpacity(0.1)
@@ -404,7 +447,9 @@ Widget _buildHeader() {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: hasReflection ? Colors.green : AppColors.info,
+                            color: hasReflection
+                                ? Colors.green
+                                : AppColors.info,
                           ),
                         ),
                       ],
@@ -414,7 +459,11 @@ Widget _buildHeader() {
               }),
 
             const SizedBox(width: 6),
-            Icon(Icons.chevron_right_rounded, color: AppColors.brownshade, size: 22),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.brownshade,
+              size: 22,
+            ),
           ],
         ),
       ),

@@ -58,10 +58,7 @@ class AppPageHeader extends StatelessWidget {
               ),
             ),
           ),
-          if (action != null)
-            action!
-          else
-            const SizedBox(width: 36),
+          if (action != null) action! else const SizedBox(width: 36),
         ],
       ),
     );
@@ -111,8 +108,7 @@ class AppIconButton extends StatelessWidget {
           color: backgroundColor ?? AppColors.white.withOpacity(0.6),
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        child: child ??
-            Icon(icon, color: iconColor, size: size),
+        child: child ?? Icon(icon, color: iconColor, size: size),
       ),
     );
   }
@@ -473,10 +469,7 @@ class AppEmptyState extends StatelessWidget {
             Text(
               subtitle!,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.brownshade,
-              ),
+              style: const TextStyle(fontSize: 12, color: AppColors.brownshade),
             ),
           ],
         ],
@@ -861,10 +854,7 @@ class AppTextFieldCard extends StatelessWidget {
         style: const TextStyle(fontSize: 14, color: AppColors.textDark),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(
-            color: AppColors.brownshade,
-            fontSize: 14,
-          ),
+          hintStyle: const TextStyle(color: AppColors.brownshade, fontSize: 14),
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,
           contentPadding: const EdgeInsets.symmetric(
@@ -896,11 +886,7 @@ class AppFieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
+      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color),
     );
   }
 }
@@ -993,8 +979,7 @@ class AppNavItem extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 11,
-              fontWeight:
-                  isSelected ? FontWeight.w600 : FontWeight.normal,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               color: isSelected ? AppColors.primary : AppColors.brownshade,
             ),
           ),
@@ -1020,12 +1005,10 @@ class AppDivider extends StatelessWidget {
   }) : isVertical = true,
        width = 1;
 
-  const AppDivider.horizontal({
-    super.key,
-    this.color = AppColors.divider,
-  }) : isVertical = false,
-       height = 1,
-       width = double.infinity;
+  const AppDivider.horizontal({super.key, this.color = AppColors.divider})
+    : isVertical = false,
+      height = 1,
+      width = double.infinity;
 
   final bool isVertical;
   final double height;
@@ -1069,10 +1052,7 @@ class AppLoadingCenter extends StatelessWidget {
           CircularProgressIndicator(color: color),
           if (label != null) ...[
             const SizedBox(height: 16),
-            Text(
-              label!,
-              style: TextStyle(color: color, fontSize: 14),
-            ),
+            Text(label!, style: TextStyle(color: color, fontSize: 14)),
           ],
         ],
       ),
@@ -1112,8 +1092,9 @@ class AppUserAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.bgField,
         shape: borderRadius == null ? BoxShape.circle : BoxShape.rectangle,
-        borderRadius:
-            borderRadius != null ? BorderRadius.circular(borderRadius!) : null,
+        borderRadius: borderRadius != null
+            ? BorderRadius.circular(borderRadius!)
+            : null,
         border: Border.all(color: AppColors.white, width: 3),
       ),
       child: Icon(

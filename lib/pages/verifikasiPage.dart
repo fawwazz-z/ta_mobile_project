@@ -202,19 +202,21 @@ class VerifikasiPage extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            Obx(() => AppPrimaryButton(
-                  label: 'Selesaikan Presensi',
-                  icon: Icons.check_circle_outline,
-                  onPressed: controller.dalamRadius.value
-                      ? () => controller.selesaikanPresensi()
-                      : null,
-                  color: controller.dalamRadius.value
-                      ? AppColors.primaryLight
-                      : Colors.grey,
-                  height: 55,
-                  fontSize: 16,
-                  borderRadius: 16,
-                )),
+            Obx(
+              () => AppPrimaryButton(
+                label: 'Selesaikan Presensi',
+                icon: Icons.check_circle_outline,
+                onPressed: controller.dalamRadius.value
+                    ? () => controller.selesaikanPresensi()
+                    : null,
+                color: controller.dalamRadius.value
+                    ? AppColors.primaryLight
+                    : Colors.grey,
+                height: 55,
+                fontSize: 16,
+                borderRadius: 16,
+              ),
+            ),
 
             const SizedBox(height: 28),
           ],

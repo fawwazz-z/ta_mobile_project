@@ -16,10 +16,12 @@ class PresensiPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgMain,
       appBar: AppBar(
-        title: Obx(() => Text(
-              controller.isCheckIn ? 'Presensi Masuk' : 'Presensi Pulang',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            )),
+        title: Obx(
+          () => Text(
+            controller.isCheckIn ? 'Presensi Masuk' : 'Presensi Pulang',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
         backgroundColor: AppColors.bgCream,
         elevation: 0,
         centerTitle: true,
@@ -85,21 +87,23 @@ class PresensiPage extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          Obx(() => AppPrimaryButton(
-                label: controller.dalamRadius.value
-                    ? 'Ambil Foto'
-                    : 'Di Luar Radius Sekolah',
-                onPressed: controller.ambilFoto,
-                isLoading: controller.isLoadingLocation.value,
-                color: controller.isLoadingLocation.value
-                    ? Colors.grey.shade300
-                    : controller.dalamRadius.value
-                        ? AppColors.primaryLight
-                        : Colors.grey,
-                height: 55,
-                fontSize: 16,
-                borderRadius: 16,
-              )),
+          Obx(
+            () => AppPrimaryButton(
+              label: controller.dalamRadius.value
+                  ? 'Ambil Foto'
+                  : 'Di Luar Radius Sekolah',
+              onPressed: controller.ambilFoto,
+              isLoading: controller.isLoadingLocation.value,
+              color: controller.isLoadingLocation.value
+                  ? Colors.grey.shade300
+                  : controller.dalamRadius.value
+                  ? AppColors.primaryLight
+                  : Colors.grey,
+              height: 55,
+              fontSize: 16,
+              borderRadius: 16,
+            ),
+          ),
 
           const SizedBox(height: 24),
         ],
@@ -268,7 +272,9 @@ class PresensiPage extends StatelessWidget {
                   child: Text(
                     controller.alamat.value,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -465,14 +471,46 @@ class _FaceBracketPainter extends CustomPainter {
     const margin = 40.0;
     const bracketSize = 30.0;
 
-    canvas.drawLine(Offset(margin, margin + bracketSize), Offset(margin, margin), paint);
-    canvas.drawLine(Offset(margin, margin), Offset(margin + bracketSize, margin), paint);
-    canvas.drawLine(Offset(size.width - margin - bracketSize, margin), Offset(size.width - margin, margin), paint);
-    canvas.drawLine(Offset(size.width - margin, margin), Offset(size.width - margin, margin + bracketSize), paint);
-    canvas.drawLine(Offset(margin, size.height - margin - bracketSize), Offset(margin, size.height - margin), paint);
-    canvas.drawLine(Offset(margin, size.height - margin), Offset(margin + bracketSize, size.height - margin), paint);
-    canvas.drawLine(Offset(size.width - margin - bracketSize, size.height - margin), Offset(size.width - margin, size.height - margin), paint);
-    canvas.drawLine(Offset(size.width - margin, size.height - margin), Offset(size.width - margin, size.height - margin - bracketSize), paint);
+    canvas.drawLine(
+      Offset(margin, margin + bracketSize),
+      Offset(margin, margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(margin, margin),
+      Offset(margin + bracketSize, margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - margin - bracketSize, margin),
+      Offset(size.width - margin, margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - margin, margin),
+      Offset(size.width - margin, margin + bracketSize),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(margin, size.height - margin - bracketSize),
+      Offset(margin, size.height - margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(margin, size.height - margin),
+      Offset(margin + bracketSize, size.height - margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - margin - bracketSize, size.height - margin),
+      Offset(size.width - margin, size.height - margin),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - margin, size.height - margin),
+      Offset(size.width - margin, size.height - margin - bracketSize),
+      paint,
+    );
   }
 
   @override

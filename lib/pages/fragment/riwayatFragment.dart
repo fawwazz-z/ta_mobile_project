@@ -11,11 +11,16 @@ class RiwayatFragment extends StatelessWidget {
 
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'hadir':     return AppColors.success;
-      case 'terlambat': return AppColors.error;
-      case 'sakit':     return AppColors.warning;
-      case 'izin':      return AppColors.info;
-      default:          return AppColors.defalt;
+      case 'hadir':
+        return AppColors.success;
+      case 'terlambat':
+        return AppColors.error;
+      case 'sakit':
+        return AppColors.warning;
+      case 'izin':
+        return AppColors.info;
+      default:
+        return AppColors.defalt;
     }
   }
 
@@ -128,8 +133,10 @@ class RiwayatFragment extends StatelessWidget {
                   : const SizedBox.shrink(),
             ),
             border: InputBorder.none,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
         ),
       ),

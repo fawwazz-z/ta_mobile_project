@@ -234,11 +234,7 @@ class PresensiSiswaPages extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const AppUserAvatar(
-                    size: 38,
-                    iconSize: 20,
-                    borderRadius: 19,
-                  ),
+                  const AppUserAvatar(size: 38, iconSize: 20, borderRadius: 19),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,9 +270,7 @@ class PresensiSiswaPages extends StatelessWidget {
                         margin: const EdgeInsets.only(right: 6),
                         padding: const EdgeInsets.symmetric(vertical: 7),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? color
-                              : const Color(0xFFF5EFE6),
+                          color: isSelected ? color : const Color(0xFFF5EFE6),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(

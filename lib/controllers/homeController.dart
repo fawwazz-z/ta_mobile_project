@@ -29,67 +29,68 @@ class JadwalHariIniModel {
   });
 
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
-    final subject    = j['subject']    as Map<String, dynamic>?;
-    final classroom  = j['classroom']  as Map<String, dynamic>?;
+    final subject = j['subject'] as Map<String, dynamic>?;
+    final classroom = j['classroom'] as Map<String, dynamic>?;
     final lessonHour = j['lesson_hour'] as Map<String, dynamic>?;
 
     String startTime = '--:--';
-    String endTime   = '--:--';
+    String endTime = '--:--';
 
     if (lessonHour != null) {
-      startTime = (lessonHour['start_time'] as String?)?.substring(0, 5) ?? '--:--';
-      endTime   = (lessonHour['end_time']   as String?)?.substring(0, 5) ?? '--:--';
+      startTime =
+          (lessonHour['start_time'] as String?)?.substring(0, 5) ?? '--:--';
+      endTime = (lessonHour['end_time'] as String?)?.substring(0, 5) ?? '--:--';
     }
 
     return JadwalHariIniModel(
-      id:              (j['id'] as num).toInt(),
-      subjectName:     subject?['name']   as String? ?? 'Mata Pelajaran',
-      classroomName:   classroom?['name'] as String? ?? 'Kelas',
-      classroomId:     (classroom?['id']  as num?)?.toInt() ?? 0,
-      day:             j['day']           as String? ?? '',
-      startTime:       startTime,
-      endTime:         endTime,
+      id: (j['id'] as num).toInt(),
+      subjectName: subject?['name'] as String? ?? 'Mata Pelajaran',
+      classroomName: classroom?['name'] as String? ?? 'Kelas',
+      classroomId: (classroom?['id'] as num?)?.toInt() ?? 0,
+      day: j['day'] as String? ?? '',
+      startTime: startTime,
+      endTime: endTime,
       isJournalFilled: j['is_journal_filled'] as bool? ?? false,
-      hasReflection:   j['has_reflection']    as bool? ?? false,
+      hasReflection: j['has_reflection'] as bool? ?? false,
     );
   }
 }
 
 class HomeController extends GetxController {
   // Jam sekolah (batas waktu)
-  var jamMasukSekolah  = '07:15'.obs;
+  var jamMasukSekolah = '07:15'.obs;
   var jamPulangSekolah = '15:00'.obs;
 
   // Jam presensi aktual guru
-  var jamMasukDisplay  = '--:--'.obs;
+  var jamMasukDisplay = '--:--'.obs;
   var jamPulangDisplay = '--:--'.obs;
 
   // Data user
-  var teacherName   = ''.obs;
-  var teacherRole   = ''.obs;
+  var teacherName = ''.obs;
+  var teacherRole = ''.obs;
   var isLoadingUser = false.obs;
 
   // Jadwal
   var isLoadingJadwal = false.obs;
-  var jadwalHariIni   = <JadwalHariIniModel>[].obs;
-  var errorJadwal     = ''.obs;
+  var jadwalHariIni = <JadwalHariIniModel>[].obs;
+  var errorJadwal = ''.obs;
 
   // Status refleksi per schedule
   var refleksiStatus = <int, bool>{}.obs;
 
   // Statistik presensi siswa
-  var totalSiswa    = 0.obs;
-  var totalHadir    = 0.obs;
-  var totalIzin     = 0.obs;
-  var totalSakit    = 0.obs;
-  var totalAlpa     = 0.obs;
+  var totalSiswa = 0.obs;
+  var totalHadir = 0.obs;
+  var totalIzin = 0.obs;
+  var totalSakit = 0.obs;
+  var totalAlpa = 0.obs;
   var sudahPresensi = false.obs;
 
   // Status presensi guru hari ini
-  var presensiMasuk  = ''.obs;
+  var presensiMasuk = ''.obs;
   var presensiPulang = ''.obs;
 
-  bool get sudahCheckIn  => presensiMasuk.value.isNotEmpty;
+  bool get sudahCheckIn => presensiMasuk.value.isNotEmpty;
   bool get sudahCheckOut => presensiPulang.value.isNotEmpty;
 
   @override
@@ -110,7 +111,7 @@ class HomeController extends GetxController {
   // ── Fetch attendance hari ini ──────────────────────────────────────────────
   Future<void> fetchAttendanceHariIni() async {
     try {
-      final token    = await AuthService.getToken() ?? '';
+      final token = await AuthService.getToken() ?? '';
       final response = await http.get(
         Uri.parse('${AppStatic.base_url}/attendance/history'),
         headers: {
@@ -124,12 +125,12 @@ class HomeController extends GetxController {
         final List data = body['data'] ?? [];
 
         // Tanggal hari ini dalam lokal (WIB)
-        final now   = DateTime.now();
+        final now = DateTime.now();
         final today = DateTime(now.year, now.month, now.day);
 
         Map<String, dynamic>? todayRecord;
         for (final item in data) {
-          final record  = item as Map<String, dynamic>;
+          final record = item as Map<String, dynamic>;
           final dateRaw = record['attendance_date'] as String? ?? '';
 
           if (dateRaw.isEmpty) continue;
@@ -151,9 +152,15 @@ class HomeController extends GetxController {
           // Cocokkan dengan hari ini:
           // - via attendance_date yang sudah dikonversi ke lokal, ATAU
           // - via check_in_time yang sudah dikonversi ke lokal
-          final matchByDate   = recordDate == today;
-          final matchByCheckIn = checkInLocal != null &&
-              DateTime(checkInLocal.year, checkInLocal.month, checkInLocal.day) == today;
+          final matchByDate = recordDate == today;
+          final matchByCheckIn =
+              checkInLocal != null &&
+              DateTime(
+                    checkInLocal.year,
+                    checkInLocal.month,
+                    checkInLocal.day,
+                  ) ==
+                  today;
 
           if (matchByDate || matchByCheckIn) {
             todayRecord = record;
@@ -162,30 +169,30 @@ class HomeController extends GetxController {
         }
 
         if (todayRecord != null) {
-          final checkInRaw  = todayRecord['check_in_time']  as String? ?? '';
+          final checkInRaw = todayRecord['check_in_time'] as String? ?? '';
           final checkOutRaw = todayRecord['check_out_time'] as String? ?? '';
 
           if (checkInRaw.isNotEmpty && checkInRaw != 'null') {
-            final formatted       = _formatTime(checkInRaw);
-            presensiMasuk.value   = formatted;
+            final formatted = _formatTime(checkInRaw);
+            presensiMasuk.value = formatted;
             jamMasukDisplay.value = formatted;
           } else {
-            presensiMasuk.value   = '';
+            presensiMasuk.value = '';
             jamMasukDisplay.value = '--:--';
           }
 
           if (checkOutRaw.isNotEmpty && checkOutRaw != 'null') {
-            final formatted        = _formatTime(checkOutRaw);
-            presensiPulang.value   = formatted;
+            final formatted = _formatTime(checkOutRaw);
+            presensiPulang.value = formatted;
             jamPulangDisplay.value = formatted;
           } else {
-            presensiPulang.value   = '';
+            presensiPulang.value = '';
             jamPulangDisplay.value = '--:--';
           }
         } else {
-          presensiMasuk.value    = '';
-          presensiPulang.value   = '';
-          jamMasukDisplay.value  = '--:--';
+          presensiMasuk.value = '';
+          presensiPulang.value = '';
+          jamMasukDisplay.value = '--:--';
           jamPulangDisplay.value = '--:--';
         }
       } else if (response.statusCode == 401) {
@@ -200,9 +207,9 @@ class HomeController extends GetxController {
   Future<void> fetchJadwalHariIni() async {
     try {
       isLoadingJadwal.value = true;
-      errorJadwal.value     = '';
+      errorJadwal.value = '';
 
-      final token    = await AuthService.getToken();
+      final token = await AuthService.getToken();
       final response = await http.get(
         Uri.parse('${AppStatic.base_url}/journals/schedules'),
         headers: {
@@ -243,7 +250,7 @@ class HomeController extends GetxController {
             },
           );
           if (response.statusCode == 200) {
-            final body       = jsonDecode(response.body);
+            final body = jsonDecode(response.body);
             final reflection = body['data']?['reflection'] ?? '';
             refleksiStatus[jadwal.id] = reflection.isNotEmpty;
           }
@@ -268,11 +275,11 @@ class HomeController extends GetxController {
     required int sakit,
     required int alpa,
   }) {
-    totalHadir.value    = hadir;
-    totalIzin.value     = izin;
-    totalSakit.value    = sakit;
-    totalAlpa.value     = alpa;
-    totalSiswa.value    = hadir + izin + sakit + alpa;
+    totalHadir.value = hadir;
+    totalIzin.value = izin;
+    totalSakit.value = sakit;
+    totalAlpa.value = alpa;
+    totalSiswa.value = hadir + izin + sakit + alpa;
     sudahPresensi.value = true;
   }
 
@@ -282,10 +289,7 @@ class HomeController extends GetxController {
   int get totalIzinSakit => totalIzin.value + totalSakit.value;
 
   Future<void> refreshData() async {
-    await Future.wait([
-      fetchAttendanceHariIni(),
-      fetchJadwalHariIni(),
-    ]);
+    await Future.wait([fetchAttendanceHariIni(), fetchJadwalHariIni()]);
   }
 
   // Format waktu UTC → lokal HH:mm

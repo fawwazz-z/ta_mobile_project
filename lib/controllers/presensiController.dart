@@ -79,7 +79,8 @@ class PresensiController extends GetxController {
   }
 
   Future<void> ambilFoto() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
+    if (cameraController == null || !cameraController!.value.isInitialized)
+      return;
     if (!dalamRadius.value) {
       Get.snackbar(
         'Diluar Radius',
@@ -106,13 +107,13 @@ class PresensiController extends GetxController {
 
     final verCtrl = Get.put(VerifikasiController());
 
-    verCtrl.fotoPath.value    = capturedImagePath.value;
-    verCtrl.alamat.value      = alamat.value;
-    verCtrl.koordinat.value   = koordinat.value;
-    verCtrl.jarakMeter.value  = jarakMeter.value;
+    verCtrl.fotoPath.value = capturedImagePath.value;
+    verCtrl.alamat.value = alamat.value;
+    verCtrl.koordinat.value = koordinat.value;
+    verCtrl.jarakMeter.value = jarakMeter.value;
     verCtrl.dalamRadius.value = dalamRadius.value;
-    verCtrl.currentLat.value  = currentLat.value;
-    verCtrl.currentLng.value  = currentLng.value;
+    verCtrl.currentLat.value = currentLat.value;
+    verCtrl.currentLng.value = currentLng.value;
 
     Get.toNamed(AppRoutes.verifikasipage);
   }
@@ -152,8 +153,10 @@ class PresensiController extends GetxController {
     currentLat.value = pos.latitude;
     currentLng.value = pos.longitude;
 
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(pos.latitude, pos.longitude);
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      pos.latitude,
+      pos.longitude,
+    );
     Placemark place = placemarks.first;
     alamat.value =
         '${place.street}, ${place.subLocality}, ${place.locality}, '
@@ -162,8 +165,12 @@ class PresensiController extends GetxController {
         '${pos.latitude.toStringAsFixed(6)}, ${pos.longitude.toStringAsFixed(6)}';
 
     double jarak = Geolocator.distanceBetween(
-        pos.latitude, pos.longitude, _schoolLat, _schoolLng);
-    jarakMeter.value  = jarak;
+      pos.latitude,
+      pos.longitude,
+      _schoolLat,
+      _schoolLng,
+    );
+    jarakMeter.value = jarak;
     dalamRadius.value = jarak <= _radiusMeters;
   }
 
@@ -172,22 +179,21 @@ class PresensiController extends GetxController {
     isSubmitting.value = true;
 
     try {
-      final token    = await AuthService.getToken();
+      final token = await AuthService.getToken();
       final endpoint = isCheckIn
           ? '${AppStatic.base_url}/attendance/check-in'
           : '${AppStatic.base_url}/attendance/check-out';
 
       final request = http.MultipartRequest('POST', Uri.parse(endpoint))
-        ..headers['Accept']        = 'application/json'
+        ..headers['Accept'] = 'application/json'
         ..headers['Authorization'] = 'Bearer $token'
-        ..fields['latitude']       = currentLat.value.toString()
-        ..fields['longitude']      = currentLng.value.toString();
+        ..fields['latitude'] = currentLat.value.toString()
+        ..fields['longitude'] = currentLng.value.toString();
 
       if (capturedImagePath.value.isNotEmpty) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'image',
-          capturedImagePath.value,
-        ));
+        request.files.add(
+          await http.MultipartFile.fromPath('image', capturedImagePath.value),
+        );
       }
 
       final streamed = await request.send();
@@ -215,11 +221,11 @@ class PresensiController extends GetxController {
         final homeCtrl = Get.find<HomeController>();
         if (isCheckIn && data != null) {
           final rawTime = data['check_in_time'] as String? ?? '';
-          homeCtrl.presensiMasuk.value   = _formatTime(rawTime);
+          homeCtrl.presensiMasuk.value = _formatTime(rawTime);
           homeCtrl.jamMasukDisplay.value = _formatTime(rawTime);
         } else if (!isCheckIn && data != null) {
           final rawTime = data['check_out_time'] as String? ?? '';
-          homeCtrl.presensiPulang.value   = _formatTime(rawTime); // set checkout
+          homeCtrl.presensiPulang.value = _formatTime(rawTime); // set checkout
           homeCtrl.jamPulangDisplay.value = _formatTime(rawTime);
         }
       }
@@ -260,7 +266,7 @@ class PresensiController extends GetxController {
       final dt = DateTime.tryParse(raw);
       if (dt != null) {
         return '${dt.hour.toString().padLeft(2, '0')}:'
-               '${dt.minute.toString().padLeft(2, '0')}';
+            '${dt.minute.toString().padLeft(2, '0')}';
       }
     }
     final parts = raw.split(':');

@@ -54,10 +54,7 @@ class _SplashAnimatedWrapperState extends State<SplashAnimatedWrapper>
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animController, curve: widget.fadeCurve),
     );
-    _scaleAnim = Tween<double>(
-      begin: widget.scaleBegin,
-      end: 1.0,
-    ).animate(
+    _scaleAnim = Tween<double>(begin: widget.scaleBegin, end: 1.0).animate(
       CurvedAnimation(parent: _animController, curve: widget.scaleCurve),
     );
     _animController.forward();
@@ -77,7 +74,6 @@ class _SplashAnimatedWrapperState extends State<SplashAnimatedWrapper>
     );
   }
 }
-
 
 class SplashLogo extends StatelessWidget {
   const SplashLogo({
@@ -99,10 +95,8 @@ class SplashLogo extends StatelessWidget {
       assetPath,
       width: width,
       fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => _SplashLogoPlaceholder(
-        text: fallbackText,
-        size: placeholderSize,
-      ),
+      errorBuilder: (_, __, ___) =>
+          _SplashLogoPlaceholder(text: fallbackText, size: placeholderSize),
     );
   }
 }
@@ -164,7 +158,6 @@ class SplashWelcomeText extends StatelessWidget {
     );
   }
 }
-
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
