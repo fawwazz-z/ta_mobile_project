@@ -12,9 +12,10 @@ import 'package:ta_mobile_project/services/authService.dart';
 import '../controllers/verifikasiController.dart';
 import '../routes/colors.dart';
 
-const double _schoolLat = -6.8080000;
-const double _schoolLng = 110.8315000;
-const double _radiusMeters = 999900.0;
+// Variabel dinamis yang akan diisi dari API
+double _schoolLat = -6.8080000; // default sementara
+double _schoolLng = 110.8315000; // default sementara
+double _radiusMeters = 999900.0; // default sementara
 
 class PresensiController extends GetxController {
   CameraController? cameraController;
@@ -24,6 +25,7 @@ class PresensiController extends GetxController {
   var capturedImagePath = ''.obs;
 
   var isLoadingLocation = true.obs;
+  var isLoadingProfile = false.obs;
   var alamat = ''.obs;
   var koordinat = ''.obs;
   var currentLat = 0.0.obs;
@@ -33,6 +35,13 @@ class PresensiController extends GetxController {
   var locationError = ''.obs;
 
   var isSubmitting = false.obs;
+
+  // Data lokasi sekolah dari API
+  var schoolLocationName = ''.obs;
+  var schoolAddress = ''.obs;
+  var schoolLatitude = 0.0.obs;
+  var schoolLongitude = 0.0.obs;
+  var schoolRadiusKm = 0.0.obs;
 
   bool get isCheckIn {
     if (Get.isRegistered<HomeController>()) {
@@ -44,14 +53,89 @@ class PresensiController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    initCamera();
-    _getLocation();
+    _loadProfileAndInit();
   }
 
   @override
   void onClose() {
     cameraController?.dispose();
     super.onClose();
+  }
+
+  /// Load profile dulu, baru init camera dan location
+  Future<void> _loadProfileAndInit() async {
+    await fetchSchoolLocation();
+    await initCamera();
+    await _getLocation();
+  }
+
+  /// GET /profile - Ambil data lokasi sekolah
+  Future<void> fetchSchoolLocation() async {
+    try {
+      isLoadingProfile.value = true;
+      final token = await AuthService.getToken();
+      final response = await http.get(
+        Uri.parse('${AppStatic.base_url}/profile'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print("Profile Response Status: ${response.statusCode}");
+      print("Profile Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        if (body['success'] == true) {
+          final data = body['data'];
+          final location = data['location'];
+
+          if (location != null) {
+            // Update variabel global untuk radius sekolah
+            _schoolLat =
+                double.tryParse(location['latitude']?.toString() ?? '0') ??
+                -6.8080000;
+            _schoolLng =
+                double.tryParse(location['longitude']?.toString() ?? '0') ??
+                110.8315000;
+            _radiusMeters =
+                (double.tryParse(location['radius_km']?.toString() ?? '0') ??
+                    0) *
+                1000; // konversi km ke meter
+
+            // Simpan ke observable untuk ditampilkan jika perlu
+            schoolLocationName.value = location['name'] ?? 'Sekolah';
+            schoolAddress.value = location['address'] ?? '';
+            schoolLatitude.value = _schoolLat;
+            schoolLongitude.value = _schoolLng;
+            schoolRadiusKm.value =
+                double.tryParse(location['radius_km']?.toString() ?? '0') ?? 0;
+
+            print("School Location Loaded:");
+            print("  Name: ${schoolLocationName.value}");
+            print("  Lat: $_schoolLat, Lng: $_schoolLng");
+            print(
+              "  Radius: ${schoolRadiusKm.value} km ($_radiusMeters meters)",
+            );
+          } else {
+            print("Location data not found in profile response");
+          }
+        } else {
+          print("Failed to load profile: ${body['message']}");
+        }
+      } else if (response.statusCode == 401) {
+        _handleUnauthorized();
+      } else {
+        print("Failed to load profile: HTTP ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching school location: $e");
+      // Tetap lanjut dengan default location
+    } finally {
+      isLoadingProfile.value = false;
+    }
   }
 
   Future<void> initCamera() async {
@@ -164,6 +248,7 @@ class PresensiController extends GetxController {
     koordinat.value =
         '${pos.latitude.toStringAsFixed(6)}, ${pos.longitude.toStringAsFixed(6)}';
 
+    // Hitung jarak ke sekolah menggunakan data dari API
     double jarak = Geolocator.distanceBetween(
       pos.latitude,
       pos.longitude,
@@ -172,6 +257,10 @@ class PresensiController extends GetxController {
     );
     jarakMeter.value = jarak;
     dalamRadius.value = jarak <= _radiusMeters;
+
+    print("Distance to school: ${jarak.toStringAsFixed(2)} meters");
+    print("Radius limit: $_radiusMeters meters");
+    print("Within radius: ${dalamRadius.value}");
   }
 
   Future<void> submitPresensi() async {
@@ -225,7 +314,6 @@ class PresensiController extends GetxController {
           homeCtrl.jamMasukDisplay.value = _formatTime(rawTime);
         } else if (!isCheckIn && data != null) {
           final rawTime = data['check_out_time'] as String? ?? '';
-          homeCtrl.presensiPulang.value = _formatTime(rawTime); // set checkout
           homeCtrl.jamPulangDisplay.value = _formatTime(rawTime);
         }
       }
@@ -272,5 +360,16 @@ class PresensiController extends GetxController {
     final parts = raw.split(':');
     if (parts.length >= 2) return '${parts[0]}:${parts[1]}';
     return raw;
+  }
+
+  void _handleUnauthorized() {
+    AuthService.clearToken();
+    Get.offAllNamed('/loginPage');
+    Get.snackbar(
+      'Sesi Berakhir',
+      'Silakan login kembali',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 }

@@ -7,6 +7,7 @@ import 'package:ta_mobile_project/services/authService.dart';
 
 class JadwalHariIniModel {
   final int id;
+  final int journalId;
   final String subjectName;
   final String classroomName;
   final int classroomId;
@@ -18,6 +19,7 @@ class JadwalHariIniModel {
 
   const JadwalHariIniModel({
     required this.id,
+    required this.journalId,
     required this.subjectName,
     required this.classroomName,
     required this.classroomId,
@@ -44,6 +46,7 @@ class JadwalHariIniModel {
 
     return JadwalHariIniModel(
       id: (j['id'] as num).toInt(),
+      journalId: (j['journal_id'] as num?)?.toInt() ?? 0,
       subjectName: subject?['name'] as String? ?? 'Mata Pelajaran',
       classroomName: classroom?['name'] as String? ?? 'Kelas',
       classroomId: (classroom?['id'] as num?)?.toInt() ?? 0,
