@@ -25,21 +25,25 @@ class RefleksiController extends GetxController {
     kelasNama = args['kelas'] as String? ?? 'Kelas';
     mapelNama = args['mapel'] as String? ?? 'Mata Pelajaran';
 
-    if (args['journal_id'] != null) {
-      journalId.value = args['journal_id'] as int;
-    } else {
-      fetchJournalId();
-    }
+    print("=== REFLEKSI DEBUG ===");
+    print("scheduleId: $scheduleId");
+    print("journalId dari args: ${args['journal_id']}");
 
-    if (args['reflection'] != null) {
-      refleksiText.value = args['reflection'] as String;
+    // Jika ada journal_id dari arguments, langsung gunakan
+    if (args['journal_id'] != null && args['journal_id'] != 0) {
+      journalId.value = args['journal_id'] as int;
+      fetchExistingRefleksiByJournalId();
     } else {
-      fetchExistingRefleksi();
+      // Fallback: cari journal_id berdasarkan schedule_id
+      print("Journal ID tidak ditemukan, fetch dari API...");
+      fetchJournalIdAndRefleksi();
     }
   }
 
-  Future<void> fetchJournalId() async {
+  /// Ambil journal_id dan refleksi berdasarkan schedule_id
+  Future<void> fetchJournalIdAndRefleksi() async {
     try {
+      isLoading.value = true;
       final token = await AuthService.getToken();
       final response = await http.get(
         Uri.parse('${AppStatic.base_url}/journals/$scheduleId/detail'),
@@ -49,42 +53,83 @@ class RefleksiController extends GetxController {
         },
       );
 
+      print("Fetch Journal Response Status: ${response.statusCode}");
+      print("Fetch Journal Response Body: ${response.body}");
+
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         if (body['success'] == true) {
-          journalId.value = body['data']['id'] ?? 0;
+          final data = body['data'];
+          journalId.value = data['id'] ?? 0;
+          final reflection = data['reflection'] ?? '';
+          if (reflection.isNotEmpty) {
+            refleksiText.value = reflection;
+            print("Refleksi ditemukan: $reflection");
+          } else {
+            print("Refleksi kosong");
+          }
+        } else {
+          print("Gagal mendapatkan journal");
         }
+      } else {
+        print("Error: ${response.statusCode}");
       }
     } catch (e) {
       print("Error fetch journal id: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  Future<void> fetchExistingRefleksi() async {
+  /// Ambil refleksi langsung berdasarkan journal_id
+  Future<void> fetchExistingRefleksiByJournalId() async {
+    if (journalId.value == 0) return;
+
     try {
+      isLoading.value = true;
       final token = await AuthService.getToken();
       final response = await http.get(
-        Uri.parse('${AppStatic.base_url}/journals/$scheduleId/detail'),
+        Uri.parse('${AppStatic.base_url}/journals/journal/${journalId.value}'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
 
+      print("Fetch Refleksi By JournalId Response: ${response.statusCode}");
+      print("Fetch Refleksi By JournalId Body: ${response.body}");
+
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        if (body['success'] == true) {
-          final reflection = body['data']['reflection'] ?? '';
-          if (reflection.isNotEmpty) {
-            refleksiText.value = reflection;
-          }
+        // Handle response dengan atau tanpa wrapper 'data'
+        final data = body['data'] ?? body;
+        final reflection = data['reflection'] ?? '';
+
+        print("Refleksi dari API: '$reflection'");
+
+        if (reflection.isNotEmpty) {
+          refleksiText.value = reflection;
+          print("Refleksi Text diupdate menjadi: ${refleksiText.value}");
+        } else {
+          print("Refleksi kosong dari API");
+          refleksiText.value = '';
         }
+      } else if (response.statusCode == 404) {
+        print("Journal tidak ditemukan (404)");
+        refleksiText.value = '';
+      } else {
+        print("Error: ${response.statusCode}");
+        refleksiText.value = '';
       }
     } catch (e) {
       print("Error fetch refleksi: $e");
+      refleksiText.value = '';
+    } finally {
+      isLoading.value = false;
     }
   }
 
+  /// POST /api/journals/{journalId}/reflection
   Future<void> simpanRefleksi() async {
     if (refleksiText.value.trim().isEmpty) {
       Get.snackbar(
@@ -99,7 +144,7 @@ class RefleksiController extends GetxController {
     if (journalId.value == 0) {
       Get.snackbar(
         'Error',
-        'Data jurnal tidak ditemukan',
+        'Data jurnal tidak ditemukan. Silakan refresh dan coba lagi.',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -123,6 +168,9 @@ class RefleksiController extends GetxController {
         },
         body: jsonEncode(payload),
       );
+
+      print("Simpan Refleksi Response: ${response.statusCode}");
+      print("Simpan Refleksi Body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (Get.isRegistered<HomeController>()) {
@@ -153,6 +201,7 @@ class RefleksiController extends GetxController {
         );
       }
     } catch (e) {
+      print("Error simpan refleksi: $e");
       Get.snackbar(
         'Error',
         'Tidak dapat terhubung ke server',
@@ -164,6 +213,7 @@ class RefleksiController extends GetxController {
     }
   }
 
+  /// PUT /api/journals/{journalId}/reflection
   Future<void> updateRefleksi() async {
     if (refleksiText.value.trim().isEmpty) {
       Get.snackbar(
@@ -178,7 +228,7 @@ class RefleksiController extends GetxController {
     if (journalId.value == 0) {
       Get.snackbar(
         'Error',
-        'Data jurnal tidak ditemukan',
+        'Data jurnal tidak ditemukan. Silakan refresh dan coba lagi.',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -202,6 +252,9 @@ class RefleksiController extends GetxController {
         },
         body: jsonEncode(payload),
       );
+
+      print("Update Refleksi Response: ${response.statusCode}");
+      print("Update Refleksi Body: ${response.body}");
 
       if (response.statusCode == 200) {
         if (Get.isRegistered<HomeController>()) {
@@ -232,6 +285,7 @@ class RefleksiController extends GetxController {
         );
       }
     } catch (e) {
+      print("Error update refleksi: $e");
       Get.snackbar(
         'Error',
         'Tidak dapat terhubung ke server',

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/controllers/homeController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
+import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
 class SiswaUpdateModel {
@@ -260,7 +261,7 @@ class UpdatePresensiController extends GetxController {
         );
 
         Future.delayed(const Duration(milliseconds: 500), () {
-          Get.offAllNamed('/home');
+          Get.offAllNamed(AppRoutes.mainPage);
         });
       } else if (response.statusCode == 401) {
         _handleUnauthorized();

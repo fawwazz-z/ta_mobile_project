@@ -31,15 +31,7 @@ class RiwayatFragment extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            AppPageHeader(
-              title: 'Riwayat Presensi',
-              action: AppIconButton(
-                icon: Icons.refresh_rounded,
-                onTap: controller.fetchHistory,
-              ),
-            ),
-
-            _buildSearchBar(),
+            AppPageHeader(title: 'Riwayat Presensi'),
             const SizedBox(height: 10),
 
             Obx(
@@ -96,48 +88,6 @@ class RiwayatFragment extends StatelessWidget {
               }),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // ── Search Bar (tetap custom karena Obx di suffixIcon) ──────────────────
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: TextField(
-          onChanged: controller.onSearchChanged,
-          decoration: InputDecoration(
-            hintText: 'Cari tanggal atau status...',
-            hintStyle: const TextStyle(color: AppColors.defalt, fontSize: 14),
-            prefixIcon: const Icon(
-              Icons.search_rounded,
-              color: AppColors.textDark,
-              size: 20,
-            ),
-            suffixIcon: Obx(
-              () => controller.searchQuery.isNotEmpty
-                  ? GestureDetector(
-                      onTap: controller.clearSearch,
-                      child: const Icon(
-                        Icons.close_rounded,
-                        color: AppColors.defalt,
-                        size: 18,
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
         ),
       ),
     );

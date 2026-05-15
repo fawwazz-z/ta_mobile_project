@@ -314,6 +314,7 @@ class HomeFragment extends StatelessWidget {
                   subject: jadwal.subjectName,
                   time: '${jadwal.startTime} - ${jadwal.endTime}',
                   scheduleId: jadwal.id,
+                  journalId: jadwal.journalId,
                   classroomId: jadwal.classroomId,
                   mapel: jadwal.subjectName,
                   startTime: jadwal.startTime,
@@ -335,6 +336,7 @@ class HomeFragment extends StatelessWidget {
     required String className,
     required String subject,
     required int scheduleId,
+    required int journalId,
     required int classroomId,
     required String time,
     required String mapel,
@@ -349,6 +351,7 @@ class HomeFragment extends StatelessWidget {
             AppRoutes.updatePresensiPage,
             arguments: {
               'schedule_id': scheduleId,
+              'journal_id': journalId,
               'classroom_id': classroomId,
               'kelas': className,
               'mapel': mapel,
@@ -408,18 +411,27 @@ class HomeFragment extends StatelessWidget {
               ),
             ),
 
+            // Di tombol refleksi (kurang lebih line 320-350)
             if (isJournalFilled)
               Obx(() {
                 final hasReflection = homeCtrl.getReflectionStatus(scheduleId);
                 return GestureDetector(
                   onTap: () {
+                    // 🔥 KIRIMKAN schedule_id DAN journal_id
+                    final arguments = {
+                      'schedule_id': scheduleId,
+                      'kelas': className,
+                      'mapel': mapel,
+                    };
+
+                    // Jika journalId tersedia (bukan 0), kirimkan
+                    if (journalId != 0) {
+                      arguments['journal_id'] = journalId;
+                    }
+
                     Get.toNamed(
                       AppRoutes.refleksipage,
-                      arguments: {
-                        'schedule_id': scheduleId,
-                        'kelas': className,
-                        'mapel': mapel,
-                      },
+                      arguments: arguments,
                     )?.then((_) => homeCtrl.refreshData());
                   },
                   child: Container(
@@ -457,7 +469,6 @@ class HomeFragment extends StatelessWidget {
                   ),
                 );
               }),
-
             const SizedBox(width: 6),
             Icon(
               Icons.chevron_right_rounded,
