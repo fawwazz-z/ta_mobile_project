@@ -15,14 +15,24 @@ class _RefleksiPageState extends State<RefleksiPage> {
   late final RefleksiController ctrl;
   late final TextEditingController textController;
 
+  bool _isLoading = true;
+  bool _isSaving = false;
+
   @override
   void initState() {
     super.initState();
     ctrl = Get.find<RefleksiController>();
     textController = TextEditingController();
 
-    // Tunggu data selesai loading, lalu set text
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    // Tunggu controller selesai fetch data
+    await Future.delayed(Duration(milliseconds: 500));
+
+    setState(() {
+      _isLoading = false;
       textController.text = ctrl.refleksiText.value;
     });
   }
@@ -74,16 +84,10 @@ class _RefleksiPageState extends State<RefleksiPage> {
                     color: AppColors.textDark,
                   ),
                 ),
-                // Hanya bagian ini yang perlu Obx
-                Obx(
-                  () => Text(
-                    '${ctrl.kelasNama} • ${ctrl.mapelNama}',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.brownshade2,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Text(
+                  '${ctrl.kelasNama} • ${ctrl.mapelNama}',
+                  style: TextStyle(fontSize: 11, color: AppColors.brownshade2),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -94,32 +98,29 @@ class _RefleksiPageState extends State<RefleksiPage> {
   }
 
   Widget _buildBody() {
-    // Hanya loading state yang perlu Obx
-    return Obx(() {
-      if (ctrl.isLoading.value) {
-        return const Expanded(child: Center(child: AppLoadingCenter()));
-      }
+    if (_isLoading) {
+      return const Expanded(child: Center(child: AppLoadingCenter()));
+    }
 
-      return Expanded(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              _buildInfoCard(),
-              const SizedBox(height: 24),
-              const AppFieldLabel('Refleksi Hari Ini'),
-              const SizedBox(height: 8),
-              _buildRefleksiTextField(),
-              const SizedBox(height: 16),
-              _buildTipsBox(),
-              const SizedBox(height: 24),
-            ],
-          ),
+    return Expanded(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            _buildInfoCard(),
+            const SizedBox(height: 24),
+            const AppFieldLabel('Refleksi Hari Ini'),
+            const SizedBox(height: 8),
+            _buildRefleksiTextField(),
+            const SizedBox(height: 16),
+            _buildTipsBox(),
+            const SizedBox(height: 24),
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 
   Widget _buildInfoCard() {
@@ -213,7 +214,7 @@ class _RefleksiPageState extends State<RefleksiPage> {
       child: const Row(
         children: [
           Icon(Icons.lightbulb_outline, color: AppColors.warning, size: 18),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
               '💡 Tips: Tuliskan kendala, keberhasilan, '
@@ -227,21 +228,61 @@ class _RefleksiPageState extends State<RefleksiPage> {
   }
 
   Widget _buildSaveButton() {
-    // Hanya isSaving yang perlu Obx
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-      child: Obx(
-        () => AppPrimaryButton(
-          label: 'Simpan Refleksi',
-          icon: Icons.save_outlined,
-          onPressed: () {
-            if (ctrl.refleksiText.value.isNotEmpty) {
-              ctrl.updateRefleksi();
-            } else {
-              ctrl.simpanRefleksi();
-            }
-          },
-          isLoading: ctrl.isSaving.value,
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: _isSaving
+              ? null
+              : () async {
+                  setState(() {
+                    _isSaving = true;
+                  });
+
+                  if (ctrl.refleksiText.value.isNotEmpty) {
+                    await ctrl.updateRefleksi();
+                  } else {
+                    await ctrl.simpanRefleksi();
+                  }
+
+                  setState(() {
+                    _isSaving = false;
+                  });
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+            foregroundColor: AppColors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            elevation: 0,
+          ),
+          child: _isSaving
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.save_outlined, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Simpan Refleksi',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
