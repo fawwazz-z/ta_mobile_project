@@ -67,7 +67,9 @@ class RefleksiController extends GetxController {
             print("Refleksi ditemukan: $reflection");
           } else {
             print("Refleksi kosong");
+            refleksiText.value = '';
           }
+          update(); // 🔥 Tambahkan ini untuk refresh UI
         } else {
           print("Gagal mendapatkan journal");
         }
@@ -78,6 +80,7 @@ class RefleksiController extends GetxController {
       print("Error fetch journal id: $e");
     } finally {
       isLoading.value = false;
+      update(); // 🔥 Tambahkan ini
     }
   }
 
