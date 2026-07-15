@@ -119,7 +119,6 @@ class VerifikasiPage extends StatelessWidget {
               shadowColor: Colors.transparent,
               child: Column(
                 children: [
-                  // Lokasi
                   _infoRow(
                     icon: Icons.location_on,
                     iconColor: AppColors.primaryLight,
@@ -134,10 +133,7 @@ class VerifikasiPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const Divider(height: 24),
-
-                  // Koordinat
                   _infoRow(
                     icon: Icons.explore,
                     iconColor: AppColors.primaryLight,
@@ -149,10 +145,7 @@ class VerifikasiPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const Divider(height: 24),
-
-                  // Status radius
                   _infoRow(
                     icon: Icons.radar,
                     iconColor: AppColors.success,
