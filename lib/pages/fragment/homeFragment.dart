@@ -28,8 +28,7 @@ class HomeFragment extends StatelessWidget {
               _buildHeader(),
               const SizedBox(height: 20),
               _buildPresensiCard(),
-              const SizedBox(height: 16),
-              _buildStatsRow(),
+              // ✅ _buildStatsRow() dihapus
               const SizedBox(height: 24),
               _buildJurnalSection(),
               const SizedBox(height: 24),
@@ -40,7 +39,6 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
-  // ── Header ─────────────────────────────────────────────────────────────────
   Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,7 +66,6 @@ class HomeFragment extends StatelessWidget {
             ),
           ],
         ),
-
         GestureDetector(
           onTap: () => Get.find<MainController>().changeIndex(3),
           child: AppUserAvatar(size: 44, iconSize: 24, borderRadius: 12),
@@ -77,35 +74,12 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
-  // ── Presensi Card ──────────────────────────────────────────────────────────
   Widget _buildPresensiCard() {
     final now = DateTime.now();
-    final days = [
-      'Minggu',
-      'Senin',
-      'Selasa',
-      'Rabu',
-      'Kamis',
-      'Jumat',
-      'Sabtu',
-    ];
-    final months = [
-      '',
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-    final dateStr =
-        '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
+    final days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    final months = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    final dateStr = '${days[now.weekday % 7]}, ${now.day} ${months[now.month]} ${now.year}';
 
     return AppCard(
       padding: const EdgeInsets.all(20),
@@ -113,103 +87,77 @@ class HomeFragment extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header card: judul + badge jam sekolah
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'Presensi Hari Ini',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+              ),
+              Obx(() => AppPrimaryBadge(
+                label: homeCtrl.sudahCheckIn
+                    ? homeCtrl.jamPulangSekolah.value
+                    : homeCtrl.jamMasukSekolah.value,
+              )),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(dateStr, style: TextStyle(fontSize: 12, color: AppColors.brownshade)),
+          const SizedBox(height: 16),
+          Obx(() => Row(
+            children: [
+              Expanded(
+                child: AppTimeDisplay(
+                  label: 'MASUK',
+                  value: homeCtrl.jamMasukDisplay.value,
+                  filled: homeCtrl.jamMasukDisplay.value != '--:--',
                 ),
               ),
-              Obx(
-                () => AppPrimaryBadge(
-                  label: homeCtrl.sudahCheckIn
-                      ? homeCtrl.jamPulangSekolah.value
-                      : homeCtrl.jamMasukSekolah.value,
+              AppDivider.vertical(height: 40),
+              const SizedBox(width: 20),
+              Expanded(
+                child: AppTimeDisplay(
+                  label: 'PULANG',
+                  value: homeCtrl.jamPulangDisplay.value,
+                  filled: homeCtrl.jamPulangDisplay.value != '--:--',
                 ),
               ),
             ],
-          ),
-
-          const SizedBox(height: 4),
-          Text(
-            dateStr,
-            style: TextStyle(fontSize: 12, color: AppColors.brownshade),
-          ),
-          const SizedBox(height: 16),
-
-          // Jam MASUK & PULANG
-          Obx(
-            () => Row(
-              children: [
-                Expanded(
-                  child: AppTimeDisplay(
-                    label: 'MASUK',
-                    value: homeCtrl.jamMasukDisplay.value,
-                    filled: homeCtrl.jamMasukDisplay.value != '--:--',
-                  ),
-                ),
-                AppDivider.vertical(height: 40),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: AppTimeDisplay(
-                    label: 'PULANG',
-                    value: homeCtrl.jamPulangDisplay.value,
-                    filled: homeCtrl.jamPulangDisplay.value != '--:--',
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          )),
           const SizedBox(height: 18),
-
-          // Tombol presensi
           Obx(() {
-            final sudahKeduanya =
-                homeCtrl.sudahCheckIn && homeCtrl.sudahCheckOut;
+            final sudahKeduanya = homeCtrl.sudahCheckIn && homeCtrl.sudahCheckOut;
             return SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton.icon(
-                onPressed: sudahKeduanya
-                    ? null
-                    : () => Get.toNamed(AppRoutes.presensipage),
+                onPressed: sudahKeduanya ? null : () => Get.toNamed(AppRoutes.presensipage),
                 icon: Icon(
                   sudahKeduanya
                       ? Icons.check_circle_rounded
                       : homeCtrl.sudahCheckIn
-                      ? Icons.logout_rounded
-                      : Icons.fingerprint_rounded,
+                          ? Icons.logout_rounded
+                          : Icons.fingerprint_rounded,
                   size: 22,
                 ),
                 label: Text(
                   sudahKeduanya
                       ? 'Presensi Selesai'
                       : homeCtrl.sudahCheckIn
-                      ? 'Presensi Pulang'
-                      : 'Mulai Presensi',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                          ? 'Presensi Pulang'
+                          : 'Mulai Presensi',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: sudahKeduanya
                       ? Colors.grey.shade400
                       : homeCtrl.sudahCheckIn
-                      ? AppColors.warning
-                      : AppColors.primary,
+                          ? AppColors.warning
+                          : AppColors.primary,
                   foregroundColor: AppColors.white,
                   disabledBackgroundColor: Colors.grey.shade400,
                   disabledForegroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   elevation: 0,
                 ),
               ),
@@ -220,46 +168,6 @@ class HomeFragment extends StatelessWidget {
     );
   }
 
-  // ── Stats Row ──────────────────────────────────────────────────────────────
-  Widget _buildStatsRow() {
-    return Obx(() {
-      final persenHadir = homeCtrl.sudahPresensi.value
-          ? '${homeCtrl.persenHadir.toStringAsFixed(0)}%'
-          : '--%';
-      final izinSakit = homeCtrl.sudahPresensi.value
-          ? '${homeCtrl.totalIzinSakit} Siswa'
-          : '-- Siswa';
-      final labelKehadiran = homeCtrl.sudahPresensi.value
-          ? 'KEHADIRAN'
-          : 'KEHADIRAN SISWA';
-
-      return Row(
-        children: [
-          Expanded(
-            child: AppStatCard(
-              icon: Icons.calendar_month_outlined,
-              iconColor: AppColors.info,
-              iconBg: AppColors.infoLight,
-              label: labelKehadiran,
-              value: persenHadir,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: AppStatCard(
-              icon: Icons.medical_services_outlined,
-              iconColor: AppColors.warning,
-              iconBg: AppColors.warningLight,
-              label: 'IZIN/SAKIT',
-              value: izinSakit,
-            ),
-          ),
-        ],
-      );
-    });
-  }
-
-  // ── Jurnal/Jadwal Section ──────────────────────────────────────────────────
   Widget _buildJurnalSection() {
     return Column(
       children: [
@@ -269,30 +177,21 @@ class HomeFragment extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Obx(() {
-          if (homeCtrl.isLoadingJadwal.value) {
-            return const AppLoadingCenter();
-          }
+          if (homeCtrl.isLoadingJadwal.value) return const AppLoadingCenter();
           if (homeCtrl.errorJadwal.isNotEmpty) {
             return Center(
-              child: Text(
-                homeCtrl.errorJadwal.value,
-                style: TextStyle(color: AppColors.brownshade4),
-              ),
+              child: Text(homeCtrl.errorJadwal.value,
+                  style: TextStyle(color: AppColors.brownshade4)),
             );
           }
           if (homeCtrl.jadwalHariIni.isEmpty) {
             return AppCard(
               child: Row(
                 children: [
-                  Icon(
-                    Icons.event_available_rounded,
-                    color: AppColors.brownshade,
-                  ),
+                  Icon(Icons.event_available_rounded, color: AppColors.brownshade),
                   const SizedBox(width: 12),
-                  Text(
-                    'Tidak ada jadwal mengajar hari ini',
-                    style: TextStyle(color: AppColors.brownshade4),
-                  ),
+                  Text('Tidak ada jadwal mengajar hari ini',
+                      style: TextStyle(color: AppColors.brownshade4)),
                 ],
               ),
             );
@@ -307,9 +206,7 @@ class HomeFragment extends StatelessWidget {
                 child: _buildJurnalItem(
                   icon: Icons.menu_book_outlined,
                   iconColor: entry.key == 0 ? AppColors.info : AppColors.purple,
-                  iconBg: entry.key == 0
-                      ? AppColors.iconBgBlue
-                      : AppColors.iconBgPurple,
+                  iconBg: entry.key == 0 ? AppColors.iconBgBlue : AppColors.iconBgPurple,
                   className: jadwal.classroomName,
                   subject: jadwal.subjectName,
                   time: '${jadwal.startTime} - ${jadwal.endTime}',
@@ -347,31 +244,25 @@ class HomeFragment extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (isJournalFilled) {
-          Get.toNamed(
-            AppRoutes.updatePresensiPage,
-            arguments: {
-              'schedule_id': scheduleId,
-              'journal_id': journalId,
-              'classroom_id': classroomId,
-              'kelas': className,
-              'mapel': mapel,
-              'start_time': startTime,
-              'end_time': endTime,
-            },
-          )?.then((_) => homeCtrl.refreshData());
+          Get.toNamed(AppRoutes.updatePresensiPage, arguments: {
+            'schedule_id': scheduleId,
+            'journal_id': journalId,
+            'classroom_id': classroomId,
+            'kelas': className,
+            'mapel': mapel,
+            'start_time': startTime,
+            'end_time': endTime,
+          })?.then((_) => homeCtrl.refreshData());
         } else {
-          Get.toNamed(
-            AppRoutes.presensiSiswa,
-            arguments: {
-              'schedule_id': scheduleId,
-              'classroom_id': classroomId,
-              'kelas': className,
-              'mapel': mapel,
-              'start_time': startTime,
-              'end_time': endTime,
-              'is_journal_filled': isJournalFilled,
-            },
-          )?.then((_) => homeCtrl.refreshData());
+          Get.toNamed(AppRoutes.presensiSiswa, arguments: {
+            'schedule_id': scheduleId,
+            'classroom_id': classroomId,
+            'kelas': className,
+            'mapel': mapel,
+            'start_time': startTime,
+            'end_time': endTime,
+            'is_journal_filled': isJournalFilled,
+          })?.then((_) => homeCtrl.refreshData());
         }
       },
       child: AppCard(
@@ -391,54 +282,31 @@ class HomeFragment extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    className,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
-                    ),
-                  ),
+                  Text(className,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                   const SizedBox(height: 2),
-                  Text(
-                    '$subject • $time',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.brownshade4,
-                    ),
-                  ),
+                  Text('$subject • $time',
+                      style: TextStyle(fontSize: 13, color: AppColors.brownshade4)),
                 ],
               ),
             ),
-
-            // Di tombol refleksi (kurang lebih line 320-350)
             if (isJournalFilled)
               Obx(() {
                 final hasReflection = homeCtrl.getReflectionStatus(scheduleId);
                 return GestureDetector(
                   onTap: () {
-                    // 🔥 KIRIMKAN schedule_id DAN journal_id
                     final arguments = {
                       'schedule_id': scheduleId,
                       'kelas': className,
                       'mapel': mapel,
                     };
-
-                    // Jika journalId tersedia (bukan 0), kirimkan
-                    if (journalId != 0) {
-                      arguments['journal_id'] = journalId;
-                    }
-
-                    Get.toNamed(
-                      AppRoutes.refleksipage,
-                      arguments: arguments,
-                    )?.then((_) => homeCtrl.refreshData());
+                    if (journalId != 0) arguments['journal_id'] = journalId;
+                    Get.toNamed(AppRoutes.refleksipage, arguments: arguments)
+                        ?.then((_) => homeCtrl.refreshData());
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: hasReflection
                           ? Colors.green.withOpacity(0.1)
@@ -448,21 +316,15 @@ class HomeFragment extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.edit_note_outlined,
-                          size: 14,
-                          color: hasReflection ? Colors.green : AppColors.info,
-                        ),
+                        Icon(Icons.edit_note_outlined, size: 14,
+                            color: hasReflection ? Colors.green : AppColors.info),
                         const SizedBox(width: 4),
                         Text(
                           hasReflection ? 'Refleksi ✓' : 'Refleksi',
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: hasReflection
-                                ? Colors.green
-                                : AppColors.info,
-                          ),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: hasReflection ? Colors.green : AppColors.info),
                         ),
                       ],
                     ),
@@ -470,11 +332,7 @@ class HomeFragment extends StatelessWidget {
                 );
               }),
             const SizedBox(width: 6),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.brownshade,
-              size: 22,
-            ),
+            Icon(Icons.chevron_right_rounded, color: AppColors.brownshade, size: 22),
           ],
         ),
       ),

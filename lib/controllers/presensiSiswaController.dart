@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/controllers/homeController.dart';
 import 'package:ta_mobile_project/routes/colors.dart';
+import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
 class SiswaModel {
@@ -183,7 +184,7 @@ class PresensiSiswaController extends GetxController {
 
         // LANGSUNG KEMBALI KE HOME (tanpa ke refleksi)
         Future.delayed(const Duration(milliseconds: 500), () {
-          Get.back(); // Kembali ke halaman home
+          Get.offAllNamed(AppRoutes.mainPage); // Kembali ke halaman home
         });
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
