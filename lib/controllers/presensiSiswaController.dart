@@ -55,6 +55,10 @@ class PresensiSiswaController extends GetxController {
     jamSelesai = args['end_time'] as String? ?? '';
     classroomId = args['classroom_id'] as int? ?? 0;
 
+    print('=== PresensiSiswaController onInit ===');
+    print('classroomId: $classroomId');
+    print('scheduleId: $scheduleId');
+
     fetchSiswa();
   }
 
@@ -64,7 +68,9 @@ class PresensiSiswaController extends GetxController {
       errorMsg.value = '';
 
       final token = await AuthService.getToken();
-      final url = '${AppStatic.base_url}/journals/students/$classroomId';
+      final url = '${AppStatic.base_url}/journals/students/$scheduleId';
+
+      print('Fetching siswa dari: $url');
 
       final response = await http.get(
         Uri.parse(url),
@@ -73,6 +79,9 @@ class PresensiSiswaController extends GetxController {
           'Authorization': 'Bearer $token',
         },
       );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
@@ -84,6 +93,7 @@ class PresensiSiswaController extends GetxController {
             if (siswa.status.isEmpty) siswa.status = 'hadir';
             return siswa;
           }).toList();
+          print('Jumlah siswa: ${siswaList.length}');
         } else {
           errorMsg.value = 'Data siswa tidak ditemukan';
         }
@@ -93,6 +103,7 @@ class PresensiSiswaController extends GetxController {
         errorMsg.value = 'Gagal memuat data siswa (Code: ${response.statusCode})';
       }
     } catch (e) {
+      print('Error fetchSiswa: $e');
       errorMsg.value = 'Tidak dapat terhubung ke server';
     } finally {
       isLoading.value = false;

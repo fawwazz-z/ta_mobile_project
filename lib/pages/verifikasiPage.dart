@@ -36,6 +36,7 @@ class VerifikasiPage extends StatelessWidget {
             // ── Preview Foto ───────────────────────────────────────────────
             Obx(() {
               final path = controller.fotoPath.value;
+              print('=== VerifikasiPage fotoPath: $path ==='); // debug
               return Container(
                 width: double.infinity,
                 height: 240,
@@ -48,11 +49,16 @@ class VerifikasiPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: path.isNotEmpty
-                          ? Image.file(
-                              File(path),
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: 240,
+                          ? Transform(
+                              // ✅ Mirror horizontal untuk kamera depan
+                              alignment: Alignment.center,
+                              transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                              child: Image.file(
+                                File(path),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 240,
+                              ),
                             )
                           : const Center(
                               child: Icon(
