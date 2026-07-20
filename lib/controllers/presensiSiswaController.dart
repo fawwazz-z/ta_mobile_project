@@ -11,7 +11,7 @@ class SiswaModel {
   final int id;
   final String nama;
   final String nis;
-  String status; // hadir | izin | sakit | alpa
+  String status;
 
   SiswaModel({
     required this.id,
@@ -58,7 +58,6 @@ class PresensiSiswaController extends GetxController {
     fetchSiswa();
   }
 
-  /// GET /api/journals/students/{classroom_id}
   Future<void> fetchSiswa() async {
     try {
       isLoading.value = true;
@@ -79,17 +78,19 @@ class PresensiSiswaController extends GetxController {
         final body = jsonDecode(response.body);
         if (body['success'] == true) {
           final List raw = body['data'] ?? [];
-          siswaList.value = raw
-              .map((e) => SiswaModel.fromJson(e as Map<String, dynamic>))
-              .toList();
+          // ✅ Default status hadir jika kosong
+          siswaList.value = raw.map((e) {
+            final siswa = SiswaModel.fromJson(e as Map<String, dynamic>);
+            if (siswa.status.isEmpty) siswa.status = 'hadir';
+            return siswa;
+          }).toList();
         } else {
           errorMsg.value = 'Data siswa tidak ditemukan';
         }
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
       } else {
-        errorMsg.value =
-            'Gagal memuat data siswa (Code: ${response.statusCode})';
+        errorMsg.value = 'Gagal memuat data siswa (Code: ${response.statusCode})';
       }
     } catch (e) {
       errorMsg.value = 'Tidak dapat terhubung ke server';
@@ -106,20 +107,7 @@ class PresensiSiswaController extends GetxController {
     }
   }
 
-  /// POST /api/journals/attendance
   Future<void> simpanPresensi({required String material}) async {
-    final belumDiisi = siswaList.where((s) => s.status.isEmpty).toList();
-
-    if (belumDiisi.isNotEmpty) {
-      Get.snackbar(
-        'Perhatian',
-        'Semua siswa harus diisi statusnya',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
     if (material.isEmpty) {
       Get.snackbar(
         'Perhatian',
@@ -153,13 +141,11 @@ class PresensiSiswaController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Hitung statistik
         final hadir = siswaList.where((s) => s.status == 'hadir').length;
         final izin = siswaList.where((s) => s.status == 'izin').length;
         final sakit = siswaList.where((s) => s.status == 'sakit').length;
         final alpa = siswaList.where((s) => s.status == 'alpa').length;
 
-        // Update statistik ke HomeController
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().updateStatistikPresensi(
             hadir: hadir,
@@ -167,13 +153,10 @@ class PresensiSiswaController extends GetxController {
             sakit: sakit,
             alpa: alpa,
           );
-          // Update status refleksi
           Get.find<HomeController>().updateReflectionStatus(scheduleId, false);
-          // Refresh jadwal di home
           Get.find<HomeController>().refreshData();
         }
 
-        // Tampilkan snackbar sukses
         Get.snackbar(
           'Berhasil',
           'Presensi berhasil disimpan',
@@ -182,9 +165,8 @@ class PresensiSiswaController extends GetxController {
           duration: const Duration(seconds: 2),
         );
 
-        // LANGSUNG KEMBALI KE HOME (tanpa ke refleksi)
         Future.delayed(const Duration(milliseconds: 500), () {
-          Get.offAllNamed(AppRoutes.mainPage); // Kembali ke halaman home
+          Get.offAllNamed(AppRoutes.mainPage);
         });
       } else if (response.statusCode == 401) {
         _handleUnauthorized();
