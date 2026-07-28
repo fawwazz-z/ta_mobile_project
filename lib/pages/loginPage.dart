@@ -66,7 +66,6 @@ class LoginPage extends GetView<LoginController> {
                     ),
                     const SizedBox(height: 12),
 
-                    // ── Lupa kata sandi
                     _buildForgotPassword(),
                     const SizedBox(height: 28),
 
@@ -79,71 +78,6 @@ class LoginPage extends GetView<LoginController> {
                         height: 56,
                         fontSize: 17,
                       ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    _buildDivider(),
-                    const SizedBox(height: 20),
-
-                    Obx(
-                      () => controller.isLoadingGoogle.value
-                          ? SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: OutlinedButton(
-                                onPressed: null,
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor: AppColors.white,
-                                  side: BorderSide(
-                                    color: AppColors.brownshade,
-                                    width: 1,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                child: const SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.primary,
-                                    strokeWidth: 2.5,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: OutlinedButton(
-                                onPressed: controller.loginWithGoogle,
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor: AppColors.white,
-                                  side: BorderSide(
-                                    color: AppColors.brownshade,
-                                    width: 1,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _googleLogo(),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      'Masuk dengan Google',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textDark,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
                     ),
                     const SizedBox(height: 32),
 
@@ -159,7 +93,6 @@ class LoginPage extends GetView<LoginController> {
     );
   }
 
-  // ── Background watermark — tidak ada widget reusable yang cocok ──────────
   Widget _buildBackgroundWatermark() {
     return Positioned(
       bottom: 0,
@@ -178,7 +111,6 @@ class LoginPage extends GetView<LoginController> {
     );
   }
 
-  // ── Logo sekolah ─────────────────────────────────────────────────────────
   Widget _buildLogo() {
     return Container(
       width: 80,
@@ -195,7 +127,6 @@ class LoginPage extends GetView<LoginController> {
     );
   }
 
-  // ── Judul halaman ────────────────────────────────────────────────────────
   Widget _buildTitle() {
     return Column(
       children: [
@@ -216,7 +147,6 @@ class LoginPage extends GetView<LoginController> {
     );
   }
 
-  // ── Lupa kata sandi ──────────────────────────────────────────────────────
   Widget _buildForgotPassword() {
     return Align(
       alignment: Alignment.centerRight,
@@ -234,37 +164,6 @@ class LoginPage extends GetView<LoginController> {
     );
   }
 
-  // ── Divider dengan teks tengah ───────────────────────────────────────────
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(child: Divider(color: AppColors.brownshade, thickness: 0.8)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text(
-            'ATAU MASUK DENGAN',
-            style: TextStyle(
-              fontSize: 11,
-              color: AppColors.brownshade4,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Expanded(child: Divider(color: AppColors.brownshade, thickness: 0.8)),
-      ],
-    );
-  }
-
-  // ── Google logo ──────────────────────────────────────────────────────────
-  Widget _googleLogo() {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: CustomPaint(painter: _GoogleLogoPainter()),
-    );
-  }
-
-  // ── Footer ───────────────────────────────────────────────────────────────
   Widget _buildFooter() {
     return Column(
       children: [
@@ -287,46 +186,4 @@ class LoginPage extends GetView<LoginController> {
       ],
     );
   }
-}
-
-// ── Google Logo Painter ───────────────────────────────────────────────────
-class _GoogleLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    final bgPaint = Paint()..color = AppColors.white;
-    canvas.drawCircle(center, radius, bgPaint);
-
-    const strokeW = 4.5;
-    final rect = Rect.fromCircle(center: center, radius: radius - 2);
-
-    final paints = [
-      Paint()
-        ..color = AppColors.info
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW,
-      Paint()
-        ..color = AppColors.success
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW,
-      Paint()
-        ..color = AppColors.warning
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW,
-      Paint()
-        ..color = AppColors.error
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW,
-    ];
-
-    const step = 3.14159 / 2;
-    for (int i = 0; i < 4; i++) {
-      canvas.drawArc(rect, i * step - 3.14159 / 4, step, false, paints[i]);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
