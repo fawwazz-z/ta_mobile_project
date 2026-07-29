@@ -38,17 +38,16 @@ class EditProfilPages extends StatelessWidget {
                     ),
                     const SizedBox(height: 28),
 
-                    Text(
-                      'INFORMASI PERSONAL',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.brownshade2,
-                        letterSpacing: 1.2,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
+                    // Text(
+                    //   'INFORMASI PERSONAL',
+                    //   style: TextStyle(
+                    //     fontSize: 11,
+                    //     color: AppColors.brownshade2,
+                    //     letterSpacing: 1.2,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 14),
                     const AppFieldLabel('Nama Lengkap'),
                     const SizedBox(height: 6),
                     AppTextFieldCard(
@@ -57,15 +56,14 @@ class EditProfilPages extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
 
-                    const AppFieldLabel('NIP'),
-                    const SizedBox(height: 6),
-                    AppTextFieldCard(
-                      controller: ctrl.nipController,
-                      hint: 'Masukkan NIP',
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 14),
-
+                    // const AppFieldLabel('NIP'),
+                    // const SizedBox(height: 6),
+                    // AppTextFieldCard(
+                    //   controller: ctrl.nipController,
+                    //   hint: 'Masukkan NIP',
+                    //   keyboardType: TextInputType.number,
+                    // ),
+                    // const SizedBox(height: 14),
                     const AppFieldLabel('Email'),
                     const SizedBox(height: 6),
                     AppTextFieldCard(
