@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart'; // 1. Import Firebase Messaging
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
+import 'package:ta_mobile_project/services/fcm_service.dart'; // 2. Import FcmService
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
@@ -163,8 +165,6 @@ class LoginController extends GetxController {
   }
 
   // ─── HELPER: Simpan sesi dari response login ─────────────────────────────
-  // Kedua endpoint (login & google) punya format yang sama:
-  // { token, role, user: {id, name, email, ...} }
   Future<void> _saveSession(Map<String, dynamic> data) async {
     final token = data['token'] as String;
     final role = data['role'] as String? ?? '';
@@ -179,6 +179,14 @@ class LoginController extends GetxController {
         role: role,
         userId: (userMap['id'] as num?)?.toInt() ?? 0,
       );
+    }
+
+    // 3. Ambil Token FCM & kirim ke server Laravel
+    try {
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      await FcmService.registerToken(fcmToken);
+    } catch (e) {
+      print('Gagal mendaftarkan FCM Token saat login: $e');
     }
   }
 

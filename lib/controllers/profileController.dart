@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/routes/colors.dart';
 import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
+import 'package:ta_mobile_project/services/fcm_service.dart'; // 1. Import FcmService
 
 class ProfileController extends GetxController {
   var isLoading = false.obs;
@@ -69,6 +70,14 @@ class ProfileController extends GetxController {
       isLoading.value = true;
       final token = await AuthService.getToken();
 
+      // 2. Hapus FCM Token dari Laravel sebelum API /logout dipanggil
+      try {
+        await FcmService.unregisterToken();
+      } catch (e) {
+        print('Gagal unregister FCM saat logout: $e');
+      }
+
+      // 3. Panggil API Logout ke server Laravel
       await http.post(
         Uri.parse('${AppStatic.base_url}/logout'),
         headers: {
