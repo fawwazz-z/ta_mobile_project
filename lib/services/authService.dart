@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'fcm_service.dart'; // 1. Import FcmService
 
 class AuthService {
   static const _keyToken = 'auth_token';
@@ -44,8 +45,16 @@ class AuthService {
   static Future<int?> getUserId() async =>
       (await SharedPreferences.getInstance()).getInt(_keyUserId);
 
-  // ─── CLEAR ───────────────────────────────────────────────────────────────
+  // ─── CLEAR / LOGOUT ───────────────────────────────────────────────────────
   static Future<void> clearToken() async {
+    // 2. Hapus FCM token dari server Laravel dulu sebelum hapus data di HP
+    try {
+      await FcmService.unregisterToken();
+    } catch (e) {
+      print('Gagal unregister FCM Token saat logout: $e');
+    }
+
+    // 3. Hapus sesi lokal di SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyToken);
     await prefs.remove(_keyName);
