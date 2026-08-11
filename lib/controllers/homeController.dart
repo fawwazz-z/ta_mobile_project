@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:ta_mobile_project/routes/colors.dart';
+import 'package:ta_mobile_project/routes/route.dart';
 import 'package:ta_mobile_project/services/authService.dart';
 
 class JadwalHariIniModel {
@@ -61,8 +62,8 @@ class JadwalHariIniModel {
 
 class HomeController extends GetxController {
   // Jam sekolah (batas waktu)
-  var jamMasukSekolah = '07:15'.obs;
-  var jamPulangSekolah = '15:00'.obs;
+  var jamMasukSekolah = '07:00'.obs;
+  var jamPulangSekolah = '17:00'.obs;
 
   // Jam presensi aktual guru
   var jamMasukDisplay = '--:--'.obs;
@@ -293,6 +294,114 @@ class HomeController extends GetxController {
 
   Future<void> refreshData() async {
     await Future.wait([fetchAttendanceHariIni(), fetchJadwalHariIni()]);
+  }
+
+  // ── Validasi Waktu Presensi ────────────────────────────────────────────────
+  void handlePresensiClick() {
+    final now = DateTime.now();
+
+    // 1. Sudah Selesai Presensi Masuk & Pulang
+    if (sudahCheckIn && sudahCheckOut) {
+      _showWarningDialog(
+        'Presensi Selesai',
+        'Anda telah menyelesaikan presensi masuk dan pulang untuk hari ini.',
+      );
+      return;
+    }
+
+    // 2. Belum Presensi Masuk (Shift Pagi: 07:00 - 09:00)
+    if (!sudahCheckIn) {
+      final startCheckIn = _parseTimeToToday(
+        jamMasukSekolah.value.isNotEmpty ? jamMasukSekolah.value : '07:00',
+      );
+      final endCheckIn = _parseTimeToToday('09:00');
+
+      if (now.isBefore(startCheckIn)) {
+        _showWarningDialog(
+          'Belum Waktunya Presensi',
+          'Presensi masuk belum dibuka. Silakan kembali pada pukul ${jamMasukSekolah.value} WIB.',
+        );
+        return;
+      }
+
+      if (now.isAfter(endCheckIn)) {
+        _showWarningDialog(
+          'Waktu Presensi Berakhir',
+          'Batas waktu presensi masuk (09:00 WIB) telah berakhir.',
+        );
+        return;
+      }
+
+      Get.toNamed(AppRoutes.presensipage);
+      return;
+    }
+
+    // 3. Sudah Check-In, Belum Check-Out (Shift Pagi: 17:00 - 19:00)
+    if (sudahCheckIn && !sudahCheckOut) {
+      final startCheckOut = _parseTimeToToday(
+        jamPulangSekolah.value.isNotEmpty ? jamPulangSekolah.value : '17:00',
+      );
+      final endCheckOut = _parseTimeToToday('19:00');
+
+      if (now.isBefore(startCheckOut)) {
+        _showWarningDialog(
+          'Belum Waktunya Pulang',
+          'Presensi pulang belum dibuka. Silakan kembali pada pukul ${jamPulangSekolah.value} WIB.',
+        );
+        return;
+      }
+
+      if (now.isAfter(endCheckOut)) {
+        _showWarningDialog(
+          'Waktu Presensi Berakhir',
+          'Batas waktu presensi pulang (19:00 WIB) telah berakhir.',
+        );
+        return;
+      }
+
+      Get.toNamed(AppRoutes.presensipage);
+      return;
+    }
+  }
+
+  DateTime _parseTimeToToday(String timeStr) {
+    final now = DateTime.now();
+    final clean = timeStr.trim();
+    final parts = clean.split(':');
+    if (parts.length >= 2) {
+      final hour = int.tryParse(parts[0]) ?? 0;
+      final minute = int.tryParse(parts[1]) ?? 0;
+      return DateTime(now.year, now.month, now.day, hour, minute);
+    }
+    return now;
+  }
+
+  void _showWarningDialog(String title, String message) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textDark,
+          ),
+        ),
+        content: Text(message, style: const TextStyle(fontSize: 14)),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () => Get.back(),
+            child: const Text('Mengerti', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   // Format waktu UTC → lokal HH:mm
