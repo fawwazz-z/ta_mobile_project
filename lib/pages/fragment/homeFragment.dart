@@ -131,7 +131,7 @@ class HomeFragment extends StatelessWidget {
               width: double.infinity,
               height: 52,
               child: ElevatedButton.icon(
-                onPressed: sudahKeduanya ? null : () => Get.toNamed(AppRoutes.presensipage),
+                onPressed: () => homeCtrl.handlePresensiClick(),
                 icon: Icon(
                   sudahKeduanya
                       ? Icons.check_circle_rounded

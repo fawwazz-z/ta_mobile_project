@@ -66,7 +66,7 @@ class LoginPage extends GetView<LoginController> {
                     ),
                     const SizedBox(height: 12),
 
-                    _buildForgotPassword(),
+                    // _buildForgotPassword(),
                     const SizedBox(height: 28),
 
                     Obx(
