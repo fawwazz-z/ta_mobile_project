@@ -49,16 +49,11 @@ class VerifikasiPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: path.isNotEmpty
-                          ? Transform(
-                              // ✅ Mirror horizontal untuk kamera depan
-                              alignment: Alignment.center,
-                              transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
-                              child: Image.file(
-                                File(path),
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: 240,
-                              ),
+                          ? Image.file(
+                              File(path),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 240,
                             )
                           : const Center(
                               child: Icon(

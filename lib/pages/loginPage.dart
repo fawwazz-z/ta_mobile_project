@@ -66,6 +66,7 @@ class LoginPage extends GetView<LoginController> {
                     ),
                     const SizedBox(height: 12),
 
+                    _buildForgotPassword(),
                     const SizedBox(height: 28),
 
                     Obx(
@@ -143,6 +144,23 @@ class LoginPage extends GetView<LoginController> {
           style: TextStyle(fontSize: 14, color: AppColors.brownshade4),
         ),
       ],
+    );
+  }
+
+  Widget _buildForgotPassword() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: GestureDetector(
+        onTap: controller.forgotPassword,
+        child: const Text(
+          'Lupa Kata Sandi?',
+          style: TextStyle(
+            fontSize: 13,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 
