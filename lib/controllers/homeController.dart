@@ -34,15 +34,16 @@ class JadwalHariIniModel {
   factory JadwalHariIniModel.fromJson(Map<String, dynamic> j) {
     final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
-    final lessonHour = j['lesson_hour'] as Map<String, dynamic>?;
+    final lessonHours = j['lesson_hours'] as List<dynamic>?;
 
     String startTime = '--:--';
     String endTime = '--:--';
 
-    if (lessonHour != null) {
-      startTime =
-          (lessonHour['start_time'] as String?)?.substring(0, 5) ?? '--:--';
-      endTime = (lessonHour['end_time'] as String?)?.substring(0, 5) ?? '--:--';
+    if (lessonHours != null && lessonHours.isNotEmpty) {
+      final first = lessonHours.first as Map<String, dynamic>;
+      final last = lessonHours.last as Map<String, dynamic>;
+      startTime = (first['start_time'] as String?)?.substring(0, 5) ?? '--:--';
+      endTime = (last['end_time'] as String?)?.substring(0, 5) ?? '--:--';
     }
 
     return JadwalHariIniModel(
@@ -128,7 +129,6 @@ class HomeController extends GetxController {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final List data = body['data'] ?? [];
 
-        // Tanggal hari ini dalam lokal (WIB)
         final now = DateTime.now();
         final today = DateTime(now.year, now.month, now.day);
 
@@ -139,23 +139,17 @@ class HomeController extends GetxController {
 
           if (dateRaw.isEmpty) continue;
 
-          // Parse UTC lalu convert ke lokal untuk perbandingan tanggal
           final dt = DateTime.tryParse(dateRaw)?.toLocal();
           if (dt == null) continue;
 
           final recordDate = DateTime(dt.year, dt.month, dt.day);
 
-          // check_in_time juga dalam UTC, pakai itu sebagai acuan tanggal lokal
-          // karena attendance_date bisa berbeda 1 hari akibat timezone
           final checkInRaw = record['check_in_time'] as String? ?? '';
           DateTime? checkInLocal;
           if (checkInRaw.isNotEmpty && checkInRaw != 'null') {
             checkInLocal = DateTime.tryParse(checkInRaw)?.toLocal();
           }
 
-          // Cocokkan dengan hari ini:
-          // - via attendance_date yang sudah dikonversi ke lokal, ATAU
-          // - via check_in_time yang sudah dikonversi ke lokal
           final matchByDate = recordDate == today;
           final matchByCheckIn =
               checkInLocal != null &&
@@ -300,7 +294,6 @@ class HomeController extends GetxController {
   void handlePresensiClick() {
     final now = DateTime.now();
 
-    // 1. Sudah Selesai Presensi Masuk & Pulang
     if (sudahCheckIn && sudahCheckOut) {
       _showWarningDialog(
         'Presensi Selesai',
@@ -309,7 +302,6 @@ class HomeController extends GetxController {
       return;
     }
 
-    // 2. Belum Presensi Masuk (Shift Pagi: 07:00 - 09:00)
     if (!sudahCheckIn) {
       final startCheckIn = _parseTimeToToday(
         jamMasukSekolah.value.isNotEmpty ? jamMasukSekolah.value : '07:00',
@@ -336,7 +328,6 @@ class HomeController extends GetxController {
       return;
     }
 
-    // 3. Sudah Check-In, Belum Check-Out (Shift Pagi: 17:00 - 19:00)
     if (sudahCheckIn && !sudahCheckOut) {
       final startCheckOut = _parseTimeToToday(
         jamPulangSekolah.value.isNotEmpty ? jamPulangSekolah.value : '17:00',
@@ -407,7 +398,6 @@ class HomeController extends GetxController {
   // Format waktu UTC → lokal HH:mm
   String _formatTime(String raw) {
     if (raw.isEmpty || raw == 'null') return '--:--';
-    // ISO format dari API selalu UTC, convert ke lokal
     if (raw.contains('T')) {
       final dt = DateTime.tryParse(raw)?.toLocal();
       if (dt != null) {

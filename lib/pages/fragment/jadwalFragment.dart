@@ -50,16 +50,6 @@ class JadwalFragment extends StatelessWidget {
             ),
           ),
         ),
-
-        // ✅ Obx wajib agar label bulan reaktif saat prev/next ditekan
-        Obx(
-          () => AppMonthSelector(
-            label: ctrl.selectedMonthLabel,
-            onPrev: ctrl.previousMonth,
-            onNext: ctrl.nextMonth,
-          ),
-        ),
-
         const SizedBox(height: 8),
       ],
     );
@@ -130,7 +120,6 @@ class JadwalFragment extends StatelessWidget {
             ),
             if (isToday) ...[
               const SizedBox(width: 8),
-              // ✅ AppPrimaryBadge
               const AppPrimaryBadge(
                 label: 'HARI INI',
                 fontSize: 9,
