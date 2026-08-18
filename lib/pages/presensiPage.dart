@@ -58,7 +58,7 @@ class PresensiPage extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    CameraPreview(controller.cameraController!),
+                    _buildCameraPreview(),
                     Positioned.fill(
                       child: CustomPaint(
                         painter: _FaceBracketPainter(
@@ -107,6 +107,40 @@ class PresensiPage extends StatelessWidget {
 
           const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  // Preview kamera dengan aspect ratio yang benar (mencegah gambar gepeng).
+  // CameraPreview sebelumnya diletakkan di Stack(fit: StackFit.expand) yang
+  // memaksa gambar mengisi penuh container, sehingga rasio aslinya rusak
+  // (gepeng/distorsi). Solusinya: render preview pada ukuran aslinya lalu
+  // scale dengan BoxFit.cover via FittedBox, sehingga rasio tetap terjaga
+  // dan bagian yang overflow dipotong (bukan di-stretch).
+  Widget _buildCameraPreview() {
+    final camController = controller.cameraController!;
+    final previewSize = camController.value.previewSize;
+
+    if (previewSize == null) {
+      return CameraPreview(camController);
+    }
+
+    // previewSize dari sensor kamera biasanya landscape (width > height),
+    // sedangkan tampilan aplikasi ini potret, jadi width & height ditukar.
+    final previewW = previewSize.height;
+    final previewH = previewSize.width;
+
+    return ClipRect(
+      child: OverflowBox(
+        alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: previewW,
+            height: previewH,
+            child: CameraPreview(camController),
+          ),
+        ),
       ),
     );
   }
