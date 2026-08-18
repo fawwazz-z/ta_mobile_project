@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:ta_mobile_project/controllers/homeController.dart';
@@ -176,8 +178,42 @@ class PresensiController extends GetxController {
     }
     isTakingPhoto.value = true;
     final file = await cameraController!.takePicture();
-    capturedImagePath.value = file.path;
+
+    // Kamera depan (front camera) menyimpan file hasil capture dalam
+    // kondisi "raw sensor" yang terbalik (mirror) dibanding apa yang
+    // terlihat user di live preview. Balikkan (flip horizontal) hasil
+    // foto supaya sama persis dengan yang tampil di preview saat difoto.
+    final fixedPath = await _fixMirrorForFrontCamera(file.path);
+
+    capturedImagePath.value = fixedPath;
     isTakingPhoto.value = false;
+  }
+
+  /// Flip horizontal file foto jika diambil dari kamera depan, lalu
+  /// timpa file yang sama. Jika bukan kamera depan atau proses gagal,
+  /// path asli dikembalikan tanpa perubahan.
+  Future<String> _fixMirrorForFrontCamera(String path) async {
+    try {
+      final isFrontCamera =
+          cameraController?.description.lensDirection ==
+          CameraLensDirection.front;
+      if (!isFrontCamera) return path;
+
+      final originalFile = File(path);
+      final bytes = await originalFile.readAsBytes();
+
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) return path;
+
+      final flipped = img.flipHorizontal(decoded);
+      final newBytes = img.encodeJpg(flipped, quality: 92);
+
+      await originalFile.writeAsBytes(newBytes);
+      return path;
+    } catch (e) {
+      print('Gagal memperbaiki mirror foto: $e');
+      return path;
+    }
   }
 
   void ambilUlang() {
