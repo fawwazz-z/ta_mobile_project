@@ -40,7 +40,7 @@ class EditProfileController extends GetxController {
         'Nama tidak boleh kosong',
         backgroundColor: Colors.orange,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -87,7 +87,7 @@ class EditProfileController extends GetxController {
           'Profil berhasil diperbarui',
           backgroundColor: Colors.green,
           colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
         );
       } else {
         await AuthService.saveUserData(
@@ -113,7 +113,7 @@ class EditProfileController extends GetxController {
           'Profil diperbarui secara lokal',
           backgroundColor: Colors.green,
           colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
         );
       }
     } catch (_) {
@@ -122,7 +122,7 @@ class EditProfileController extends GetxController {
         'Gagal memperbarui profil, cek koneksi internet',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     } finally {
       isLoading.value = false;
@@ -133,7 +133,7 @@ class EditProfileController extends GetxController {
     Get.snackbar(
       'Info',
       'Fitur reset password akan segera hadir',
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       backgroundColor: Colors.amber,
       colorText: Colors.black,
     );

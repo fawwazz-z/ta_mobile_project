@@ -33,15 +33,16 @@ class JurnalHistoryModel {
   factory JurnalHistoryModel.fromJson(Map<String, dynamic> j) {
     final subject = j['subject'] as Map<String, dynamic>?;
     final classroom = j['classroom'] as Map<String, dynamic>?;
-    final lessonHour = j['lesson_hour'] as Map<String, dynamic>?;
+    final lessonHours = j['lesson_hours'] as List<dynamic>?;
 
     String startTime = '--:--';
     String endTime = '--:--';
 
-    if (lessonHour != null) {
-      startTime =
-          (lessonHour['start_time'] as String?)?.substring(0, 5) ?? '--:--';
-      endTime = (lessonHour['end_time'] as String?)?.substring(0, 5) ?? '--:--';
+    if (lessonHours != null && lessonHours.isNotEmpty) {
+      final first = lessonHours.first as Map<String, dynamic>;
+      final last = lessonHours.last as Map<String, dynamic>;
+      startTime = (first['start_time'] as String?)?.substring(0, 5) ?? '--:--';
+      endTime = (last['end_time'] as String?)?.substring(0, 5) ?? '--:--';
     }
 
     return JurnalHistoryModel(
@@ -64,23 +65,12 @@ class JurnalController extends GetxController {
   var jurnalList = <JurnalHistoryModel>[].obs;
   var errorMsg = ''.obs;
 
-  // Month & Year State
   final RxInt selectedMonth = DateTime.now().month.obs;
   final RxInt selectedYear = DateTime.now().year.obs;
 
   final List<String> _monthNames = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember',
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
 
   String get selectedMonthLabel =>
@@ -112,7 +102,6 @@ class JurnalController extends GetxController {
     fetchJurnalHistory();
   }
 
-  /// GET /api/journals/history?month={month}&year={year}
   Future<void> fetchJurnalHistory() async {
     try {
       isLoading.value = true;
