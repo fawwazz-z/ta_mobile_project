@@ -25,14 +25,28 @@ class JadwalModel {
   });
 
   factory JadwalModel.fromJson(Map<String, dynamic> j, String day) {
+    final lessonHours = j['lesson_hours'] as List<dynamic>?;
+
+    String startTime = '--:--';
+    String endTime = '--:--';
+    int session = 0;
+
+    if (lessonHours != null && lessonHours.isNotEmpty) {
+      final first = lessonHours.first as Map<String, dynamic>;
+      final last = lessonHours.last as Map<String, dynamic>;
+      startTime = _formatTime(first['start_time'] as String? ?? '--:--');
+      endTime = _formatTime(last['end_time'] as String? ?? '--:--');
+      session = (first['session'] as num?)?.toInt() ?? 0;
+    }
+
     return JadwalModel(
       id: (j['id'] as num).toInt(),
       subjectName: j['subject'] as String? ?? 'Mata Pelajaran',
       classroomName: j['classroom'] as String? ?? 'Kelas',
       day: _normalizeDay(day),
-      startTime: _formatTime(j['start_time'] as String? ?? '--:--'),
-      endTime: _formatTime(j['end_time'] as String? ?? '--:--'),
-      session: (j['session'] as num?)?.toInt() ?? 0,
+      startTime: startTime,
+      endTime: endTime,
+      session: session,
     );
   }
 
@@ -60,49 +74,28 @@ class JadwalController extends GetxController {
   var jadwalList = <JadwalModel>[].obs;
   var errorMsg = ''.obs;
 
-  // ── State bulan yang dipilih ─────────────────────────────────────────────
   var selectedMonth = DateTime.now().obs;
 
-  // Label bulan yang ditampilkan di AppMonthSelector
   String get selectedMonthLabel {
     const months = [
-      '',
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
+      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     return '${months[selectedMonth.value.month]} ${selectedMonth.value.year}';
   }
 
-  // Navigasi ke bulan sebelumnya
   void previousMonth() {
     final current = selectedMonth.value;
     selectedMonth.value = DateTime(current.year, current.month - 1);
   }
 
-  // Navigasi ke bulan berikutnya
   void nextMonth() {
     final current = selectedMonth.value;
     selectedMonth.value = DateTime(current.year, current.month + 1);
   }
 
-  // ── Urutan hari ──────────────────────────────────────────────────────────
   final List<String> dayOrder = [
-    'Senin',
-    'Selasa',
-    'Rabu',
-    'Kamis',
-    'Jumat',
-    'Sabtu',
+    'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu',
   ];
 
   final Map<String, String> _dayMapping = {
@@ -121,7 +114,6 @@ class JadwalController extends GetxController {
     fetchJadwal();
   }
 
-  /// GET /api/journals/schedules/all
   Future<void> fetchJadwal() async {
     try {
       isLoading.value = true;
@@ -135,9 +127,6 @@ class JadwalController extends GetxController {
           'Authorization': 'Bearer $token',
         },
       );
-
-      print("Jadwal Response Status: ${response.statusCode}");
-      print("Jadwal Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
@@ -178,7 +167,6 @@ class JadwalController extends GetxController {
     }
   }
 
-  /// Get jadwal berdasarkan hari (dalam Bahasa Indonesia)
   List<JadwalModel> getByDay(String day) {
     return jadwalList
         .where((j) => j.day.toLowerCase() == day.toLowerCase())
